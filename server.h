@@ -13,10 +13,10 @@ class Server : public Threadloop
     MessageSender* instSender;
     std::thread *thSender;
 
-    std::vector<std::pair<Connection*, std::thread*>> connections;
+    std::vector<std::pair<PConnection, std::thread*>> connections;
 public:
     void createConnection(/*some args...*/);
-    void deleteConnection(Connection* conn);
+    void deleteConnection(Connection& conn);
 
     MessageSender& getSender() const;
 

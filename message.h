@@ -4,9 +4,12 @@
 #include <string>
 #include <memory>
 
+class Connection;
+typedef std::shared_ptr<Connection> PConnection;
+
 class MessageBase
 {
-public:
+    friend class MessageSender;
     virtual bool isEOF() { return false; }
     virtual void send() = 0;
 };
@@ -15,16 +18,17 @@ typedef std::shared_ptr<MessageBase> PMessageBase;
 
 class EOFMessage: public MessageBase
 {
-public:
     virtual bool isEOF() { return true; }
     virtual void send() { }
 };
 
 class Message: public MessageBase {
-    // <- connection
-public:
+    PConnection connection;
+
     virtual std::string toString() = 0;
-    Message();
+    virtual void send();
+public:
+    Message(PConnection conn): connection(conn) { }
 };
 
 
