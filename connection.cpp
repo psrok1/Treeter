@@ -18,7 +18,7 @@ void Connection::operator()()
         4. Deserializacja wiadomosci (mozna powolac jakas fabryke)
         5. Wykonanie akcji zwiazanej z wiadomoscia
            Akcja powinna dokonac odpowiedzi przy pomocy MessageSender'a
-        6. Koniec
+           Mozna stworzyc w przyszlosci odpowiedni wizytator.
      **/
     }
 

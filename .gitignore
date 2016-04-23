@@ -72,5 +72,4 @@ Thumbs.db
 *.exe
 
 # Qt Creator project file
-*.pro
 build-*
