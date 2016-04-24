@@ -1,7 +1,8 @@
 #include <iostream>
 #include "server.h"
 #include <thread>
-
+#include <cstdlib>
+#include <ctime>
 #include <signal.h>
 #include <unistd.h>
 
@@ -15,6 +16,7 @@ void handle_ctrlc(int) {
 
 int main(int argc, char *argv[])
 {
+    srand(time(nullptr));
     struct sigaction sigIntHandler;
 
     sigIntHandler.sa_handler = handle_ctrlc;
