@@ -15,7 +15,7 @@ class Connection : public Threadloop
     // TODO: socket descriptor
     // TODO: cipher key
 public:
-    Connection(Server* srv): server(srv), id(Connection::NEXT_ID++) {}
+    Connection(Server* srv): id(Connection::NEXT_ID++), server(srv) {}
 
     virtual void operator()();
     virtual void stop();

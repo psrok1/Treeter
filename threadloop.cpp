@@ -10,7 +10,7 @@ Threadloop::~Threadloop()
         this->stop();
 
     // If destructor was called from the same thread: it need to be detached
-    if(this->worker.id == std::this_thread::get_id())
+    if(this->worker.get_id() == std::this_thread::get_id())
         this->worker.detach();
     // Otherwise: wait for its termination
     else if(this->worker.joinable())
@@ -23,7 +23,7 @@ void Threadloop::start()
     this->broken = false;
 }
 
-void join()
+void Threadloop::join()
 {
     this->worker.join();
 }

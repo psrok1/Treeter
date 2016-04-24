@@ -71,7 +71,7 @@ void Server::createConnection(/*Some args..*/)
     PConnection connection(new Connection(this));
     {
         std::unique_lock<std::mutex> lck(this->lckConnList);
-        this->connections.push_back(connection);
+        this->connectionList.push_back(connection);
     }
     connection->start();
 }
@@ -88,11 +88,11 @@ void Server::deleteConnection(Connection& conn)
             it != this->connectionList.end();
             ++it)
         {
-            if(*it == conn)
+            if(**it == conn)
                 break;
         }
 
-        if(it == this->connections.end())
+        if(it == this->connectionList.end())
         {
             // Connection has been deleted by another thread! (Probably server thread during close)
             // No problem!
@@ -103,7 +103,7 @@ void Server::deleteConnection(Connection& conn)
         connection = *it;
 
         // Delete it from list
-        this->connections.erase(it);
+        this->connectionList.erase(it);
     }
     // Now, just stop it!
     connection->stop();
