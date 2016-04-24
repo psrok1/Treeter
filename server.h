@@ -1,9 +1,9 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <mutex>
 #include <thread>
-#include <vector>
-#include <utility>
+#include <list>
 #include "messagesender.h"
 #include "connection.h"
 #include "threadloop.h"
@@ -11,9 +11,11 @@
 class Server : public Threadloop
 {
     MessageSender* instSender;
-    std::thread *thSender;
 
-    std::vector<std::pair<PConnection, std::thread*>> connections;
+    typedef std::list<PConnection> ConnectionList;
+
+    ConnectionList connectionList;
+    std::mutex lckConnList;
 public:
     void createConnection(/*some args...*/);
     void deleteConnection(Connection& conn);

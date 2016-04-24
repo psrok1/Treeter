@@ -1,11 +1,12 @@
 #include "server.h"
 #include <stdexcept>
+#include <algorithm>
 
 void Server::operator()()
 {
     // Launch message sender instance
     instSender = new MessageSender();
-    thSender   = new std::thread(std::ref(*instSender));
+    instSender->start();
 
     /**
       TODO:
@@ -30,19 +31,22 @@ void Server::operator()()
      **/
 
     // Close all connections
-    for(auto& c: this->connections) {
-        PConnection connection = c.first;
-        std::thread* worker = c.second;
+    {
+        // Dzieki kopii, destruktory wykonaja sie poza sekcja krytyczna.
+        // Destruktory sa blokujace!
+        ConnectionList connections_copy;
+        {
+            std::unique_lock<std::mutex> lck(this->lckConnList);
 
-        connection->stop();
-        worker->join();
-        delete worker;
-    }
+            connections_copy = this->connectionList;
 
+            this->connectionList.empty();
+        }
+        // Stop niech bedzie wykonywane poza sekcja krytyczna
+        for(auto& c: connections_copy)
+            c->stop();
+    } // Tutaj powinny wykonac sie destruktory - w tym miejscu ostatnim smart-pointerem powinien byc ten w kopii
     // Close sender instance
-    instSender->stop();
-    thSender->join();
-    delete thSender;
     delete instSender;
 }
 
@@ -65,30 +69,45 @@ void Server::createConnection(/*Some args..*/)
      *  (wymaga oczywiscie zmian w konstruktorze)
      */
     PConnection connection(new Connection(this));
-    std::thread* worker = new std::thread(std::ref(*connection));
-
-    this->connections.push_back(std::make_pair(connection, worker));
+    {
+        std::unique_lock<std::mutex> lck(this->lckConnList);
+        this->connections.push_back(connection);
+    }
+    connection->start();
 }
 
 void Server::deleteConnection(Connection& conn)
 {
-    auto conn_it = this->connections.begin();
-    for(; conn_it != this->connections.end(); ++conn_it)
+    PConnection connection;
+
     {
-        if(*(*conn_it).first == conn)
-            break;
+        std::unique_lock<std::mutex> lck(this->lckConnList);
+        Server::ConnectionList::iterator it;
+
+        for(auto it = this->connectionList.begin();
+            it != this->connectionList.end();
+            ++it)
+        {
+            if(*it == conn)
+                break;
+        }
+
+        if(it == this->connections.end())
+        {
+            // Connection has been deleted by another thread! (Maybe self-deleted) No problem!
+            return;
+        }
+
+        // Copy smart pointer to preserve connection existence
+        connection = *it;
+
+        // Delete it from list
+        this->connections.erase(it);
     }
-
-    if(conn_it == this->connections.end())
-        throw std::runtime_error("Attempt to delete connection which doesn't exist");
-
-    auto* worker = (*conn_it).second;
-
-    conn.stop();
-    worker->join();
-    delete worker;
-
-    this->connections.erase(conn_it);
+    // Now, just stop it!
+    connection->stop();
+    // Connection should be deleted during returning from this function
+    // Deletion will be nonblocking in self-deletion case and blocking otherwise
 }
 
 MessageSender& Server::getSender() const

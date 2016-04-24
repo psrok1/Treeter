@@ -24,7 +24,10 @@ void Connection::operator()()
 
     // TODO: Finalizacja.
 
-    // Na koncu zawsze wyrejestrowanie polaczenia
+    // Wyrejestrowanie polaczenia zawsze na koncu
+    // Jesli watek wyrejestrowuje sie sam: po tej instrukcji "this" bedzie uniewaznione
+    // Jesli watek jest wyrejestrowywany przez serwer - serwer na poczatek stworzy kopie smart-pointerow, by wiedziec kiedy
+    // machina sie zatrzyma. My jednak zakladamy pierwszy scenariusz
     server->deleteConnection(*this);
 }
 
@@ -33,9 +36,12 @@ void Connection::stop()
     /**
      * Zadanie zatrzymania polaczenia: np. shutdown na sockecie
      * Ta metoda moze byc wykonywana z roznych watkow, pamietac o atomowosci
-     * Bez synchronizacji mutexami, stop ma byc nieblokujace.
-     * Jak sie nie da: zglosic na Issues
      */
+
+    // Tutaj powinnismy moim zdaniem rowniez przeprowadzic odlaczanie referencji z modelu
+    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwarancje, ze polaczenie zostanie oswobodzone
+    // dokladnie w chwili, gdy zadajacy tego chce
+    // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
 
     // Na koncu zawsze zmiana stanu Threadloop na "zatrzymany"
     Threadloop::stop();
