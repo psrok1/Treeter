@@ -94,7 +94,8 @@ void Server::deleteConnection(Connection& conn)
 
         if(it == this->connections.end())
         {
-            // Connection has been deleted by another thread! (Maybe self-deleted) No problem!
+            // Connection has been deleted by another thread! (Probably server thread during close)
+            // No problem!
             return;
         }
 
@@ -107,7 +108,7 @@ void Server::deleteConnection(Connection& conn)
     // Now, just stop it!
     connection->stop();
     // Connection should be deleted during returning from this function
-    // Deletion will be nonblocking in self-deletion case and blocking otherwise
+    // Deletion will be nonblocking in self-deletion case and blocking for caller otherwise
 }
 
 MessageSender& Server::getSender() const

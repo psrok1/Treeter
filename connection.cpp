@@ -1,6 +1,8 @@
 #include "connection.h"
 #include "server.h"
 
+unsigned Connection::NEXT_ID = 0;
+
 void Connection::operator()()
 {
     // TODO: Inicjalizacja....
@@ -58,5 +60,5 @@ void Connection::sendMessage(std::string msg)
 }
 
 bool Connection::operator==(const Connection& comp_to) {
-    return (this == &comp_to);
+    return this->id == comp_to.id;
 }

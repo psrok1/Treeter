@@ -9,11 +9,13 @@ class Server;
 
 class Connection : public Threadloop
 {
+    static unsigned NEXT_ID;
+    unsigned id;
     Server* server;
     // TODO: socket descriptor
     // TODO: cipher key
 public:
-    Connection(Server* srv): server(srv) { }
+    Connection(Server* srv): server(srv), id(Connection::NEXT_ID++) {}
 
     virtual void operator()();
     virtual void stop();
