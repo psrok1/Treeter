@@ -4,28 +4,34 @@
 #include <memory>
 #include <string>
 #include "threadloop.h"
+#include <iostream>
 
 class Server;
 
-class Connection : public Threadloop
+class Connection : public Threadloop<Connection>
 {
     static unsigned NEXT_ID;
     unsigned id;
+
     Server* server;
     // TODO: socket descriptor
     // TODO: cipher key
+    std::atomic<bool> stop;
 public:
-    Connection(Server* srv): id(Connection::NEXT_ID++), server(srv) {}
+    Connection(Server* srv): id(Connection::NEXT_ID++), server(srv), stop(false) {
+        std::cout<<"Connection(" << this->id << ")\n";
+    }
+    ~Connection() {
+        std::cout<<"~Connection(" << this->id << ")\n";
+    }
 
-    virtual void operator()();
-    virtual void stop();
+    virtual void stopThread();
 
     void sendMessage(std::string msg);
 
     // Is "comp_to" the same as "this"?
     bool operator==(const Connection& comp_to);
+    virtual void operator()(Reference refConnection);
 };
-
-typedef std::shared_ptr<Connection> PConnection;
 
 #endif // CONNECTION_H

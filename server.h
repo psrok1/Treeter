@@ -7,23 +7,31 @@
 #include "messagesender.h"
 #include "connection.h"
 #include "threadloop.h"
+#include <iostream>
 
-class Server : public Threadloop
+class Server : public Threadloop<Server>
 {
-    MessageSender* instSender;
+    MessageSender::Reference messageSender;
 
-    typedef std::list<PConnection> ConnectionList;
+    typedef std::list<Connection::Reference> ConnectionList;
 
     ConnectionList connectionList;
-    std::mutex lckConnList;
+    std::mutex connectionListLock;
+    std::atomic<bool> stop;
 public:
-    void createConnection(/*some args...*/);
-    void deleteConnection(Connection& conn);
+    Server(): stop(false) {
+        std::cout<<"Server()\n";
+    }
+    ~Server() {
+        std::cout<<"~Server()\n";
+    }
+    void createConnection();
+    void deleteConnection(Connection::Reference connection);
 
-    MessageSender& getSender() const;
+    MessageSender::Reference getSender() const;
+    virtual void stopThread();
 
-    virtual void operator()();
-    virtual void stop();
+    virtual void operator()(Reference refServer);
 };
 
 #endif // SERVER_H

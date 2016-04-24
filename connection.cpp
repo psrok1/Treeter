@@ -1,14 +1,22 @@
 #include "connection.h"
 #include "server.h"
-
+#include <cstdlib>
+#include <chrono>
 unsigned Connection::NEXT_ID = 0;
 
-void Connection::operator()()
+void Connection::operator()(Reference refConnection)
 {
+    MessageSender::Reference sender = this->server->getSender();
+    std::cout << "Connection " << this->id << " started...\n";
     // TODO: Inicjalizacja....
 
-    for(;;)
+    while(!stop)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
+        MessageBase::Reference msg(new TestMessage(refConnection));
+        sender->send(msg);
+        if((rand() % 100) < 10)
+            break;
     /**
       TODO
 
@@ -26,14 +34,11 @@ void Connection::operator()()
 
     // TODO: Finalizacja.
 
-    // Wyrejestrowanie polaczenia zawsze na koncu
-    // Jesli watek wyrejestrowuje sie sam: po tej instrukcji "this" bedzie uniewaznione
-    // Jesli watek jest wyrejestrowywany przez serwer - serwer na poczatek stworzy kopie smart-pointerow, by wiedziec kiedy
-    // machina sie zatrzyma. My jednak zakladamy pierwszy scenariusz
-    server->deleteConnection(*this);
+    std::cout << "Connection " << this->id << " finished...\n";
+    this->server->deleteConnection(refConnection);
 }
 
-void Connection::stop()
+void Connection::stopThread()
 {
     /**
      * Zadanie zatrzymania polaczenia: np. shutdown na sockecie
@@ -46,11 +51,12 @@ void Connection::stop()
     // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
 
     // Na koncu zawsze zmiana stanu Threadloop na "zatrzymany"
-    Threadloop::stop();
+    stop = true;
 }
 
 void Connection::sendMessage(std::string msg)
 {
+    std::cout<<this->id<<"> "<<msg<<"\n";
     /**
      * Wyslanie wiadomosci do socketa
      * Tutaj mozna umiescic rowniez szyfrowanie

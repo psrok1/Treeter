@@ -5,7 +5,6 @@ CONFIG -= qt
 LIBS += -pthread
 
 SOURCES += main.cpp \
-    threadloop.cpp \
     messagequeue.cpp \
     messagesender.cpp \
     server.cpp \

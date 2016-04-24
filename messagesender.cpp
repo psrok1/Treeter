@@ -1,26 +1,27 @@
 #include "messagesender.h"
 
-void MessageSender::operator()()
+void MessageSender::operator()(Reference)
 {
+    std::cout << "Sender started\n";
     for(;;)
     {
-        PMessageBase msg = messageQueue.get();
+        MessageBase::Reference msg = messageQueue.get();
         if(msg->isEOF())
         {
             break;
         }
         msg->send();
     }
+    std::cout << "Sender stopped\n";
 }
 
-void MessageSender::stop()
+void MessageSender::stopThread()
 {
-    PMessageBase eof(new EOFMessage());
+    MessageBase::Reference eof(new EOFMessage());
     messageQueue.put(eof);
-    Threadloop::stop();
 }
 
-void MessageSender::send(PMessageBase msg)
+void MessageSender::send(MessageBase::Reference msg)
 {
     messageQueue.put(msg);
 }

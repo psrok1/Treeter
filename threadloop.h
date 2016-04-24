@@ -3,23 +3,41 @@
 
 #include <atomic>
 #include <thread>
+#include <memory>
+#include <functional>
 
+template<class DerivedClass>
 class Threadloop
 {
-    std::atomic<bool> broken;
+public:
+    typedef std::shared_ptr<DerivedClass> Reference;
+private:
     std::thread worker;
 public:
+    Threadloop() {}
+    virtual ~Threadloop() {}
+    virtual void operator()(Reference) = 0;
+
     // Copying isn't allowed
     Threadloop(const Threadloop&) = delete;
     Threadloop& operator=(const Threadloop&) = delete;
 
-    Threadloop();
-    virtual ~Threadloop();
+    std::thread& createThread(Reference ref) {
+        worker = std::thread(std::bind(&DerivedClass::operator(), static_cast<DerivedClass*>(this), std::placeholders::_1), ref);
+        return worker;
+    }
 
-    virtual void operator()() = 0;
-    virtual void start();
-    virtual void join();
-    virtual void stop();
+    void detachThread() {
+        if(this->worker.joinable())
+            this->worker.detach();
+    }
+
+    void joinThread() {
+        if(this->worker.joinable())
+            this->worker.join();
+    }
+
+    virtual void stopThread() = 0;
 };
 
 #endif // THREADLOOP_H

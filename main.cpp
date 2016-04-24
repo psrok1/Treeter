@@ -7,10 +7,10 @@
 
 using namespace std;
 
-Server serverInstance;
+Server::Reference serverInstance;
 
 void handle_ctrlc(int) {
-    serverInstance.stop();
+    serverInstance->stopThread();
 }
 
 int main(int argc, char *argv[])
@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 
     sigaction(SIGINT, &sigIntHandler, NULL);
 
-    serverInstance.start();
-    serverInstance.join();
+    serverInstance = Server::Reference(new Server());
+    serverInstance->createThread(serverInstance);
+    serverInstance->joinThread();
     return 0;
 }

@@ -1,17 +1,17 @@
 #include "messagequeue.h"
 
-PMessageBase MessageQueue::get()
+MessageBase::Reference MessageQueue::get()
 {
     std::unique_lock<std::mutex> lck(mu);
     cond.wait(lck, [this]{ return !messageQueue.empty(); });
 
-    PMessageBase msg = messageQueue.front();
+    MessageBase::Reference msg = messageQueue.front();
     messageQueue.pop();
 
     return msg;
 }
 
-void MessageQueue::put(PMessageBase msg)
+void MessageQueue::put(MessageBase::Reference msg)
 {
     std::unique_lock<std::mutex> lck(mu);
 

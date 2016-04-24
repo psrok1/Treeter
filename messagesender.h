@@ -3,14 +3,22 @@
 
 #include "threadloop.h"
 #include "messagequeue.h"
+#include <iostream>
 
-class MessageSender : public Threadloop
+class MessageSender : public Threadloop<MessageSender>
 {
     MessageQueue messageQueue;
 public:
-    virtual void operator()();
-    virtual void stop();
-    void send(PMessageBase msg);
+    MessageSender() {
+        std::cout<<"MessageSender()\n";
+    }
+    ~MessageSender() {
+        std::cout<<"~MessageSender()\n";
+    }
+    virtual void stopThread();
+    void send(MessageBase::Reference msg);
+
+    virtual void operator()(Reference refMessageSender);
 };
 
 #endif // MESSAGESENDER_H

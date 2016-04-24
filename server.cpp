@@ -1,12 +1,15 @@
 #include "server.h"
 #include <stdexcept>
 #include <algorithm>
+#include <chrono>
+#include <cstdlib>
 
-void Server::operator()()
+void Server::operator()(Reference)
 {
+    std::cout << "Server started...\n";
     // Launch message sender instance
-    instSender = new MessageSender();
-    instSender->start();
+    messageSender = MessageSender::Reference(new MessageSender());
+    messageSender->createThread(messageSender);
 
     /**
       TODO:
@@ -15,8 +18,10 @@ void Server::operator()()
      **/
 
     // ---- SERVER LOOP
-    for(;;)
+    while(!stop)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
+        createConnection();
         /**
           Tutaj nasluchujemy nowych polaczen
           Nowe obiekty polaczen rejestrujemy przy pomocy metody createConnection.
@@ -32,25 +37,29 @@ void Server::operator()()
 
     // Close all connections
     {
-        // Dzieki kopii, destruktory wykonaja sie poza sekcja krytyczna.
-        // Destruktory sa blokujace!
         ConnectionList connections_copy;
         {
-            std::unique_lock<std::mutex> lck(this->lckConnList);
+            std::unique_lock<std::mutex> lck(this->connectionListLock);
 
             connections_copy = this->connectionList;
 
-            this->connectionList.empty();
+            this->connectionList.clear();
         }
-        // Stop niech bedzie wykonywane poza sekcja krytyczna
+
         for(auto& c: connections_copy)
-            c->stop();
-    } // Tutaj powinny wykonac sie destruktory - w tym miejscu ostatnim smart-pointerem powinien byc ten w kopii
+        {
+            c->stopThread();
+            c->joinThread();
+        }
+    }
+
     // Close sender instance
-    delete instSender;
+    messageSender->stopThread();
+    messageSender->joinThread();
+    std::cout << "Server stopped...\n";
 }
 
-void Server::stop() {
+void Server::stopThread() {
     // Listening socket shutdown
     /**
      * Tutaj wyzwalamy zamkniecie socketa nasluchujacego.
@@ -58,7 +67,7 @@ void Server::stop() {
      * Stop moze byc wyzwalany z poziomu roznych watkow: pamietac o atomowosci.
      * Zadnych mutexow, ma byc nieblokujacy.
      */
-    Threadloop::stop();
+    stop = true;
 }
 
 void Server::createConnection(/*Some args..*/)
@@ -68,27 +77,25 @@ void Server::createConnection(/*Some args..*/)
      * Mozesz ten argument przekazac w linijce nizej:
      *  (wymaga oczywiscie zmian w konstruktorze)
      */
-    PConnection connection(new Connection(this));
+    Connection::Reference connection(new Connection(this));
     {
-        std::unique_lock<std::mutex> lck(this->lckConnList);
+        std::unique_lock<std::mutex> lck(this->connectionListLock);
         this->connectionList.push_back(connection);
     }
-    connection->start();
+    connection->createThread(connection);
 }
 
-void Server::deleteConnection(Connection& conn)
+void Server::deleteConnection(Connection::Reference connection)
 {
-    PConnection connection;
-
     {
-        std::unique_lock<std::mutex> lck(this->lckConnList);
+        std::unique_lock<std::mutex> lck(this->connectionListLock);
         Server::ConnectionList::iterator it;
 
-        for(auto it = this->connectionList.begin();
+        for(it = this->connectionList.begin();
             it != this->connectionList.end();
             ++it)
         {
-            if(**it == conn)
+            if(**it == *connection)
                 break;
         }
 
@@ -99,19 +106,14 @@ void Server::deleteConnection(Connection& conn)
             return;
         }
 
-        // Copy smart pointer to preserve connection existence
-        connection = *it;
-
         // Delete it from list
+        (*it)->detachThread();
         this->connectionList.erase(it);
     }
     // Now, just stop it!
-    connection->stop();
-    // Connection should be deleted during returning from this function
-    // Deletion will be nonblocking in self-deletion case and blocking for caller otherwise
+    connection->stopThread();
 }
 
-MessageSender& Server::getSender() const
-{
-    return *(this->instSender);
+MessageSender::Reference Server::getSender() const {
+    return this->messageSender;
 }
