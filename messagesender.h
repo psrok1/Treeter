@@ -9,12 +9,6 @@ class MessageSender : public Threadloop<MessageSender>
 {
     MessageQueue messageQueue;
 public:
-    MessageSender() {
-        std::cout<<"MessageSender()\n";
-    }
-    ~MessageSender() {
-        std::cout<<"~MessageSender()\n";
-    }
     virtual void stopThread();
     void send(MessageBase::Reference msg);
 

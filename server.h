@@ -17,14 +17,12 @@ class Server : public Threadloop<Server>
 
     ConnectionList connectionList;
     std::mutex connectionListLock;
-    std::atomic<bool> stop;
+    std::atomic<bool> stopped;
+    int shutdownPipe[2];
 public:
-    Server(): stop(false) {
-        std::cout<<"Server()\n";
-    }
-    ~Server() {
-        std::cout<<"~Server()\n";
-    }
+    Server();
+    ~Server();
+
     void createConnection();
     void deleteConnection(Connection::Reference connection);
 

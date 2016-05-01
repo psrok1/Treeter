@@ -4,6 +4,21 @@
 #include <chrono>
 #include <cstdlib>
 
+#include <unistd.h>
+
+
+Server::Server(): stopped(false)
+{
+    pipe(this->shutdownPipe);
+}
+
+Server::~Server()
+{
+    close(this->shutdownPipe[0]);
+    close(this->shutdownPipe[1]);
+}
+
+
 void Server::operator()(Reference)
 {
     std::cout << "Server started...\n";
@@ -18,7 +33,7 @@ void Server::operator()(Reference)
      **/
 
     // ---- SERVER LOOP
-    while(!stop)
+    while(!stopped)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
         createConnection();
@@ -60,14 +75,14 @@ void Server::operator()(Reference)
 }
 
 void Server::stopThread() {
-    // Listening socket shutdown
     /**
      * Tutaj wyzwalamy zamkniecie socketa nasluchujacego.
      * Musimy sprawic, by watek wyskoczyl z petli nasluchujacej.
      * Stop moze byc wyzwalany z poziomu roznych watkow: pamietac o atomowosci.
      * Zadnych mutexow, ma byc nieblokujacy.
      */
-    stop = true;
+    stopped = true;
+    write(this->shutdownPipe[1], "goodbye", sizeof("goodbye"));
 }
 
 void Server::createConnection(/*Some args..*/)

@@ -16,14 +16,11 @@ class Connection : public Threadloop<Connection>
     Server* server;
     // TODO: socket descriptor
     // TODO: cipher key
-    std::atomic<bool> stop;
+    std::atomic<bool> stopped;
+    int shutdownPipe[2];
 public:
-    Connection(Server* srv): id(Connection::NEXT_ID++), server(srv), stop(false) {
-        std::cout<<"Connection(" << this->id << ")\n";
-    }
-    ~Connection() {
-        std::cout<<"~Connection(" << this->id << ")\n";
-    }
+    Connection(Server* srv);
+    ~Connection();
 
     virtual void stopThread();
 

@@ -2,7 +2,21 @@
 #include "server.h"
 #include <cstdlib>
 #include <chrono>
+
+#include <unistd.h>
+
 unsigned Connection::NEXT_ID = 0;
+
+Connection::Connection(Server* srv): id(Connection::NEXT_ID++), server(srv), stopped(false)
+{
+    pipe(this->shutdownPipe);
+}
+
+Connection::~Connection()
+{
+    close(this->shutdownPipe[0]);
+    close(this->shutdownPipe[1]);
+}
 
 void Connection::operator()(Reference refConnection)
 {
@@ -10,7 +24,7 @@ void Connection::operator()(Reference refConnection)
     std::cout << "Connection " << this->id << " started...\n";
     // TODO: Inicjalizacja....
 
-    while(!stop)
+    while(!stopped)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
         MessageBase::Reference msg(new TestMessage(refConnection));
@@ -51,8 +65,8 @@ void Connection::stopThread()
     // dokladnie w chwili, gdy zadajacy tego chce
     // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
 
-    // Na koncu zawsze zmiana stanu Threadloop na "zatrzymany"
-    stop = true;
+    stopped = true;
+    write(this->shutdownPipe[1], "goodbye", sizeof("goodbye"));
 }
 
 void Connection::sendMessage(std::string msg)

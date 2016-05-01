@@ -2,7 +2,6 @@
 
 void MessageSender::operator()(Reference)
 {
-    std::cout << "Sender started\n";
     for(;;)
     {
         MessageBase::Reference msg = messageQueue.get();
@@ -12,7 +11,6 @@ void MessageSender::operator()(Reference)
         }
         msg->send();
     }
-    std::cout << "Sender stopped\n";
 }
 
 void MessageSender::stopThread()
