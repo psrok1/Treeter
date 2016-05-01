@@ -12,8 +12,10 @@ using namespace std;
 
 int main()
 {
-    Configuration::load();
-    Configuration::save();
+    if(Configuration::load())
+    {
+        std::cout<<"Server port: "<<Configuration::getServerPort()<<"\n";
+    }
 }
 
 /*
