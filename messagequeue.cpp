@@ -6,15 +6,19 @@ MessageBase::Reference MessageQueue::get()
     cond.wait(lck, [this]{ return !messageQueue.empty(); });
 
     MessageBase::Reference msg = messageQueue.front();
-    messageQueue.pop();
+    messageQueue.pop_front();
 
     return msg;
 }
 
-void MessageQueue::put(MessageBase::Reference msg)
+void MessageQueue::put(MessageBase::Reference msg, bool oob)
 {
     std::unique_lock<std::mutex> lck(mu);
 
-    messageQueue.push(msg);
+    if(!oob)
+        messageQueue.push_back(msg);
+    else
+        messageQueue.push_front(msg);
+
     cond.notify_all();
 }

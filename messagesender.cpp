@@ -18,7 +18,7 @@ void MessageSender::operator()(Reference)
 void MessageSender::stopThread()
 {
     MessageBase::Reference eof(new EOFMessage());
-    messageQueue.put(eof);
+    messageQueue.put(eof, true);
 }
 
 void MessageSender::send(MessageBase::Reference msg)

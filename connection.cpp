@@ -14,9 +14,10 @@ void Connection::operator()(Reference refConnection)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
         MessageBase::Reference msg(new TestMessage(refConnection));
-        sender->send(msg);
         if((rand() % 100) < 10)
             break;
+        else
+            sender->send(msg);
     /**
       TODO
 
