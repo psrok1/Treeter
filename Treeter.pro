@@ -17,4 +17,5 @@ HEADERS += \
     message.h \
     messagesender.h \
     server.h \
-    connection.h
+    connection.h \
+    json.hpp
