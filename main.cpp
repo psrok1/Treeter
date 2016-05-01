@@ -6,28 +6,14 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "json.hpp"
+#include "config.h"
 
 using namespace std;
 
 int main()
 {
-    nlohmann::json j = {
-      {"pi", 3.141},
-      {"happy", true},
-      {"name", "Niels"},
-      {"nothing", nullptr},
-      {"answer", {
-        {"everything", 42}
-      }},
-      {"list", {1, 0, 2}},
-      {"object", {
-        {"currency", "USD"},
-        {"value", 42.99}
-      }}
-    };
-
-    std::cout << j["pi"];
+    Configuration::load();
+    Configuration::save();
 }
 
 /*

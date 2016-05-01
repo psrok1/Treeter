@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     messagesender.cpp \
     server.cpp \
     connection.cpp \
-    message.cpp
+    message.cpp \
+    config.cpp
 
 HEADERS += \
     threadloop.h \
@@ -18,4 +19,5 @@ HEADERS += \
     messagesender.h \
     server.h \
     connection.h \
-    json.hpp
+    json.hpp \
+    config.h
