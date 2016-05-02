@@ -13,6 +13,8 @@ namespace Configuration
 
     extern std::string getDatabaseName();
     extern void setDatabaseName(std::string dbname);
+
+    extern bool checkFields();
 }
 
 #endif // CONFIG_H

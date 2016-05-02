@@ -9,6 +9,8 @@ namespace Configuration
     using json = nlohmann::json;
     json j;
 
+    bool checkFields();
+
     bool load()
     {
         std::ifstream file;
@@ -20,13 +22,18 @@ namespace Configuration
 
             file.close();
             j = json::parse(str);
+            if(!checkFields())
+            {
+                std::cerr << "Loading configuration failed: missing field or unexpected type of value\n";
+                return false;
+            }
         }
         catch (std::ifstream::failure e) {
-            std::cerr << "Exception opening/reading/closing file\n";
+            std::cerr << "Loading configuration failed: can't open file for reading\n";
             return false;
         }
         catch (std::invalid_argument e) {
-            std::cerr << "Exception parsing file\n";
+            std::cerr << "Loading configuration failed: wrong JSON format\n";
             return false;
         }
         return true;
@@ -40,7 +47,7 @@ namespace Configuration
             file.close();
         }
         catch(std::ofstream::failure e) {
-            std::cerr << "Exception opening/writing/closing file\n";
+            std::cerr << "Storing configuration failed: can't open file for writing\n";
             return false;
         }
         return true;
@@ -64,5 +71,13 @@ namespace Configuration
     void setDatabaseName(std::string dbname)
     {
         j["databaseName"] = dbname;
+    }
+
+    bool checkFields() {
+        if(!j["databaseName"].is_string())
+            return false;
+        if(!j["serverPort"].is_number())
+            return false;
+        return true;
     }
 }
