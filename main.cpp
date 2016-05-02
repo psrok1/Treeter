@@ -16,8 +16,11 @@ void handle_ctrlc(int) {
     serverInstance->stopThread();
 }
 
+void printLogo();
+
 int main(int argc, char *argv[])
 {   
+    printLogo();
     srand(time(nullptr));
     struct sigaction sigIntHandler;
 
@@ -34,4 +37,17 @@ int main(int argc, char *argv[])
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
     return 0;
+}
+
+void printLogo()
+{
+    std::cout<<"\n";
+    std::cout<<"      .+-                                         \n";
+    std::cout<<"   yosmMmh+y                                      \n";
+    std::cout<<"   -odMMMNs         _____            _            \n";
+    std::cout<<"mdsNydMMMmsNyhN`   |_   _| _ ___ ___| |_ ___ _ _  \n";
+    std::cout<<":dNMMMMMMMMMMm:      | || '_/ -_) -_)  _/ -_) '_| \n";
+    std::cout<<" `/ssshMdsss+`       |_||_| \\___\\___|\\__\\___|_|   \n";
+    std::cout<<"      .o:                                         \n";
+    std::cout<<"\n";
 }
