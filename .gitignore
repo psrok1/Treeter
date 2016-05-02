@@ -73,3 +73,7 @@ Thumbs.db
 
 # Qt Creator project file
 build-*
+
+# IntelliJ files
+Treeter-Client/.idea
+Treeter-Client/out
