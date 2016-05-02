@@ -6,8 +6,19 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "config.h"
+
 using namespace std;
 
+int main()
+{
+    if(Configuration::load())
+    {
+        std::cout<<"Server port: "<<Configuration::getServerPort()<<"\n";
+    }
+}
+
+/*
 Server::Reference serverInstance;
 
 void handle_ctrlc(int) {
@@ -29,4 +40,4 @@ int main(int argc, char *argv[])
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
     return 0;
-}
+}*/
