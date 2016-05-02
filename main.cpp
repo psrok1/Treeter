@@ -10,15 +10,6 @@
 
 using namespace std;
 
-int main()
-{
-    if(Configuration::load())
-    {
-        std::cout<<"Server port: "<<Configuration::getServerPort()<<"\n";
-    }
-}
-
-/*
 Server::Reference serverInstance;
 
 void handle_ctrlc(int) {
@@ -26,9 +17,12 @@ void handle_ctrlc(int) {
 }
 
 int main(int argc, char *argv[])
-{
+{   
     srand(time(nullptr));
     struct sigaction sigIntHandler;
+
+    if(!Configuration::load())
+        return 1;
 
     sigIntHandler.sa_handler = handle_ctrlc;
     sigemptyset(&sigIntHandler.sa_mask);
@@ -40,4 +34,4 @@ int main(int argc, char *argv[])
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
     return 0;
-}*/
+}
