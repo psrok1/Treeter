@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 public class MessageView {
@@ -86,6 +88,15 @@ public class MessageView {
         {
             public void actionPerformed(ActionEvent e) {
                 controller.send(inputField.getText());
+            }
+        });
+
+        frame.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                controller.disconnect();
             }
         });
     }

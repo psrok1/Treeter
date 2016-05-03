@@ -53,4 +53,10 @@ public class MainController
         controller.messageView.attachController(controller);
         controller.connectView.show();
     }
+
+    public void disconnect() {
+        client.close();
+        messageView.hide();
+        connectView.show();
+    }
 }

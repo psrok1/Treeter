@@ -37,18 +37,21 @@ public class Client
             // Nawiązanie połączenia i inicjalizacja strumieni
             try
             {
+                System.out.println("Connecting...");
                 connection.connect(address);
                 inputStream = new BufferedReader(
                         new InputStreamReader(connection.getInputStream()));
                 outputStream = new PrintWriter(connection.getOutputStream(), true);
             } catch (final IOException e)
             {
+                System.out.println("ARGH! NO!");
                 // Jeśli coś się nie udało: generuj zdarzenie błędu połączenia i uciekaj
                 if (onSocketErrorListener != null)
                     onSocketErrorListener.action();
                 return;
             }
             // Jeśli połączono: generuj odpowiednie zdarzenie
+            System.out.println("Connected.");
             if (onConnectListener != null)
                 onConnectListener.action();
             // Główna pętla nasłuchująca
@@ -58,6 +61,17 @@ public class Client
                 {
                     // Czekaj i odbierz wiadomość
                     String input = inputStream.readLine();
+                    if(input == null)
+                    {
+                        if (!expectedClose)
+                        {
+                            // Generuj odpowiednie zdarzenie
+                            if (onSuddenDisconnectListener != null)
+                                onSuddenDisconnectListener.action();
+                        }
+                        return;
+                    }
+                    System.out.println("Received");
                     // Przetwarzaj wiadomość
                     onMessageListener.action(input);
                 } catch (final IOException e)
@@ -99,6 +113,7 @@ public class Client
     {
         String ip = addr.substring(0, addr.indexOf(':'));
         int port = Integer.parseInt(addr.substring(addr.indexOf(':') + 1));
+        System.out.println(String.format("%s: %d", ip, port));
         address = new InetSocketAddress(ip, port);
         connection = new Socket();
     }

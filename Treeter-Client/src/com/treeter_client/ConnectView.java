@@ -18,6 +18,7 @@ public class ConnectView {
         frame = new JFrame();
         frame.setSize(600, 360);
         frame.setLayout(new BorderLayout());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setBackground(new Color(0xA6, 0x80, 0xB8));
 
         logoImage = new ImageIcon(getClass().getResource("/logo-simple.png"));
@@ -102,8 +103,8 @@ public class ConnectView {
         insidePanel.add(buttonPanel, c);
 
         // Przyciski
-        acceptButton = new JButton("Zakończ");
-        cancelButton = new JButton("Zaloguj");
+        acceptButton = new JButton("Zaloguj");
+        cancelButton = new JButton("Zakończ");
         buttonPanel.add(acceptButton);
         buttonPanel.add(cancelButton);
     }
