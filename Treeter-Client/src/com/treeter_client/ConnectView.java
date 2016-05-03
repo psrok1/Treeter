@@ -3,6 +3,8 @@ package com.treeter_client;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ConnectView {
     private JFrame frame;
@@ -12,12 +14,11 @@ public class ConnectView {
     private JTextField serverField, nickField, passwordField;
     private JButton acceptButton, cancelButton;
 
-    ConnectView()
-    {
+    ConnectView() {
         frame = new JFrame();
         frame.setSize(600, 360);
         frame.setLayout(new BorderLayout());
-        frame.getContentPane().setBackground(new Color(0xA6,0x80,0xB8));
+        frame.getContentPane().setBackground(new Color(0xA6, 0x80, 0xB8));
 
         logoImage = new ImageIcon(getClass().getResource("/logo-simple.png"));
         logo = new JLabel(logoImage);
@@ -32,7 +33,7 @@ public class ConnectView {
         insidePanel.setBackground(Color.WHITE);
         outsidePanel.add(insidePanel, BorderLayout.CENTER);
         final GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(4,16,8,4);
+        c.insets = new Insets(4, 16, 8, 4);
 
         // Etykieta "Logowanie"
         logLabel = new JLabel("Logowanie");
@@ -56,7 +57,7 @@ public class ConnectView {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 1;
-       insidePanel.add(serverField, c);
+        insidePanel.add(serverField, c);
 
         // Pole wprowadzania nazwy użytkownika
         nickLabel = new JLabel("Nazwa użytkownika");
@@ -107,8 +108,23 @@ public class ConnectView {
         buttonPanel.add(cancelButton);
     }
 
-    public static void main(String args[]) {
-        ConnectView view = new ConnectView();
-        view.frame.setVisible(true);
+    public void show()
+    {
+        frame.setVisible(true);
+    }
+
+    public  void hide()
+    {
+        frame.setVisible(false);
+    }
+
+    public void attachController(MainController controller)
+    {
+        acceptButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.connect(serverField.getText());
+            }
+        });
     }
 }

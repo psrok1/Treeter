@@ -75,5 +75,4 @@ Thumbs.db
 build-*
 
 # IntelliJ files
-Treeter-Client/.idea
 Treeter-Client/out
