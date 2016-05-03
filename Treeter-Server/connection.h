@@ -5,6 +5,9 @@
 #include <string>
 #include "threadloop.h"
 #include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 class Server;
 
@@ -14,12 +17,13 @@ class Connection : public Threadloop<Connection>
     unsigned id;
 
     Server* server;
-    // TODO: socket descriptor
+    int socketDescriptor;
+    unsigned int ipAddress;
     // TODO: cipher key
     std::atomic<bool> stopped;
     int shutdownPipe[2];
 public:
-    Connection(Server* srv);
+    Connection(Server* srv, int socket);
     ~Connection();
 
     virtual void stopThread();

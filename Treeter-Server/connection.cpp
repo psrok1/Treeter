@@ -2,20 +2,25 @@
 #include "server.h"
 #include <cstdlib>
 #include <chrono>
-
+#include <cstring>
 #include <unistd.h>
 
 unsigned Connection::NEXT_ID = 0;
 
-Connection::Connection(Server* srv): id(Connection::NEXT_ID++), server(srv), stopped(false)
+Connection::Connection(Server* srv, int socket): id(Connection::NEXT_ID++), server(srv), stopped(false)
 {
     pipe(this->shutdownPipe);
+    sockaddr_in addr;
+    unsigned int length;
+    socketDescriptor = accept(socket,(struct sockaddr*) &addr, &length);
+    ipAddress = ntohl(addr.sin_addr.s_addr);
 }
 
 Connection::~Connection()
 {
     close(this->shutdownPipe[0]);
     close(this->shutdownPipe[1]);
+    close(socketDescriptor);
 }
 
 void Connection::operator()(Reference refConnection)
@@ -24,14 +29,39 @@ void Connection::operator()(Reference refConnection)
     std::cout << "Connection " << this->id << " started...\n";
     // TODO: Inicjalizacja....
 
+    //Set descriptors up
+    fd_set descriptors;
+    int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
+    //Create buffers: byte buffer
+    char msgbuff[1500];
+
     while(!stopped)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
+
+        //Re-set descriptors
+        FD_ZERO(&descriptors);
+        FD_SET(socketDescriptor,&descriptors);
+        FD_SET(shutdownPipe[0], &descriptors);
+
+        select(maxdesc, &descriptors, nullptr, nullptr,nullptr);
+
+        if(FD_ISSET(shutdownPipe[0],&descriptors))
+        {
+            break;
+        }
+        if(FD_ISSET(socketDescriptor,&descriptors))
+        {
+            int bytes = recv(socketDescriptor,msgbuff,1500,0);
+            MessageBase::Reference msg(new TestMessage(refConnection, std::string(msgbuff,bytes)));
+            sender->send(msg);
+        }
+
+        /*std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
         MessageBase::Reference msg(new TestMessage(refConnection));
         if((rand() % 100) < 10)
             break;
         else
-            sender->send(msg);
+            sender->send(msg);*/
     /**
       TODO
 
@@ -72,11 +102,13 @@ void Connection::stopThread()
 void Connection::sendMessage(std::string msg)
 {
     std::cout<<this->id<<"> "<<msg<<"\n";
+    send(socketDescriptor,msg.data(),sizeof(msg.data()),0);
     /**
      * Wyslanie wiadomosci do socketa
      * Tutaj mozna umiescic rowniez szyfrowanie
      * Jesli robienie send na ubitych socketach przeszkadza, zrobic jakas kontrole.
      * Czasem watek sendera moze chciec wysylac jakies wiadomosci, gdy polaczenie jest juz zamkniete
+     *
      **/
 }
 

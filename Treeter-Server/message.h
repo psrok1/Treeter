@@ -31,11 +31,15 @@ public:
 };
 
 class TestMessage: public Message {
-    virtual std::string toString() {
-        return "test";
+
+    std::string Msgbuff;
+
+    virtual std::string toString()
+    {
+        return Msgbuff;
     }
 public:
-    TestMessage(Connection::Reference conn): Message(conn) { }
+    TestMessage(Connection::Reference conn, std::string msg): Message(conn), Msgbuff(msg) { }
 };
 
 

@@ -3,19 +3,29 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
-
+#include <cstring>
 #include <unistd.h>
 
 
-Server::Server(): stopped(false)
+Server::Server(unsigned short portNr): stopped(false), usedPort(portNr)
 {
     pipe(this->shutdownPipe);
+
+    //Tworzenie socketa
+    socketDescriptor = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK,0);
+    sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = usedPort;
+    bind(socketDescriptor,(struct sockaddr*) &addr,sizeof(addr));
+    listen(socketDescriptor,8);
 }
 
 Server::~Server()
 {
     close(this->shutdownPipe[0]);
     close(this->shutdownPipe[1]);
+    close(socketDescriptor);
 }
 
 
@@ -26,6 +36,10 @@ void Server::operator()(Reference)
     messageSender = MessageSender::Reference(new MessageSender());
     messageSender->createThread(messageSender);
 
+    //Set descriptors up
+    fd_set descriptors;
+    int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
+
     /**
       TODO:
       Glowna petla serwera
@@ -35,14 +49,32 @@ void Server::operator()(Reference)
     // ---- SERVER LOOP
     while(!stopped)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
-        createConnection();
+        //Re-set descriptors
+        FD_ZERO(&descriptors);
+        FD_SET(socketDescriptor,&descriptors);
+        FD_SET(shutdownPipe[0], &descriptors);
+
+        select(maxdesc, &descriptors, nullptr, nullptr,nullptr);
+
+        if(FD_ISSET(shutdownPipe[0],&descriptors))
+        {
+            break;
+        }
+        if(FD_ISSET(socketDescriptor,&descriptors))
+        {
+            createConnection();
+        }
+
+        //std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
+        //createConnection();
         /**
           Tutaj nasluchujemy nowych polaczen
           Nowe obiekty polaczen rejestrujemy przy pomocy metody createConnection.
           Powoluje ona automatycznie obiekt sesji i watek obslugujacy ta aktywna sesje
           Gdy socket nasluchujacy okaze sie zerwany: wyskok z petli przez break
          **/
+
+
     }
     // .... END OF SERVER LOOP
 
@@ -92,7 +124,7 @@ void Server::createConnection(/*Some args..*/)
      * Mozesz ten argument przekazac w linijce nizej:
      *  (wymaga oczywiscie zmian w konstruktorze)
      */
-    Connection::Reference connection(new Connection(this));
+    Connection::Reference connection(new Connection(this, socketDescriptor));
     {
         std::unique_lock<std::mutex> lck(this->connectionListLock);
         this->connectionList.push_back(connection);
