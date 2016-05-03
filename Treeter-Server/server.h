@@ -18,12 +18,13 @@ class Server : public Threadloop<Server>
 
     typedef std::list<Connection::Reference> ConnectionList;
 
-    int socketDescriptor;
-    unsigned short usedPort;
     ConnectionList connectionList;
     std::mutex connectionListLock;
     std::atomic<bool> stopped;
     int shutdownPipe[2];
+
+    unsigned short usedPort;
+    int socketDescriptor;
 public:
     Server(unsigned short portNr);
     ~Server();

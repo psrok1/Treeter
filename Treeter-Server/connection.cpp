@@ -49,19 +49,20 @@ void Connection::operator()(Reference refConnection)
         {
             break;
         }
+
         if(FD_ISSET(socketDescriptor,&descriptors))
         {
-            int bytes = recv(socketDescriptor,msgbuff,1500,0);
-            MessageBase::Reference msg(new TestMessage(refConnection, std::string(msgbuff,bytes)));
+            int recv_bytes = recv(socketDescriptor,msgbuff,1500,0);
+
+            if(recv_bytes <= 0)
+            {
+                std::cout << "Peer closed connection.\n";
+                break;
+            }
+
+            MessageBase::Reference msg(new TestMessage(refConnection, std::string(msgbuff,recv_bytes)));
             sender->send(msg);
         }
-
-        /*std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
-        MessageBase::Reference msg(new TestMessage(refConnection));
-        if((rand() % 100) < 10)
-            break;
-        else
-            sender->send(msg);*/
     /**
       TODO
 
@@ -102,7 +103,7 @@ void Connection::stopThread()
 void Connection::sendMessage(std::string msg)
 {
     std::cout<<this->id<<"> "<<msg<<"\n";
-    send(socketDescriptor,msg.data(),sizeof(msg.data()),0);
+    send(socketDescriptor,msg.data(),msg.size(),0);
     /**
      * Wyslanie wiadomosci do socketa
      * Tutaj mozna umiescic rowniez szyfrowanie

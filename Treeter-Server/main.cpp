@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     sigaction(SIGINT, &sigIntHandler, NULL);
 
-    serverInstance = Server::Reference(new Server(50000));
+    serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
     return 0;

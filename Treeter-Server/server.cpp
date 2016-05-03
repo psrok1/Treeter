@@ -16,7 +16,7 @@ Server::Server(unsigned short portNr): stopped(false), usedPort(portNr)
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = usedPort;
+    addr.sin_port = htons(usedPort);
     bind(socketDescriptor,(struct sockaddr*) &addr,sizeof(addr));
     listen(socketDescriptor,8);
 }
