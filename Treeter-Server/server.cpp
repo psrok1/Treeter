@@ -73,11 +73,10 @@ void Server::operator()(Reference)
           Powoluje ona automatycznie obiekt sesji i watek obslugujacy ta aktywna sesje
           Gdy socket nasluchujacy okaze sie zerwany: wyskok z petli przez break
          **/
-
-
     }
     // .... END OF SERVER LOOP
 
+    shutdown(socketDescriptor, SHUT_RD);
     /**
        Tutaj mozna przeprowadzic potrzebne finalizacje
      **/

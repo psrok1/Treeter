@@ -12,7 +12,7 @@ Connection::Connection(Server* srv, int socket): id(Connection::NEXT_ID++), serv
     pipe(this->shutdownPipe);
     sockaddr_in addr;
     unsigned int length;
-    socketDescriptor = accept(socket,(struct sockaddr*) &addr, &length);
+    socketDescriptor = accept(socket, (struct sockaddr*) &addr, &length);
     ipAddress = ntohl(addr.sin_addr.s_addr);
 }
 
