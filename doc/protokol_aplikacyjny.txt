@@ -1,0 +1,280 @@
+Protokół aplikacyjny
+Wykorzystuje obiekty JSON.
+
+Będą 3 główne rodzaje wiadomości:
+- Request (klient -> serwer)
+- Response (serwer -> klient)                   | konieczne odróżnienie
+- Notification (serwer -> klient)               | tych 2 rodzajów
+
+
+-------------------------------------------------------HANDSHAKE-------------------------------------------------------
+
+
+********* PLAIN-TEXT *********
+Klient:
+{
+        "request": "hello",
+        "requestId": 0,
+}
+
+Serwer:
+{
+        "type": "response",
+        "responseId": 0,
+        "version": 1,
+        // albo inne dane powiazane z wymiana klucza
+        "publicKey": "h54Ggdfgd54fdGDFrdgfd54==" <base64>
+}
+
+Klient generuje klucz i szyfruje otrzymanym kluczem publicznym.
+Wysyła pożądany klucz do serwera.
+
+Klient:
+{
+        "request": "startEncryption",
+        "requestId": 1,
+        // albo inne dane powiazane z wymiana klucza
+        "encryptedKey": "sifDSFSEr42431gergeSfsew43=="
+}
+
+Serwer deszyfruje klucz swoim kluczem prywatnym, przełącza się na komunikację szyfrowaną
+Odsyła zaszyfrowane potwierdzenie
+
+********* ENCRYPTED *********
+Serwer:
+{
+        "type": "response",
+        "responseId": 1,
+        // W razie niepowodzenia
+        "error": ...
+}
+
+------------------------------------------------------- DEBUG ---------------------------------------------------------
+
+Request:
+{
+        "request": "echo",
+        "requestId": ...,
+        "message": "echo echo echo sfaofasubfabasucsa"
+}
+Response:
+{
+        "type": "response",
+        "responseId": ....,
+        "message": "echo echo echo sfaofasubfabasucsa"
+}
+
+
+------------------------------------------------- REQUEST AND RESPONSE ------------------------------------------------
+
+UWIERZYTELNIENIE UŻYTKOWNIKA
+
+Request:
+{
+        "request": "authUser",
+        "requestId": ...
+        "login": "root"
+        "password": <hash np. SHA512 base64>
+}
+Response:
+{
+        "type": "response",
+        "responseId": ....,
+}
+
+ZAKOŃCZ SESJĘ
+Request:
+{
+        "request": "closeSession",
+        "requestId": <Unikalny nr identyfikujący żądanie (int)>
+}
+Positive Response:
+{
+        "type": "response",
+        "responseId": <identyfikator j.w.>,
+}
+
+
+POBIERZ LISTĘ GRUP, DO KTÓRYCH PRZYNALEŻY UŻYTKOWNIK
+Request:
+{
+        "request": "getGroupPaths",
+        "requestId": <Unikalny nr identyfikujący żądanie (int)>,
+}
+Response:
+{
+        "type": "response",
+        "responseId": <identyfikator j.w.>,
+        "paths": [<path1> <path2> <path3> ...]
+}
+
+
+POBRANIE LISTY UŻYTKOWNIKÓW GRUPY
+Request:
+{
+        "request": "getGroupUsers",
+        "requestId": <Identyfikator>,
+        "path": <string>
+}
+Positive Response:
+{
+        "type": "response",
+        "responseId": <Identyfikator>,
+        "moderators": [ <username1> <username2> ... ],
+        "users": [ <username1> <username2> ...]
+}
+Negative Response:
+{
+        "type": "response",
+        "responseId": <identyfikator>,
+        "access": false
+}
+
+
+POBRANIE WIADOMOŚCI Z FOLDERU
+Request:
+{
+        "request": "getMessages",
+        "requestId": <Unikalny nr identyfikujący żądanie (int)>,
+        "path": <Ścieżka do folderu, którego zawartość ma być pobrana (string)>,
+        // jesli nie ma ponizszego atrybutu: pobiera wszystko
+        "lastMsgTimestamp": <Timestamp najnowszej wiadomości zarchiwizowanej w kliencie, należy pobrać wszystkie nowsze wiadomości>
+}
+Positive Response:
+{
+        "type": "response",
+        "requestId": <Unikalny nr identyfikujący żądanie (int)>,
+        "messages": [<tablica zawierająca obiekty wiadomości>]
+}
+
+PROŚBA O DODANIE DO GRUPY
+Request:
+{
+        "request": "addMeToGroup",
+        "requestId": <Identyfikator>,
+        "path": <ścieżka>
+}
+Positive Response:          // Uwaga - pozytywna odpowiedź = prośba przesłana != przyznany dostęp
+{
+        "type": "response",
+        "requestId": <Identyfikator>,
+}
+
+DODAJ GRUPĘ
+Request:
+{
+        "request": "addGroup",
+        "requestId": <Identyfikator>,
+        "path": <ścieżka>    
+}
+Positive Response:
+{
+        "type": "response",
+        "requestId": <Identyfikator>,
+}
+
+
+USUŃ GRUPĘ
+Request:
+{
+        "request": "removeGroup",
+        "requestId": <identyfikator>,
+        "path": <path to group>
+}
+Positive Response:
+{
+        "type": "response",
+        "responseId": <Identyfikator>,
+}
+
+
+DODAJ UŻYTKOWNIKA DO GRUPY
+Request:
+{
+        "request": "addUserToGroup",
+        "requestId": <identyfikator>,
+        "username": <username>,
+        "path": <path-to-group>,
+        "moderator": true/false
+}
+Positive Response:
+{
+        "type": "response",
+        "responseId": <identyfikator>,
+}
+
+
+USUŃ UŻYTKOWNIKA Z GRUPY
+Request:
+{
+        "request": "removeUserFromGroup",
+        "requestId": <identyfikator>,
+        "username": <username>,
+        "path": <path-to-group>
+}
+Positive Response:
+{
+        "type": "response",
+        "responseId": <identyfikator>,
+}
+
+
+------------------------------------------------- NOTIFICATION --------------------------------------------------------
+
+
+OTRZYMAŁEŚ NOWĄ WIADOMOŚĆ
+{
+        "type": "notification",
+        "notification": "newMessage",
+        "path": <ścieżka grupy, do której została wysłana wiadomość>
+        "message": <wiadomość>
+}
+
+
+OTRZYMAŁEŚ PROŚBĘ O DODANIE DO GRUPY
+{
+        "type": "notification",
+        "notification": "addUserToGroup",
+        "path": <ścieżka grupy>,
+        "username": <nazwa użytkownika, który chce zostać dodany>
+}
+
+
+ZOSTAŁEŚ DODANY DO GRUPY
+{
+        "type": "notification",
+        "notification": "addedToGroup",
+        "path": <ścieżka do grupy>,
+        "moderator": true/false
+}
+
+
+ZOSTAŁEŚ USUNIĘTY Z GRUPY
+{
+        "type": "nofitication",
+        "notification": "removedFromGroup",
+        "path": <ścieżka do grupy>
+}
+
+
+SERWER ROZŁĄCZA SIĘ
+{
+        "type": "notification",
+        "notification": "disconnect"
+}
+
+SERWER ZMIENIA PORT NASŁUCHIWANIA
+{
+        "type": "notification",
+        "notification": "reset",
+        "listeningOnPort": <port>
+}
+
+------------------------------------------------- WIADOMOŚĆ -----------------------------------------------------------
+Postać JSON wiadomości:
+"message": {
+        "author": <nazwa użytkownika, który wysłał wiadomość>
+        "title": <tytuł wiadomości>,         // Jeśli niepotrzebne, to można wywalić
+        "content": <string>,
+        "timestamp": <timestamp>
+}
