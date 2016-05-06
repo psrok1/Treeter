@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     server.cpp \
     connection.cpp \
     message.cpp \
-    config.cpp
+    config.cpp \
+    connectionlist.cpp
 
 HEADERS += \
     threadloop.h \
@@ -20,4 +21,5 @@ HEADERS += \
     server.h \
     connection.h \
     json.hpp \
-    config.h
+    config.h \
+    connectionlist.h
