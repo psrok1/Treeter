@@ -21,7 +21,6 @@ void ConnectionList::remove(Connection::Reference conn)
     this->connections.erase(it);
     if(this->connections.empty())
         this->all_stopped.notify_all();
-
 }
 
 void ConnectionList::stopAll()
