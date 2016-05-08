@@ -3,6 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 LIBS += -pthread
+LIBS += -lcrypto
 
 SOURCES += main.cpp \
     messagequeue.cpp \
@@ -10,7 +11,8 @@ SOURCES += main.cpp \
     server.cpp \
     connection.cpp \
     message.cpp \
-    config.cpp
+    config.cpp \
+    crypto.cpp
 
 HEADERS += \
     threadloop.h \
@@ -20,4 +22,5 @@ HEADERS += \
     server.h \
     connection.h \
     json.hpp \
-    config.h
+    config.h \
+    crypto.h
