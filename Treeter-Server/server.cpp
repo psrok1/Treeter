@@ -5,20 +5,31 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <system_error>
 
 
 Server::Server(unsigned short portNr): stopped(false), usedPort(portNr)
 {
-    pipe(this->shutdownPipe);
+    if(pipe(this->shutdownPipe)==-1)
+        throw std::system_error(std::error_code(errno, std::system_category()),"server pipe() failed");
 
     //Tworzenie socketa
-    socketDescriptor = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK,0);
+    if((socketDescriptor = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK,0))==-1)
+        throw std::system_error(std::error_code(errno, std::system_category()),"socket() failed");
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_port = htons(usedPort);
-    bind(socketDescriptor,(struct sockaddr*) &addr,sizeof(addr));
-    listen(socketDescriptor,8);
+    if(bind(socketDescriptor,(struct sockaddr*) &addr,sizeof(addr))==-1)
+    {
+        close(socketDescriptor);
+        throw std::system_error(std::error_code(errno, std::system_category()),"bind() failed");
+    }
+    if(listen(socketDescriptor,8)==-1)
+    {
+        close(socketDescriptor);
+        throw std::system_error(std::error_code(errno, std::system_category()),"listen() failed");
+    }
 }
 
 Server::~Server()
@@ -47,33 +58,42 @@ void Server::operator()(Reference)
      **/
 
     // ---- SERVER LOOP
-    while(!stopped)
+    try
     {
-        //Re-set descriptors
-        FD_ZERO(&descriptors);
-        FD_SET(socketDescriptor,&descriptors);
-        FD_SET(shutdownPipe[0], &descriptors);
-
-        select(maxdesc, &descriptors, nullptr, nullptr,nullptr);
-
-        if(FD_ISSET(shutdownPipe[0],&descriptors))
+        while(!stopped)
         {
-            break;
-        }
-        if(FD_ISSET(socketDescriptor,&descriptors))
-        {
-            createConnection();
-        }
+            //Re-set descriptors
+            FD_ZERO(&descriptors);
+            FD_SET(socketDescriptor,&descriptors);
+            FD_SET(shutdownPipe[0], &descriptors);
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(((rand()%100)+1)*10));
-        //createConnection();
-        /**
-          Tutaj nasluchujemy nowych polaczen
-          Nowe obiekty polaczen rejestrujemy przy pomocy metody createConnection.
-          Powoluje ona automatycznie obiekt sesji i watek obslugujacy ta aktywna sesje
-          Gdy socket nasluchujacy okaze sie zerwany: wyskok z petli przez break
-         **/
+            if(select(maxdesc, &descriptors, nullptr, nullptr,nullptr)==-1)
+            {
+                throw std::system_error(std::error_code(errno, std::system_category()),"server select() failed");
+            }
+
+            if(FD_ISSET(shutdownPipe[0],&descriptors))
+            {
+                break;
+            }
+            if(FD_ISSET(socketDescriptor,&descriptors))
+            {
+                createConnection();
+            }
+
+            /**
+              Tutaj nasluchujemy nowych polaczen
+              Nowe obiekty polaczen rejestrujemy przy pomocy metody createConnection.
+              Powoluje ona automatycznie obiekt sesji i watek obslugujacy ta aktywna sesje
+              Gdy socket nasluchujacy okaze sie zerwany: wyskok z petli przez break
+             **/
+        }
     }
+    catch(std::system_error e)
+    {
+        std::cout<<"Server thread exception, terminating: "<<e.what()<<" errno="<<e.code();
+    }
+
     // .... END OF SERVER LOOP
 
     shutdown(socketDescriptor, SHUT_RD);
@@ -123,12 +143,19 @@ void Server::createConnection(/*Some args..*/)
      * Mozesz ten argument przekazac w linijce nizej:
      *  (wymaga oczywiscie zmian w konstruktorze)
      */
-    Connection::Reference connection(new Connection(this, socketDescriptor));
+    try
     {
-        std::unique_lock<std::mutex> lck(this->connectionListLock);
-        this->connectionList.push_back(connection);
+        Connection::Reference connection(new Connection(this, socketDescriptor));
+        {
+            std::unique_lock<std::mutex> lck(this->connectionListLock);
+            this->connectionList.push_back(connection);
+        }
+        connection->createThread(connection);
     }
-    connection->createThread(connection);
+    catch(std::system_error e)
+    {
+        std::cout<<"Failed to create new connection: "<<e.what()<<" errno="<<e.code();
+    }
 }
 
 void Server::deleteConnection(Connection::Reference connection)

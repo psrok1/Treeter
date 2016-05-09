@@ -9,13 +9,14 @@ unsigned Connection::NEXT_ID = 0;
 
 Connection::Connection(Server* srv, int socket): id(Connection::NEXT_ID++), server(srv), stopped(false)
 {
-    pipe(this->shutdownPipe);
+    if(pipe(this->shutdownPipe)==-1)
+        throw std::system_error(std::error_code(errno, std::system_category()),"connection pipe() failed");
     sockaddr_in addr;
     unsigned int length;
-    socketDescriptor = accept(socket, (struct sockaddr*) &addr, &length);
+    if((socketDescriptor = accept(socket, (struct sockaddr*) &addr, &length))==-1)
+            throw std::system_error(std::error_code(errno, std::system_category()),"accept() failed");
     ipAddress = ntohl(addr.sin_addr.s_addr);
 }
-
 Connection::~Connection()
 {
     close(this->shutdownPipe[0]);
@@ -33,7 +34,10 @@ bool Connection::readFromSocket(char* buffer, int length)
         FD_SET(socketDescriptor,&descriptors);
         FD_SET(shutdownPipe[0], &descriptors);
 
-        select(maxdesc, &descriptors, nullptr, nullptr,nullptr);
+        if(select(maxdesc, &descriptors, nullptr, nullptr,nullptr)==-1)
+        {
+            throw std::system_error(std::error_code(errno, std::system_category()),"connection select() failed");
+        }
 
         if(FD_ISSET(shutdownPipe[0],&descriptors))
         {
@@ -69,25 +73,33 @@ void Connection::operator()(Reference refConnection)
     int len;
     char* buffer;
 
-    while(!stopped)
+    try
     {
-            //Read payload length - false forces us to terminate the connection
-            if(!readFromSocket(reinterpret_cast<char*>(&len),4))
-                break;
-            len = ntohl(len);
+        while(!stopped)
+        {
+                //Read payload length - false forces us to terminate the connection
+                if(!readFromSocket(reinterpret_cast<char*>(&len),4))
+                    break;
+                len = ntohl(len);
 
-            buffer = new char[len];
-            //Read payload
-            if(!readFromSocket(buffer,len))
-            {
+                buffer = new char[len];
+                //Read payload
+                if(!readFromSocket(buffer,len))
+                {
+                    delete[] buffer;
+                    break;
+                }
+
+                MessageBase::Reference msg(new TestMessage(refConnection, std::string(buffer,len)));
                 delete[] buffer;
-                break;
-            }
-
-            MessageBase::Reference msg(new TestMessage(refConnection, std::string(buffer,len)));
-            delete[] buffer;
-            sender->send(msg);
+                sender->send(msg);
+        }
     }
+    catch (std::system_error e)
+    {
+        std::cout<<"Connection thread exception, terminating: "<<e.what()<<" errno="<<e.code();
+    }
+
     /**
       TODO
 
