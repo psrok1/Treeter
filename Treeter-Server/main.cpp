@@ -5,8 +5,10 @@
 #include <ctime>
 #include <signal.h>
 #include <unistd.h>
+#include <system_error>
 
 #include "config.h"
+#include "crypto.h"
 
 using namespace std;
 
@@ -19,24 +21,11 @@ void handle_ctrlc(int) {
 void printLogo();
 
 int main(int argc, char *argv[])
-{   
+{
     printLogo();
-    srand(time(nullptr));
-    struct sigaction sigIntHandler;
-
-    if(!Configuration::load())
-        return 1;
-
-    sigIntHandler.sa_handler = handle_ctrlc;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
-
-    sigaction(SIGINT, &sigIntHandler, NULL);
-
-    serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
-    serverInstance->createThread(serverInstance);
-    serverInstance->joinThread();
-    return 0;
+    Crypto::initialize();
+    // Crypto::test()
+    Crypto::free();
 }
 
 void printLogo()

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "crypto.h"
 #include "pthread.h"
 #include <thread>
@@ -10,6 +12,40 @@
 
 namespace Crypto
 {
+    namespace RSAProvider
+    {
+        RSA* rsa_key = nullptr;
+
+        void generate()
+        {
+            BIGNUM* e = BN_new();
+            RSA* key = RSA_new();
+            BN_set_word(e, 65537);
+            RSA_generate_key_ex(key, 1024, e, NULL);
+            BN_free(e);
+
+            if(rsa_key)
+                RSA_free(rsa_key);
+            rsa_key = key;
+        }
+
+        RSA* get()
+        {
+            return rsa_key;
+        }
+
+        std::string serializePublicKey()
+        {
+            RSA* key = get();
+            unsigned char* buf;
+            int buf_len = i2d_RSAPublicKey(key, &buf);
+            // TODO
+            // convert to base64
+            // check whether buf must be freed
+            return "";
+        }
+    }
+
     std::mutex* locks;
 
     void initialize()
@@ -21,11 +57,11 @@ namespace Crypto
             return static_cast<unsigned long>(pthread_self());
         });
 
-        CRYPTO_set_locking_callback([](int mode, int, const char*, int type) {
+        CRYPTO_set_locking_callback([](int mode, int n, const char*, int) {
             if (mode & CRYPTO_LOCK)
-                locks[type].lock();
+                locks[n].lock();
             else
-                locks[type].unlock();
+                locks[n].unlock();
         });
 
         // Load OpenSSL dependencies
