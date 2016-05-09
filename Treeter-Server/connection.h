@@ -19,9 +19,16 @@ class Connection : public Threadloop<Connection>
     Server* server;
     int socketDescriptor;
     unsigned int ipAddress;
+    //select-related stuff
+    int maxdesc;
+    fd_set descriptors;
     // TODO: cipher key
     std::atomic<bool> stopped;
     int shutdownPipe[2];
+
+    bool readMsgLength(int length);
+    bool readFromSocket(char* buffer, int length);
+
 public:
     Connection(Server* srv, int socket);
     ~Connection();

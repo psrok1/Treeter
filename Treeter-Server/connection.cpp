@@ -23,21 +23,11 @@ Connection::~Connection()
     close(socketDescriptor);
 }
 
-void Connection::operator()(Reference refConnection)
+bool Connection::readFromSocket(char* buffer, int length)
 {
-    MessageSender::Reference sender = this->server->getSender();
-    std::cout << "Connection " << this->id << " started...\n";
-    // TODO: Inicjalizacja....
-
-    //Set descriptors up
-    fd_set descriptors;
-    int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
-    //Create buffers: byte buffer
-    char msgbuff[1500];
-
-    while(!stopped)
+    int recv_bytes=0;
+    while(true)
     {
-
         //Re-set descriptors
         FD_ZERO(&descriptors);
         FD_SET(socketDescriptor,&descriptors);
@@ -47,22 +37,57 @@ void Connection::operator()(Reference refConnection)
 
         if(FD_ISSET(shutdownPipe[0],&descriptors))
         {
-            break;
+            return false;
         }
 
         if(FD_ISSET(socketDescriptor,&descriptors))
         {
-            int recv_bytes = recv(socketDescriptor,msgbuff,1500,0);
+            recv_bytes += recv(socketDescriptor,(buffer+recv_bytes),(length-recv_bytes),0);
+
+            if(recv_bytes==length)
+                return true;
 
             if(recv_bytes <= 0)
             {
                 std::cout << "Peer closed connection.\n";
+                return false;
+            }
+        }
+    }
+}
+
+void Connection::operator()(Reference refConnection)
+{
+    MessageSender::Reference sender = this->server->getSender();
+    std::cout << "Connection " << this->id << " started...\n";
+    // TODO: Inicjalizacja....
+
+    //Set max. descriptor value
+    maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
+
+    //
+    int len;
+    char* buffer;
+
+    while(!stopped)
+    {
+            //Read payload length - false forces us to terminate the connection
+            if(!readFromSocket(reinterpret_cast<char*>(&len),4))
+                break;
+            len = ntohl(len);
+
+            buffer = new char[len];
+            //Read payload
+            if(!readFromSocket(buffer,len))
+            {
+                delete[] buffer;
                 break;
             }
 
-            MessageBase::Reference msg(new TestMessage(refConnection, std::string(msgbuff,recv_bytes)));
+            MessageBase::Reference msg(new TestMessage(refConnection, std::string(buffer,len)));
+            delete[] buffer;
             sender->send(msg);
-        }
+    }
     /**
       TODO
 
@@ -76,7 +101,7 @@ void Connection::operator()(Reference refConnection)
            Akcja powinna dokonac odpowiedzi przy pomocy MessageSender'a
            Mozna stworzyc w przyszlosci odpowiedni wizytator.
      **/
-    }
+    shutdown(socketDescriptor, SHUT_RD);
 
     // TODO: Finalizacja.
 
