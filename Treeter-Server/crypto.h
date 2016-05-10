@@ -37,7 +37,6 @@ namespace Crypto
     }
 
     extern void initialize();
-    extern void test();
     extern void free();
 }
 

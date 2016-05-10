@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include "crypto.h"
+#include "base64.h"
 
 using namespace std;
 
@@ -23,9 +24,21 @@ void printLogo();
 int main(int argc, char *argv[])
 {
     printLogo();
-    Crypto::initialize();
-    Crypto::test();
-    Crypto::free();
+    {
+        using namespace Crypto;
+        initialize();
+        RSAProvider::generate();
+        RSAContext rsa = RSAProvider::getKey();
+        std::cout << "Public key:\n";
+        std::cout << rsa.getEncodedPublicKey() << "\n";
+        std::cout << "Give me AES key, RSA-encrypted, base64:\n";
+        std::string aes_encrypted;
+        std::cin >> aes_encrypted;
+        AESContext aes = rsa.decodeAESKey(aes_encrypted);
+        std::cout << "Encoded:\n";
+        std::cout << Base64::encode(aes.encrypt("Kocham Pafcia! <3")) << "\n";
+        free();
+    }
 }
 
 void printLogo()

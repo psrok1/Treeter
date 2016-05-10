@@ -182,10 +182,4 @@ namespace Crypto
         CRYPTO_set_locking_callback(NULL);
         delete [] locks;
     }
-
-    void test()
-    {
-        RSAProvider::generate();
-        std::cout << RSAProvider::getKey().getEncodedPublicKey() << "\n";
-    }
 }
