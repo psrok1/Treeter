@@ -72,7 +72,7 @@ Thumbs.db
 *.exe
 
 # Qt Creator project file
-build-*
+Treeter-build-*
 
 # IntelliJ files
 Treeter-Client/out
