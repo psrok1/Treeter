@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     message.cpp \
     config.cpp \
     crypto.cpp \
-    base64.cpp
+    base64.cpp \
+    connectionlist.cpp
 
 HEADERS += \
     threadloop.h \
@@ -25,4 +26,5 @@ HEADERS += \
     json.hpp \
     config.h \
     crypto.h \
-    base64.h
+    base64.h \
+    connectionlist.h

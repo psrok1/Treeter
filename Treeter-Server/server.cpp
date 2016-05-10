@@ -102,22 +102,8 @@ void Server::operator()(Reference)
      **/
 
     // Close all connections
-    {
-        ConnectionList connections_copy;
-        {
-            std::unique_lock<std::mutex> lck(this->connectionListLock);
-
-            connections_copy = this->connectionList;
-
-            this->connectionList.clear();
-        }
-
-        for(auto& c: connections_copy)
-        {
-            c->stopThread();
-            c->joinThread();
-        }
-    }
+    connectionList.stopAll();
+    connectionList.waitUntilEmpty();
 
     // Close sender instance
     messageSender->stopThread();
@@ -126,31 +112,18 @@ void Server::operator()(Reference)
 }
 
 void Server::stopThread() {
-    /**
-     * Tutaj wyzwalamy zamkniecie socketa nasluchujacego.
-     * Musimy sprawic, by watek wyskoczyl z petli nasluchujacej.
-     * Stop moze byc wyzwalany z poziomu roznych watkow: pamietac o atomowosci.
-     * Zadnych mutexow, ma byc nieblokujacy.
-     */
     stopped = true;
     write(this->shutdownPipe[1], "goodbye", sizeof("goodbye"));
 }
 
-void Server::createConnection(/*Some args..*/)
+void Server::createConnection()
 {
-    /**
-     * Prawdopodobnie bedziesz chcial rozszerzyc Connection o dodatkowe argumenty (np. socket)
-     * Mozesz ten argument przekazac w linijce nizej:
-     *  (wymaga oczywiscie zmian w konstruktorze)
-     */
     try
     {
-        Connection::Reference connection(new Connection(this, socketDescriptor));
-        {
-            std::unique_lock<std::mutex> lck(this->connectionListLock);
-            this->connectionList.push_back(connection);
-        }
+	Connection::Reference connection(new Connection(this, socketDescriptor));
+        connectionList.insert(connection);
         connection->createThread(connection);
+        connection->detachThread();
     }
     catch(std::system_error e)
     {
@@ -160,31 +133,7 @@ void Server::createConnection(/*Some args..*/)
 
 void Server::deleteConnection(Connection::Reference connection)
 {
-    {
-        std::unique_lock<std::mutex> lck(this->connectionListLock);
-        Server::ConnectionList::iterator it;
-
-        for(it = this->connectionList.begin();
-            it != this->connectionList.end();
-            ++it)
-        {
-            if(**it == *connection)
-                break;
-        }
-
-        if(it == this->connectionList.end())
-        {
-            // Connection has been deleted by another thread! (Probably server thread during close)
-            // No problem!
-            return;
-        }
-
-        // Delete it from list
-        (*it)->detachThread();
-        this->connectionList.erase(it);
-    }
-    // Now, just stop it!
-    connection->stopThread();
+    connectionList.remove(connection);
 }
 
 MessageSender::Reference Server::getSender() const {

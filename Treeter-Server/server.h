@@ -6,6 +6,7 @@
 #include <list>
 #include "messagesender.h"
 #include "connection.h"
+#include "connectionlist.h"
 #include "threadloop.h"
 #include <iostream>
 #include <sys/types.h>
@@ -16,10 +17,7 @@ class Server : public Threadloop<Server>
 {
     MessageSender::Reference messageSender;
 
-    typedef std::list<Connection::Reference> ConnectionList;
-
     ConnectionList connectionList;
-    std::mutex connectionListLock;
     std::atomic<bool> stopped;
     int shutdownPipe[2];
 
