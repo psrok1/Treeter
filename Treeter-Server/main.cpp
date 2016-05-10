@@ -5,11 +5,9 @@
 #include <ctime>
 #include <signal.h>
 #include <unistd.h>
-#include <system_error>
 
 #include "config.h"
 #include "crypto.h"
-#include "base64.h"
 
 using namespace std;
 
@@ -24,21 +22,28 @@ void printLogo();
 int main(int argc, char *argv[])
 {
     printLogo();
-    {
-        using namespace Crypto;
-        initialize();
-        RSAProvider::generate();
-        RSAContext rsa = RSAProvider::getKey();
-        std::cout << "Public key:\n";
-        std::cout << rsa.getEncodedPublicKey() << "\n";
-        std::cout << "Give me AES key, RSA-encrypted, base64:\n";
-        std::string aes_encrypted;
-        std::cin >> aes_encrypted;
-        AESContext aes = rsa.decodeAESKey(aes_encrypted);
-        std::cout << "Encoded:\n";
-        std::cout << Base64::encode(aes.encrypt("Kocham Pafcia! <3")) << "\n";
-        free();
-    }
+    srand(time(nullptr));
+    struct sigaction sigIntHandler;
+
+    if(!Configuration::load())
+        return 1;
+
+    Crypto::initialize();
+    Crypto::RSAProvider::generate();
+
+    sigIntHandler.sa_handler = handle_ctrlc;
+    sigemptyset(&sigIntHandler.sa_mask);
+    sigIntHandler.sa_flags = 0;
+
+    sigaction(SIGINT, &sigIntHandler, NULL);
+
+    serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
+    serverInstance->createThread(serverInstance);
+    serverInstance->joinThread();
+
+    Crypto::free();
+
+    return 0;
 }
 
 void printLogo()
