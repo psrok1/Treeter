@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 {
     printLogo();
     Crypto::initialize();
-    // Crypto::test()
+    Crypto::test();
     Crypto::free();
 }
 

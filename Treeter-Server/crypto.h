@@ -8,6 +8,7 @@
 namespace Crypto
 {
     extern void initialize();
+    extern void test();
     extern void free();
 
     extern std::string messageEncrypt(std::string msg, AES_KEY key);
