@@ -19,7 +19,7 @@ void handle_ctrlc(int) {
 
 void printLogo();
 
-int main(int argc, char *argv[])
+int main()
 {
     printLogo();
     srand(time(nullptr));

@@ -1,4 +1,7 @@
 #include "connection.h"
+#include "messageprocessor.h"
+#include "messageincoming.h"
+#include "messageoutgoing.h"
 #include "server.h"
 #include <cstdlib>
 #include <chrono>
@@ -62,9 +65,8 @@ bool Connection::readFromSocket(char* buffer, int length)
 
 void Connection::operator()(Reference refConnection)
 {
-    MessageSender::Reference sender = this->server->getSender();
+    MessageProcessor processor(refConnection);
     std::cout << "Connection " << this->id << " started...\n";
-    // TODO: Inicjalizacja....
 
     //Set max. descriptor value
     maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
@@ -90,9 +92,10 @@ void Connection::operator()(Reference refConnection)
                     break;
                 }
 
-                MessageBase::Reference msg(new TestMessage(refConnection, std::string(buffer,len)));
+                /** TODO: Deszyfrowanie **/
+                auto msg = MessageIncoming::fromString(std::string(buffer, len));
                 delete[] buffer;
-                sender->send(msg);
+                msg->process(processor);
         }
     }
     catch (std::system_error e)
@@ -100,19 +103,6 @@ void Connection::operator()(Reference refConnection)
         std::cout<<"Connection thread exception, terminating: "<<e.what()<<" errno="<<e.code();
     }
 
-    /**
-      TODO
-
-      Ta funkcja realizuje glowna petle watku polaczenia.
-      Powinna wykonywac:
-        1. Odczyt wiadomosci
-        2. Jesli koniec komunikacji: wyskoczyc z petli
-        3. Deszyfrowanie
-        4. Deserializacja wiadomosci (mozna powolac jakas fabryke)
-        5. Wykonanie akcji zwiazanej z wiadomoscia
-           Akcja powinna dokonac odpowiedzi przy pomocy MessageSender'a
-           Mozna stworzyc w przyszlosci odpowiedni wizytator.
-     **/
     shutdown(socketDescriptor, SHUT_RD);
 
     // TODO: Finalizacja.
@@ -123,11 +113,6 @@ void Connection::operator()(Reference refConnection)
 
 void Connection::stopThread()
 {
-    /**
-     * Zadanie zatrzymania polaczenia: np. shutdown na sockecie
-     * Ta metoda moze byc wykonywana z roznych watkow, pamietac o atomowosci
-     */
-
     // Tutaj powinnismy moim zdaniem rowniez przeprowadzic odlaczanie referencji z modelu
     // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwarancje, ze polaczenie zostanie oswobodzone
     // dokladnie w chwili, gdy zadajacy tego chce
@@ -140,16 +125,11 @@ void Connection::stopThread()
 void Connection::sendMessage(std::string msg)
 {
     std::cout<<this->id<<"> "<<msg<<"\n";
+    // szyfrowanie, kompletowanie
     send(socketDescriptor,msg.data(),msg.size(),0);
-    /**
-     * Wyslanie wiadomosci do socketa
-     * Tutaj mozna umiescic rowniez szyfrowanie
-     * Jesli robienie send na ubitych socketach przeszkadza, zrobic jakas kontrole.
-     * Czasem watek sendera moze chciec wysylac jakies wiadomosci, gdy polaczenie jest juz zamkniete
-     *
-     **/
 }
 
-bool Connection::operator==(const Connection& comp_to) {
+bool Connection::operator==(const Connection& comp_to)
+{
     return this->id == comp_to.id;
 }

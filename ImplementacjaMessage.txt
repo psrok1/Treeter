@@ -1,0 +1,26 @@
+Dodawanie nowego requesta ------------------
+
+1. W messageincoming.h zdefiniuj klase obiektu wiadomosci
+   Powinna zawierac metode "process" i konstruktor pobierajacy
+   obiekt JSON (tak jak EchoRequest)
+2. Zdefiniuj potrzebne gettery i dodaj ich implementacje w messageincoming.cpp
+3. W messageincoming.cpp dodaj sygnature wiadomosci do fabryki
+   W mapie ctorMap umiesc konstruktor obiektu zadania:
+   {"<string dla pola request>", messageIncomingCtor<NazwaKlasyRequest>()}
+
+   Od teraz deserializer bedzie w stanie rozpoznac i utworzyc stosowny obiekt
+   zadania
+
+4. Pora na dodanie procedury obslugi:
+   Na poczatek w messageprocessor.h zadeklaruj odpowiednia metode processRequest
+5. Nastepnie w messageprocessor.cpp napisz jej implementacje
+6. Od teraz zadanie powinno byc rozpoznawane i przetwarzane
+
+Uwaga:
+* Obiekt MessageProcessor ma dowiazanie do obiektu Connection.
+  Ponadto stanowi klase zaprzyjazniona Connection.
+
+Dodawanie nowego response ------------------------
+
+1. W messageoutgoing.h zdefiniuj klase obiektu wiadomosci
+2. W messageoutgoing.cpp zaimplementuj serializacje (analogicznie jak EchoResponse)

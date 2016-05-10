@@ -12,7 +12,6 @@ class ConnectionList
     std::mutex mu;
     std::condition_variable all_stopped;
 public:
-    ConnectionList();
     void insert(Connection::Reference conn);
     void remove(Connection::Reference conn);
     void stopAll();

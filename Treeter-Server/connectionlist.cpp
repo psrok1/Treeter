@@ -11,7 +11,7 @@ void ConnectionList::remove(Connection::Reference conn)
     std::unique_lock<std::mutex> lck(mu);
     auto it = this->connections.begin();
 
-    for(; it != this->connections.end() && **it != *conn;
+    for(; it != this->connections.end() && !(**it == *conn);
         ++it);
 
     if(it == this->connections.end())

@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 
 class Server;
+class MessageProcessor;
 
 class Connection : public Threadloop<Connection>
 {
@@ -17,6 +18,9 @@ class Connection : public Threadloop<Connection>
     unsigned id;
 
     Server* server;
+
+    friend class MessageProcessor;
+
     int socketDescriptor;
     unsigned int ipAddress;
     //select-related stuff
@@ -28,7 +32,6 @@ class Connection : public Threadloop<Connection>
 
     bool readMsgLength(int length);
     bool readFromSocket(char* buffer, int length);
-
 public:
     Connection(Server* srv, int socket);
     ~Connection();

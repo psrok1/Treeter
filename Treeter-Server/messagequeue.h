@@ -1,7 +1,7 @@
 #ifndef MESSAGEQUEUE_H
 #define MESSAGEQUEUE_H
 
-#include "message.h"
+#include "messagebase.h"
 #include <list>
 #include <condition_variable>
 #include <mutex>
