@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "config.h"
+#include "crypto.h"
 
 using namespace std;
 
@@ -19,13 +20,16 @@ void handle_ctrlc(int) {
 void printLogo();
 
 int main(int argc, char *argv[])
-{   
+{
     printLogo();
     srand(time(nullptr));
     struct sigaction sigIntHandler;
 
     if(!Configuration::load())
         return 1;
+
+    Crypto::initialize();
+    Crypto::RSAProvider::generate();
 
     sigIntHandler.sa_handler = handle_ctrlc;
     sigemptyset(&sigIntHandler.sa_mask);
@@ -36,6 +40,9 @@ int main(int argc, char *argv[])
     serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
+
+    Crypto::free();
+
     return 0;
 }
 
