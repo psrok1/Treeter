@@ -10,7 +10,7 @@ public class Client
 
     private ClientListener listener = null;
     private Thread listenerThread = null;
-    private PrintWriter outputStream;
+    private DataOutputStream outputStream;
 
     public interface EventListener
     {
@@ -24,7 +24,7 @@ public class Client
 
     private class ClientListener implements Runnable
     {
-        BufferedReader inputStream = null;
+        DataInputStream inputStream = null;
         boolean expectedClose = false;
 
         public void close()
@@ -39,9 +39,9 @@ public class Client
             {
                 System.out.println("Connecting...");
                 connection.connect(address);
-                inputStream = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()));
-                outputStream = new PrintWriter(connection.getOutputStream(), true);
+                inputStream = new DataInputStream(
+                        new BufferedInputStream(connection.getInputStream()));
+                outputStream = new DataOutputStream(connection.getOutputStream());
             } catch (final IOException e)
             {
                 System.out.println("ARGH! NO!");
@@ -60,8 +60,12 @@ public class Client
                 try
                 {
                     // Czekaj i odbierz wiadomość
-                    String input = inputStream.readLine();
-                    if(input == null)
+                    // wczytaj dlugosc wiadomosci
+                    int msgLength = inputStream.readInt();
+                    byte[] buffer = new byte[msgLength];
+                    // wczytaj wiadomosc
+                    String message = Integer.toString((inputStream.read(buffer, 0, buffer.length)));
+                    if(message == null)
                     {
                         if (!expectedClose)
                         {
@@ -73,7 +77,7 @@ public class Client
                     }
                     System.out.println("Received");
                     // Przetwarzaj wiadomość
-                    onMessageListener.action(input);
+                    onMessageListener.action(message);
                 } catch (final IOException e)
                 {
                     // Jeśli zamknięcie było niespodziewane
@@ -167,6 +171,11 @@ public class Client
 
     public void send(String msg)
     {
-        outputStream.println(msg);
+        try
+        {
+            outputStream.writeUTF(msg);
+        } catch (final IOException ioe)
+        {
+        }
     }
 }
