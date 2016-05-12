@@ -64,7 +64,8 @@ public class Client
                     int msgLength = inputStream.readInt();
                     byte[] buffer = new byte[msgLength];
                     // wczytaj wiadomosc
-                    String message = Integer.toString((inputStream.read(buffer, 0, buffer.length)));
+                    inputStream.read(buffer, 0, buffer.length);
+                    String message = new String(buffer, "US-ASCII");
                     if(message == null)
                     {
                         if (!expectedClose)
@@ -173,7 +174,12 @@ public class Client
     {
         try
         {
-            outputStream.writeUTF(msg);
+            // dlugosc wiadomosci
+            int msgLength = msg.length();
+            outputStream.writeInt(msgLength);
+            // tresc wiadomosc
+            byte[] buffer = msg.getBytes();
+            outputStream.write(buffer, 0, msgLength);
         } catch (final IOException ioe)
         {
         }
