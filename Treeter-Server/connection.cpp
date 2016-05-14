@@ -92,10 +92,14 @@ void Connection::operator()(Reference refConnection)
                     break;
                 }
 
-                /** TODO: Deszyfrowanie **/
-                auto msg = MessageIncoming::fromString(std::string(buffer, length));
+                std::string msg(buffer,length);
+
+                if(aesContext.isValid())
+                    msg = aesContext.decrypt(msg);
+
+                auto msgObject = MessageIncoming::fromString(msg);
                 delete[] buffer;
-                msg->process(processor);
+                msgObject->process(processor);
         }
     }
     catch (std::system_error e)
@@ -125,6 +129,10 @@ void Connection::stopThread()
 void Connection::sendMessage(std::string msg)
 {
     std::cout<<this->id<<"> "<<msg<<"\n";
+
+    if(aesContext.isValid())
+        msg = aesContext.encrypt(msg);
+
     unsigned int bytesToSend = msg.size()+4;
     unsigned int payloadSize = bytesToSend-4;
     unsigned int invertedSize = htonl(payloadSize);
