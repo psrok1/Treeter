@@ -62,7 +62,13 @@ namespace Crypto
         return key;
     }
 
-    AESContext::AESContext(unsigned char* k): key(k) { }
+    AESContext::AESContext(): valid(false) {}
+    AESContext::AESContext(unsigned char* k): key(k), valid(true) { }
+
+    bool AESContext::isValid() const
+    {
+        return this->valid;
+    }
 
     AESContext::~AESContext()
     {
@@ -71,6 +77,9 @@ namespace Crypto
 
     std::string AESContext::encrypt(std::string msg)
     {
+        if(!this->valid)
+            throw std::logic_error("AESContext isn't valid object");
+
         EVP_CIPHER_CTX *ctx = nullptr;
         int len;
         const char *plaintext = msg.data();
@@ -117,6 +126,9 @@ namespace Crypto
 
     std::string AESContext::decrypt(std::string msg)
     {
+        if(!this->valid)
+            throw std::logic_error("AESContext isn't valid object");
+
         EVP_CIPHER_CTX *ctx = nullptr;
         int len;
         const char *ciphertext = msg.data();
@@ -158,11 +170,19 @@ namespace Crypto
 
     unsigned char AESContext::iv[16] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
+    RSAContext::RSAContext(): valid(false) { }
+    RSAContext::RSAContext(RSAPtr k): key(k), valid(true) { }
 
-    RSAContext::RSAContext(RSAPtr k): key(k) { }
+    bool RSAContext::isValid() const
+    {
+        return this->valid;
+    }
 
     std::string RSAContext::getEncodedPublicKey()
     {
+        if(!this->valid)
+            throw std::logic_error("RSAContext isn't valid object");
+
         BIO* bio = BIO_new(BIO_s_mem());
 
         PEM_write_bio_RSAPublicKey(bio, key.get());
@@ -180,6 +200,9 @@ namespace Crypto
 
     AESContext RSAContext::decodeAESKey(std::string aes_key)
     {
+        if(!this->valid)
+            throw std::logic_error("RSAContext isn't valid object");
+
         std::string raw_encoded_aes = Base64::decode(aes_key);
         unsigned char* raw_aes = new unsigned char[raw_encoded_aes.length()];
 

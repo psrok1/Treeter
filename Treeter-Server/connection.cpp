@@ -27,9 +27,9 @@ Connection::~Connection()
     close(socketDescriptor);
 }
 
-bool Connection::readFromSocket(char* buffer, int length)
+bool Connection::readFromSocket(char* buffer, unsigned int length)
 {
-    int recv_bytes=0;
+    unsigned int recv_bytes=0;
     while(true)
     {
         //Re-set descriptors
@@ -72,7 +72,7 @@ void Connection::operator()(Reference refConnection)
     maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
 
     //
-    int len;
+    unsigned int length;
     char* buffer;
 
     try
@@ -80,20 +80,20 @@ void Connection::operator()(Reference refConnection)
         while(!stopped)
         {
                 //Read payload length - false forces us to terminate the connection
-                if(!readFromSocket(reinterpret_cast<char*>(&len),4))
+                if(!readFromSocket(reinterpret_cast<char*>(&length),4))
                     break;
-                len = ntohl(len);
+                length = ntohl(length);
 
-                buffer = new char[len];
+                buffer = new char[length];
                 //Read payload
-                if(!readFromSocket(buffer,len))
+                if(!readFromSocket(buffer,length))
                 {
                     delete[] buffer;
                     break;
                 }
 
                 /** TODO: Deszyfrowanie **/
-                auto msg = MessageIncoming::fromString(std::string(buffer, len));
+                auto msg = MessageIncoming::fromString(std::string(buffer, length));
                 delete[] buffer;
                 msg->process(processor);
         }
@@ -114,7 +114,7 @@ void Connection::operator()(Reference refConnection)
 void Connection::stopThread()
 {
     // Tutaj powinnismy moim zdaniem rowniez przeprowadzic odlaczanie referencji z modelu
-    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwarancje, ze polaczenie zostanie oswobodzone
+    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwar(bytesToSend-4),ancje, ze polaczenie zostanie oswobodzone
     // dokladnie w chwili, gdy zadajacy tego chce
     // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
 
@@ -125,8 +125,33 @@ void Connection::stopThread()
 void Connection::sendMessage(std::string msg)
 {
     std::cout<<this->id<<"> "<<msg<<"\n";
-    // szyfrowanie, kompletowanie
-    send(socketDescriptor,msg.data(),msg.size(),0);
+    unsigned int bytesToSend = msg.size()+4;
+    unsigned int payloadSize = bytesToSend-4;
+    char* bufferptr = new char[bytesToSend];
+    memcpy(bufferptr,&payloadSize,4);
+    memcpy(bufferptr+4,msg.data(),payloadSize);
+    fd_set writeDescriptors;
+
+    while(bytesToSend>0)
+    {
+        FD_ZERO(&writeDescriptors);
+        FD_SET(socketDescriptor,&writeDescriptors);
+        if(select(socketDescriptor+1,nullptr,&writeDescriptors,nullptr,nullptr)==-1)
+        {
+            this->stopThread();
+            break;
+        }
+
+        int bytesSent = send(socketDescriptor,bufferptr,msg.size(),0);
+        if(bytesSent<0)
+        {
+            this->stopThread();
+            break;
+        }
+        bufferptr+=bytesSent;
+        bytesToSend -= bytesSent;
+    }
+    delete[] bufferptr;
 }
 
 bool Connection::operator==(const Connection& comp_to)
