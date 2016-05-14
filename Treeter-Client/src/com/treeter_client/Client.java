@@ -2,12 +2,15 @@ package com.treeter_client;
 
 import java.io.*;
 import java.net.*;
+import java.security.GeneralSecurityException;
 
 public class Client
 {
     private final Socket connection;
     private final SocketAddress address;
 
+    private CryptoProvider cryptoProvider;
+    private boolean cryptoEnabled = false;
     private ClientListener listener = null;
     private Thread listenerThread = null;
     private DataOutputStream outputStream;
@@ -63,9 +66,15 @@ public class Client
                     // wczytaj dlugosc wiadomosci
                     int msgLength = inputStream.readInt();
                     byte[] buffer = new byte[msgLength];
+                    String message;
                     // wczytaj wiadomosc
-                    inputStream.read(buffer, 0, buffer.length);
-                    String message = new String(buffer, "US-ASCII");
+                    inputStream.readFully(buffer);
+
+                    if(cryptoEnabled)
+                        message = cryptoProvider.decryptMessage(buffer);
+                    else
+                        message = new String(buffer);
+
                     if(message == null)
                     {
                         if (!expectedClose)
@@ -116,6 +125,7 @@ public class Client
 
     public Client(String addr)
     {
+        cryptoProvider = new CryptoProvider();
         String ip = addr.substring(0, addr.indexOf(':'));
         int port = Integer.parseInt(addr.substring(addr.indexOf(':') + 1));
         System.out.println(String.format("%s: %d", ip, port));
@@ -170,18 +180,18 @@ public class Client
         }
     }
 
-    public void send(String msg)
+    public void send(String msg) throws GeneralSecurityException, IOException
     {
-        try
-        {
-            // dlugosc wiadomosci
-            int msgLength = msg.length();
-            outputStream.writeInt(msgLength);
-            // tresc wiadomosc
-            byte[] buffer = msg.getBytes();
-            outputStream.write(buffer, 0, msgLength);
-        } catch (final IOException ioe)
-        {
-        }
+        // dlugosc wiadomosci
+        int msgLength = msg.length();
+        outputStream.writeInt(msgLength);
+        // tresc wiadomosc
+        byte[] buffer;
+
+        if(cryptoEnabled)
+            buffer = cryptoProvider.encryptMessage(msg);
+        else
+            buffer = msg.getBytes();
+        outputStream.write(buffer, 0, msgLength);
     }
 }

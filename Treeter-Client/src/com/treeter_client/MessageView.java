@@ -8,7 +8,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
 
-public class MessageView {
+public class MessageView
+{
     private JFrame frame;
     private JList<String> messageList;
     private JScrollPane messageScrollPane;
