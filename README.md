@@ -1,2 +1,2 @@
 # Treeter
-Projekt TIN ~ Nieudana operacja, to połowa nieudanej sekcji
+Projekt TIN ~ Nieudana operacja, to połowa udanej sekcji
