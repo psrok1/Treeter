@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <system_error>
 #include "openssl/rsa.h"
 #include "openssl/aes.h"
 

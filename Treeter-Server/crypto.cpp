@@ -6,6 +6,8 @@
 #include <thread>
 #include <mutex>
 #include <cassert>
+#include <stdexcept>
+#include <system_error>
 
 #include "openssl/crypto.h"
 #include "openssl/evp.h"
@@ -15,6 +17,33 @@
 
 namespace Crypto
 {
+    namespace ErrorHandling
+    {
+        struct ssl_error_category: public std::error_category
+        {
+            ssl_error_category() {}
+            virtual ~ssl_error_category() {}
+
+            virtual const char* name() const
+            {
+                return "ssl_error";
+            }
+
+            virtual std::string message(int errval) const
+            {
+                char err_msg[4096];
+                ERR_error_string( errval , err_msg );
+                return std::string( err_msg );
+            }
+        };
+
+        std::error_code ssl_error()
+        {
+            static ssl_error_category ssl_category;
+            return std::error_code( ERR_get_error() , ssl_category );
+        }
+    }
+
     typedef std::shared_ptr<RSA> RSAPtr;
 
     RSAPtr createRSAKey()
@@ -23,10 +52,13 @@ namespace Crypto
         RSAPtr key(RSA_new(), RSA_free);
 
         BN_set_word(e, 65537);
-        RSA_generate_key_ex(key.get(), 1024, e, nullptr);
+        if(!RSA_generate_key_ex(key.get(), 1024, e, nullptr))
+        {
+            BN_free(e);
+            throw std::system_error(ErrorHandling::ssl_error());
+        }
 
         BN_free(e);
-
         return key;
     }
 
@@ -39,21 +71,42 @@ namespace Crypto
 
     std::string AESContext::encrypt(std::string msg)
     {
-        EVP_CIPHER_CTX *ctx;
+        EVP_CIPHER_CTX *ctx = nullptr;
         int len;
         const char *plaintext = msg.data();
         int plaintext_len = msg.size();
+        bool failure = false;
 
         unsigned char *ciphertext = new unsigned char[plaintext_len+256];
         int ciphertext_len;
 
-        ctx = EVP_CIPHER_CTX_new();
+        try
+        {
+            ctx = EVP_CIPHER_CTX_new();
 
-        EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
-        EVP_EncryptUpdate(ctx, ciphertext, &len, reinterpret_cast<const unsigned char*>(plaintext), plaintext_len);
-        ciphertext_len = len;
-        EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
-        ciphertext_len += len;
+            if(ctx == nullptr)
+                throw std::system_error(ErrorHandling::ssl_error());
+
+            if(!EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+                throw std::system_error(ErrorHandling::ssl_error());
+
+            if(!EVP_EncryptUpdate(ctx, ciphertext, &len, reinterpret_cast<const unsigned char*>(plaintext), plaintext_len))
+                throw std::system_error(ErrorHandling::ssl_error());
+
+            ciphertext_len = len;
+
+            if(!EVP_EncryptFinal_ex(ctx, ciphertext + len, &len))
+                throw std::system_error(ErrorHandling::ssl_error());
+
+            ciphertext_len += len;
+        } catch(std::system_error)
+        {
+            if(ciphertext)
+                delete [] ciphertext;
+            if(ctx)
+                EVP_CIPHER_CTX_free(ctx);
+            throw;
+        }
 
         EVP_CIPHER_CTX_free(ctx);
 
@@ -65,7 +118,7 @@ namespace Crypto
 
     std::string AESContext::decrypt(std::string msg)
     {
-        EVP_CIPHER_CTX *ctx;
+        EVP_CIPHER_CTX *ctx = nullptr;
         int len;
         const char *ciphertext = msg.data();
         int ciphertext_len = msg.size();
@@ -73,13 +126,28 @@ namespace Crypto
         unsigned char *plaintext = new unsigned char[ciphertext_len];
         int plaintext_len;
 
-        ctx = EVP_CIPHER_CTX_new();
+        try
+        {
+            ctx = EVP_CIPHER_CTX_new();
+            if(ctx == nullptr)
+                throw std::system_error(ErrorHandling::ssl_error());
 
-        EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
-        EVP_DecryptUpdate(ctx, plaintext, &len, reinterpret_cast<const unsigned char*>(ciphertext), ciphertext_len);
-        plaintext_len = len;
-        EVP_DecryptFinal_ex(ctx, plaintext + len, &len);
-        plaintext_len += len;
+            if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+                throw std::system_error(ErrorHandling::ssl_error());
+            if(!EVP_DecryptUpdate(ctx, plaintext, &len, reinterpret_cast<const unsigned char*>(ciphertext), ciphertext_len))
+                throw std::system_error(ErrorHandling::ssl_error());
+            plaintext_len = len;
+            if(!EVP_DecryptFinal_ex(ctx, plaintext + len, &len))
+                throw std::system_error(ErrorHandling::ssl_error());
+            plaintext_len += len;
+        } catch(std::system_error)
+        {
+            if(plaintext)
+                delete [] plaintext;
+            if(ctx)
+                EVP_CIPHER_CTX_free(ctx);
+            throw;
+        }
 
         EVP_CIPHER_CTX_free(ctx);
 
@@ -116,9 +184,13 @@ namespace Crypto
         std::string raw_encoded_aes = Base64::decode(aes_key);
         unsigned char* raw_aes = new unsigned char[raw_encoded_aes.length()];
 
-        RSA_private_decrypt(raw_encoded_aes.size(),
+        if(RSA_private_decrypt(raw_encoded_aes.size(),
                             reinterpret_cast<const unsigned char*>(raw_encoded_aes.data()),
-                            raw_aes, key.get(), RSA_PKCS1_PADDING);
+                            raw_aes, key.get(), RSA_PKCS1_PADDING) < 0)
+        {
+            delete [] raw_aes;
+            throw std::system_error(ErrorHandling::ssl_error());
+        }
 
         return AESContext(raw_aes);
     }
