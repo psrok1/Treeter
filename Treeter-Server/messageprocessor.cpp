@@ -12,7 +12,7 @@ MessageProcessor::MessageProcessor(Connection::Reference conn): connection(conn)
 bool MessageProcessor::processRequest(const EchoRequest& req)
 {
     MessageBase::Reference response(
-                new EchoResponse(connection, req.getId(), req.getMessage()));
+                new EchoResponse(connection, req.getMessage()));
     this->sender->send(response);
     return true;
 }
@@ -28,7 +28,7 @@ bool MessageProcessor::processRequest(const HelloRequest &)
 bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
 {
     connection->aesContext = connection->rsaContext.decodeAESKey(req.getEncryptedKey());
-    // TODO: send encrypted, not plain-text
+
     MessageBase::Reference response(new StartEncryptionResponse(connection));
     this->sender->send(response);
     return true;

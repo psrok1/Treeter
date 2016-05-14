@@ -16,7 +16,6 @@ public:
     typedef std::shared_ptr<MessageIncoming> Reference;
 
     static MessageIncoming::Reference fromString(std::string message);
-    unsigned int getId() const;
     virtual bool process(MessageProcessor&) const = 0;
 
     MessageIncoming(nlohmann::json obj): json_object(obj) { }

@@ -17,13 +17,12 @@ public:
 
 class EchoResponse : public MessageOutgoing
 {
-    unsigned int id;
     std::string content;
 
     virtual std::string toString();
 public:
-    EchoResponse(Connection::Reference conn, unsigned int id, std::string message):
-        MessageOutgoing(conn), id(id), content(message) { }
+    EchoResponse(Connection::Reference conn, std::string message):
+        MessageOutgoing(conn), content(message) { }
 };
 
 class HelloResponse: public MessageOutgoing

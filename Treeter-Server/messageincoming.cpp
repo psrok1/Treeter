@@ -16,11 +16,6 @@ MessageIncoming::Reference MessageIncoming::fromString(std::string message)
     return ctorMap[obj["request"]](obj);
 }
 
-unsigned int MessageIncoming::getId() const
-{
-    return json_object["requestId"];
-}
-
 std::string EchoRequest::getMessage() const
 {
     return json_object["message"];

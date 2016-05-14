@@ -9,8 +9,7 @@ void MessageOutgoing::send()
 std::string EchoResponse::toString()
 {
     nlohmann::json j;
-    j["type"] = "response";
-    j["responseId"] = id;
+    j["response"] = "echo";
     j["message"] = content;
     return j.dump();
 }
@@ -18,13 +17,14 @@ std::string EchoResponse::toString()
 std::string HelloResponse::toString()
 {
     nlohmann::json j;
-    j["type"] = "response";
+    j["response"] = "hello";
+    j["publicKey"] = publicKey;
     return j.dump();
 }
 
 std::string StartEncryptionResponse::toString()
 {
     nlohmann::json j;
-    j["type"] = "response";
+    j["response"] = "startEncryption";
     return j.dump();
 }
