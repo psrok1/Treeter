@@ -34,4 +34,19 @@ public:
     EchoRequest(nlohmann::json obj): MessageIncoming(obj) { }
 };
 
+class HelloRequest: public MessageIncoming
+{
+public:
+    HelloRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
+};
+
+class StartEncryptionRequest: public MessageIncoming
+{
+public:
+    StartEncryptionRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
+    std::string getEncryptedKey() const;
+};
+
 #endif // MESSAGEINCOMING_H

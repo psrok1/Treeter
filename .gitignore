@@ -73,6 +73,8 @@ Thumbs.db
 
 # Qt Creator project file
 Treeter-build-*
+build-Treeter-Desktop-*
 
 # IntelliJ files
 Treeter-Client/out
+
