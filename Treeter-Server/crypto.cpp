@@ -22,9 +22,9 @@ namespace Crypto
         struct ssl_error_category: public std::error_category
         {
             ssl_error_category() {}
-            virtual ~ssl_error_category() {}
+            virtual ~ssl_error_category() noexcept {}
 
-            virtual const char* name() const
+            virtual const char* name() const noexcept
             {
                 return "ssl_error";
             }
@@ -75,7 +75,6 @@ namespace Crypto
         int len;
         const char *plaintext = msg.data();
         int plaintext_len = msg.size();
-        bool failure = false;
 
         unsigned char *ciphertext = new unsigned char[plaintext_len+256];
         int ciphertext_len;
