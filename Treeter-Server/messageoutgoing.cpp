@@ -24,7 +24,7 @@ std::string HelloResponse::toString()
 
 std::string StartEncryptionResponse::toString()
 {
-    nlohman::json j;
+    nlohmann::json j;
     j["type"] = "response";
     return j.dump();
 }
