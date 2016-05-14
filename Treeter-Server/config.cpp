@@ -1,5 +1,5 @@
 #include "config.h"
-#include "json.hpp"
+#include "message/json.hpp"
 
 #include <fstream>
 

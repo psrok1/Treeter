@@ -1,8 +1,9 @@
 #include "connection.h"
-#include "messageprocessor.h"
-#include "messageincoming.h"
-#include "messageoutgoing.h"
+#include "message/messageprocessor.h"
+#include "message/messageincoming.h"
+#include "message/messageoutgoing.h"
 #include "server.h"
+
 #include <cstdlib>
 #include <chrono>
 #include <cstring>
@@ -71,7 +72,6 @@ void Connection::operator()(Reference refConnection)
     //Set max. descriptor value
     maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
 
-    //
     unsigned int length;
     char* buffer;
 
@@ -109,8 +109,6 @@ void Connection::operator()(Reference refConnection)
 
     shutdown(socketDescriptor, SHUT_RD);
 
-    // TODO: Finalizacja.
-
     std::cout << "Connection " << this->id << " finished...\n";
     this->server->deleteConnection(refConnection);
 }
@@ -118,7 +116,7 @@ void Connection::operator()(Reference refConnection)
 void Connection::stopThread()
 {
     // Tutaj powinnismy moim zdaniem rowniez przeprowadzic odlaczanie referencji z modelu
-    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwar(bytesToSend-4),ancje, ze polaczenie zostanie oswobodzone
+    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwarancje, ze polaczenie zostanie oswobodzone
     // dokladnie w chwili, gdy zadajacy tego chce
     // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
 

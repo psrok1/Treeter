@@ -1,12 +1,14 @@
 #include "server.h"
+
 #include <stdexcept>
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
-#include <unistd.h>
 #include <system_error>
+#include <iostream>
 
+#include <unistd.h>
 
 Server::Server(unsigned short portNr): stopped(false), usedPort(portNr)
 {
@@ -51,12 +53,6 @@ void Server::operator()(Reference)
     fd_set descriptors;
     int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
 
-    /**
-      TODO:
-      Glowna petla serwera
-      Tutaj mozna wykonywac potrzebne inicjalizacje np. socketu nasluchujacego
-     **/
-
     // ---- SERVER LOOP
     try
     {
@@ -80,13 +76,6 @@ void Server::operator()(Reference)
             {
                 createConnection();
             }
-
-            /**
-              Tutaj nasluchujemy nowych polaczen
-              Nowe obiekty polaczen rejestrujemy przy pomocy metody createConnection.
-              Powoluje ona automatycznie obiekt sesji i watek obslugujacy ta aktywna sesje
-              Gdy socket nasluchujacy okaze sie zerwany: wyskok z petli przez break
-             **/
         }
     }
     catch(std::system_error e)
@@ -97,9 +86,6 @@ void Server::operator()(Reference)
     // .... END OF SERVER LOOP
 
     shutdown(socketDescriptor, SHUT_RD);
-    /**
-       Tutaj mozna przeprowadzic potrzebne finalizacje
-     **/
 
     // Close all connections
     connectionList.stopAll();
@@ -120,7 +106,7 @@ void Server::createConnection()
 {
     try
     {
-	Connection::Reference connection(new Connection(this, socketDescriptor));
+        Connection::Reference connection(new Connection(this, socketDescriptor));
         connectionList.insert(connection);
         connection->createThread(connection);
         connection->detachThread();

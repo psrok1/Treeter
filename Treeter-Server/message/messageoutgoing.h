@@ -3,7 +3,7 @@
 
 #include "messagebase.h"
 #include <string>
-#include "connection.h"
+#include "../connection.h"
 
 class MessageOutgoing : public MessageBase
 {

@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 #include "config.h"
-#include "crypto.h"
+#include "crypto/crypto.h"
 
 using namespace std;
 

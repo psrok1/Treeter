@@ -1,9 +1,8 @@
 #ifndef MESSAGESENDER_H
 #define MESSAGESENDER_H
 
-#include "threadloop.h"
+#include "../threadloop.h"
 #include "messagequeue.h"
-#include <iostream>
 
 class MessageSender : public Threadloop<MessageSender>
 {

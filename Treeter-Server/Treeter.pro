@@ -6,31 +6,31 @@ LIBS += -pthread
 LIBS += -lcrypto
 
 SOURCES += main.cpp \
-    messagequeue.cpp \
-    messagesender.cpp \
     server.cpp \
     connection.cpp \
     config.cpp \
-    crypto.cpp \
-    base64.cpp \
     connectionlist.cpp \
-    messageoutgoing.cpp \
-    messageincoming.cpp \
-    messageprocessor.cpp
+    crypto/base64.cpp \
+    crypto/crypto.cpp \
+    message/messageincoming.cpp \
+    message/messageoutgoing.cpp \
+    message/messageprocessor.cpp \
+    message/messagequeue.cpp \
+    message/messagesender.cpp
 
 HEADERS += \
     threadloop.h \
-    messagequeue.h \
-    messagesender.h \
     server.h \
     connection.h \
-    json.hpp \
     config.h \
-    crypto.h \
-    base64.h \
     connectionlist.h \
-    messagebase.h \
-    messageoutgoing.h \
-    messageincoming.h \
-    messageincomingctor.h \
-    messageprocessor.h
+    crypto/base64.h \
+    crypto/crypto.h \
+    message/messagebase.h \
+    message/messageincoming.h \
+    message/messageincomingctor.h \
+    message/messageoutgoing.h \
+    message/messageprocessor.h \
+    message/messagequeue.h \
+    message/messagesender.h \
+    message/json.hpp

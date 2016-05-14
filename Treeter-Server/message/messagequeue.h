@@ -5,7 +5,6 @@
 #include <list>
 #include <condition_variable>
 #include <mutex>
-#include <iostream>
 
 class MessageQueue
 {

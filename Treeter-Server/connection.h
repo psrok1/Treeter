@@ -3,12 +3,13 @@
  
 #include <memory>
 #include <string>
-#include "threadloop.h"
-#include <iostream>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include "crypto.h"
+
+#include "threadloop.h"
+#include "crypto/crypto.h"
  
 class Server;
 class MessageProcessor;
@@ -24,10 +25,11 @@ class Connection : public Threadloop<Connection>
  
     int socketDescriptor;
     unsigned int ipAddress;
+
     //select-related stuff
     int maxdesc;
     fd_set descriptors;
-    // TODO: cipher key
+
     std::atomic<bool> stopped;
     int shutdownPipe[2];
  

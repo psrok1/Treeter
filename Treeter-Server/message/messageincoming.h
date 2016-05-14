@@ -25,10 +25,7 @@ class EchoRequest: public MessageIncoming
 {
 public:
     std::string getMessage() const;
-    virtual bool process(MessageProcessor& processor) const
-    {
-        return processor.processRequest(*this);
-    }
+    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
 
     EchoRequest(nlohmann::json obj): MessageIncoming(obj) { }
 };

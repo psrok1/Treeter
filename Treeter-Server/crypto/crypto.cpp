@@ -1,13 +1,13 @@
-#include <iostream>
-
 #include "crypto.h"
 #include "base64.h"
-#include "pthread.h"
+
 #include <thread>
 #include <mutex>
 #include <cassert>
 #include <stdexcept>
 #include <system_error>
+
+#include "pthread.h"
 
 #include "openssl/crypto.h"
 #include "openssl/evp.h"

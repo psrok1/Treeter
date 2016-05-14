@@ -4,14 +4,15 @@
 #include <mutex>
 #include <thread>
 #include <list>
-#include "messagesender.h"
-#include "connection.h"
-#include "connectionlist.h"
-#include "threadloop.h"
-#include <iostream>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+
+#include "message/messagesender.h"
+#include "connection.h"
+#include "connectionlist.h"
+#include "threadloop.h"
 
 class Server : public Threadloop<Server>
 {

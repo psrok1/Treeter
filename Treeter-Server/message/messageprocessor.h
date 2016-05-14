@@ -1,7 +1,7 @@
 #ifndef MESSAGEPROCESSOR_H
 #define MESSAGEPROCESSOR_H
 
-#include "connection.h"
+#include "../connection.h"
 #include "messagesender.h"
 
 class EchoRequest;
