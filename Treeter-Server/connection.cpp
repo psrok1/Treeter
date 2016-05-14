@@ -127,8 +127,9 @@ void Connection::sendMessage(std::string msg)
     std::cout<<this->id<<"> "<<msg<<"\n";
     unsigned int bytesToSend = msg.size()+4;
     unsigned int payloadSize = bytesToSend-4;
+    unsigned int invertedSize = htonl(payloadSize);
     char* bufferptr = new char[bytesToSend];
-    memcpy(bufferptr,&payloadSize,4);
+    memcpy(bufferptr,&invertedSize,4);
     memcpy(bufferptr+4,msg.data(),payloadSize);
     fd_set writeDescriptors;
 
