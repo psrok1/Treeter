@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include "crypto.h"
 
 class Server;
 class MessageProcessor;
@@ -32,6 +33,9 @@ class Connection : public Threadloop<Connection>
 
     bool readMsgLength(int length);
     bool readFromSocket(char* buffer, int length);
+
+    Crypto::RSAContext rsaContext;
+    Crypto::AESContext aesContext;
 public:
     Connection(Server* srv, int socket);
     ~Connection();

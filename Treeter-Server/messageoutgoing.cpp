@@ -14,3 +14,17 @@ std::string EchoResponse::toString()
     j["message"] = content;
     return j.dump();
 }
+
+std::string HelloResponse::toString()
+{
+    nlohmann::json j;
+    j["type"] = "response";
+    return j.dump();
+}
+
+std::string StartEncryptionResponse::toString()
+{
+    nlohman::json j;
+    j["type"] = "response";
+    return j.dump();
+}

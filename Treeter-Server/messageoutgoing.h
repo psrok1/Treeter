@@ -26,4 +26,21 @@ public:
         MessageOutgoing(conn), id(id), content(message) { }
 };
 
+class HelloResponse: public MessageOutgoing
+{
+public:
+    HelloResponse(Connection::Reference conn, std::string pubKey): MessageOutgoing(conn), publicKey(pubKey) { }
+    virtual std::string toString();
+
+private:
+    std::string publicKey;
+};
+
+class StartEncryptionResponse: public MessageOutgoing
+{
+public:
+    StartEncryptionResponse(Connection::Reference conn): MessageOutgoing(conn) { }
+    virtual std::string toString();
+};
+
 #endif // MESSAGEOUTGOING_H

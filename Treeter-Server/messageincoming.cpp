@@ -5,7 +5,9 @@ using json = nlohmann::json;
 
 MessageIncomingCtorMap ctorMap(
 {
-    {"echo", messageIncomingCtor<EchoRequest>()}
+    {"echo", messageIncomingCtor<EchoRequest>()},
+    {"hello", messageIncomingCtor<HelloRequest>()},
+    {"startEncryption", messageIncomingCtor<StartEncryptionRequest>()}
 });
 
 MessageIncoming::Reference MessageIncoming::fromString(std::string message)
@@ -22,4 +24,9 @@ unsigned int MessageIncoming::getId() const
 std::string EchoRequest::getMessage() const
 {
     return json_object["message"];
+}
+
+std::string StartEncryptionRequest::getEncryptedKey() const
+{
+    return json_object["encryptedKey"];
 }

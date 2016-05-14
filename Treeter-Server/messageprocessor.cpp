@@ -16,3 +16,18 @@ bool MessageProcessor::processRequest(const EchoRequest& req)
     this->sender->send(response);
     return true;
 }
+
+bool MessageProcessor::processRequest(const HelloRequest &)
+{
+    connection->rsaContext = Crypto::RSAProvider::getKey();
+    MessageBase::Reference response(new HelloResponse(connection, connection->rsaContext->getEncodedPublicKey()));
+    this->sender->send(response);
+    return true;
+}
+
+bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
+{
+    connection->aesContext = connection->rsaContext.decodeAESKey(req.getEncryptedKey());
+
+    return true;
+}

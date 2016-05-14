@@ -5,10 +5,13 @@
 #include "messagesender.h"
 
 class EchoRequest;
+class HelloRequest;
+class StartEncryptionRequest;
 
 class MessageProcessor {
     Connection::Reference connection;
     MessageSender::Reference sender;
+
 public:
     MessageProcessor(Connection::Reference conn);
     // Copying is not allowed
@@ -16,6 +19,8 @@ public:
     MessageProcessor& operator=(const MessageProcessor&) = delete;
 
     bool processRequest(const EchoRequest&);
+    bool processRequest(const HelloRequest &);
+    bool processRequest(const StartEncryptionRequest &req);
 };
 
 #endif // MESSAGEPROCESSOR_H
