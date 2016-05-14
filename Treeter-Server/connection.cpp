@@ -127,8 +127,7 @@ void Connection::sendMessage(std::string msg)
     std::cout<<this->id<<"> "<<msg<<"\n";
     unsigned int bytesToSend = msg.size()+4;
     unsigned int payloadSize = bytesToSend-4;
-    char cmessage [bytesToSend];
-    char* bufferptr = cmessage;
+    char* bufferptr = new char[bytesToSend];
     memcpy(bufferptr,&payloadSize,4);
     memcpy(bufferptr+4,msg.data(),payloadSize);
     fd_set writeDescriptors;
@@ -152,6 +151,7 @@ void Connection::sendMessage(std::string msg)
         bufferptr+=bytesSent;
         bytesToSend -= bytesSent;
     }
+    delete[] bufferptr;
 }
 
 bool Connection::operator==(const Connection& comp_to)
