@@ -31,7 +31,7 @@ class Connection : public Threadloop<Connection>
     int shutdownPipe[2];
 
     bool readMsgLength(int length);
-    bool readFromSocket(char* buffer, int length);
+    bool readFromSocket(char* buffer, unsigned int length);
 public:
     Connection(Server* srv, int socket);
     ~Connection();
