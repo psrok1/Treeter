@@ -188,16 +188,22 @@ public class Client
     public void send(MessageRequest msg) throws GeneralSecurityException, IOException
     {
         String message = msg.serialize();
-        // dlugosc wiadomosci
-        int msgLength = message.length();
-        outputStream.writeInt(msgLength);
-        // tresc wiadomosc
         byte[] buffer;
 
         if(cryptoEnabled)
             buffer = cryptoProvider.encryptMessage(message);
         else
             buffer = message.getBytes();
+
+        // dlugosc wiadomosci
+        int msgLength = buffer.length;
+        outputStream.writeInt(msgLength);
+        // tresc wiadomosci
         outputStream.write(buffer, 0, msgLength);
+    }
+
+    public void enableCrypto()
+    {
+        this.cryptoEnabled = true;
     }
 }

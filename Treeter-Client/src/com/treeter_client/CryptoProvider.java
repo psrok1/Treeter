@@ -19,6 +19,11 @@ public class CryptoProvider
     private Key aesKey;
     private PublicKey rsaKey;
 
+    CryptoProvider()
+    {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     public void importRSAPublicKey(String pem_pub_key) throws IOException
     {
         // Odkodowanie PEM z base64
@@ -34,17 +39,17 @@ public class CryptoProvider
     public void generateAESKey() throws GeneralSecurityException
     {
         // Generujemy 256-bitowy klucz AES
-        Security.addProvider(new BouncyCastleProvider());
         KeyGenerator keyGen = KeyGenerator.getInstance("AES", "BC");
-        keyGen.init(256, new SecureRandom());
+        keyGen.init(128, new SecureRandom());
         aesKey = keyGen.generateKey();
     }
 
-    public String exportAESKey()
+    public String exportAESKey() throws GeneralSecurityException
     {
-        // Eksportujemy klucz AES, kodujemy go do Base64 i zwracamy
         byte[] keyAESEncoded = aesKey.getEncoded();
-        return new String(Base64.encode(keyAESEncoded));
+        Cipher rsaCipher = Cipher.getInstance("RSA/NONE/PKCS1Padding", "BC");
+        rsaCipher.init(Cipher.ENCRYPT_MODE, rsaKey);
+        return new String(Base64.encode(rsaCipher.doFinal(keyAESEncoded)));
     }
 
     private IvParameterSpec getIV(Cipher cipher)
@@ -58,7 +63,7 @@ public class CryptoProvider
     {
         // Szyfrujemy wiadomość kluczem AES
         // (AES_256_CBC/IV 16x{0})
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey, getIV(cipher));
         byte[] buffer = plaintext_message.getBytes();
         return cipher.doFinal(buffer);
@@ -68,7 +73,7 @@ public class CryptoProvider
     {
         // Deszyfrujemy wiadomość kluczem AES
         // (AES_256_CBC/IV 16x{0})
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
         cipher.init(Cipher.DECRYPT_MODE, aesKey, getIV(cipher));
         return new String(cipher.doFinal(encrypted_message));
     }

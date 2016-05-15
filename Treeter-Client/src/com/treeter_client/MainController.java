@@ -28,8 +28,10 @@ public class MainController
 
                 StartEncryptionRequest startEncryptionRequest = new StartEncryptionRequest(aesKey);
                 client.send(startEncryptionRequest);
+                client.enableCrypto();
             } catch(Exception e)
             {
+                e.printStackTrace();
                 client.close();
             }
         }
@@ -102,6 +104,7 @@ public class MainController
             client.send(new EchoRequest(message));
         } catch(Exception e)
         {
+            e.printStackTrace();
             client.close();
         }
     }

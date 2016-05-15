@@ -27,6 +27,7 @@ public abstract class MessageResponse
     static MessageResponse deserialize(String message) throws ParseException
     {
         JSONParser jsonParser = new JSONParser();
+        message = message.substring(0,message.lastIndexOf("}")+1);
         JSONObject jsonObject = (JSONObject) jsonParser.parse(message);
         String responseType = (String) jsonObject.get("response");
         return factoryMap.get(responseType).create(jsonObject);
