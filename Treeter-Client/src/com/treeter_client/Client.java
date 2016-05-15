@@ -2,15 +2,18 @@ package com.treeter_client;
 
 import java.io.*;
 import java.net.*;
+import java.security.GeneralSecurityException;
 
 public class Client
 {
     private final Socket connection;
     private final SocketAddress address;
 
+    private CryptoProvider cryptoProvider;
+    private boolean cryptoEnabled = false;
     private ClientListener listener = null;
     private Thread listenerThread = null;
-    private PrintWriter outputStream;
+    private DataOutputStream outputStream;
 
     public interface EventListener
     {
@@ -19,12 +22,12 @@ public class Client
 
     public interface MessageEventListener
     {
-        void action(String message);
+        void action(MessageResponse messageObj);
     }
 
     private class ClientListener implements Runnable
     {
-        BufferedReader inputStream = null;
+        DataInputStream inputStream = null;
         boolean expectedClose = false;
 
         public void close()
@@ -39,9 +42,9 @@ public class Client
             {
                 System.out.println("Connecting...");
                 connection.connect(address);
-                inputStream = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()));
-                outputStream = new PrintWriter(connection.getOutputStream(), true);
+                inputStream = new DataInputStream(
+                        new BufferedInputStream(connection.getInputStream()));
+                outputStream = new DataOutputStream(connection.getOutputStream());
             } catch (final IOException e)
             {
                 System.out.println("ARGH! NO!");
@@ -60,8 +63,18 @@ public class Client
                 try
                 {
                     // Czekaj i odbierz wiadomość
-                    String input = inputStream.readLine();
-                    if(input == null)
+                    // wczytaj dlugosc wiadomosci
+                    int msgLength = inputStream.readInt();
+                    byte[] buffer = new byte[msgLength];
+                    String message;
+                    // wczytaj wiadomosc
+                    inputStream.readFully(buffer);
+                    if(cryptoEnabled)
+                        message = cryptoProvider.decryptMessage(buffer);
+                    else
+                        message = new String(buffer);
+
+                    if(message == null)
                     {
                         if (!expectedClose)
                         {
@@ -73,7 +86,8 @@ public class Client
                     }
                     System.out.println("Received");
                     // Przetwarzaj wiadomość
-                    onMessageListener.action(input);
+                    MessageResponse messageObject = MessageResponse.deserialize(message);
+                    onMessageListener.action(messageObject);
                 } catch (final IOException e)
                 {
                     // Jeśli zamknięcie było niespodziewane
@@ -111,11 +125,17 @@ public class Client
 
     public Client(String addr)
     {
+        cryptoProvider = new CryptoProvider();
         String ip = addr.substring(0, addr.indexOf(':'));
         int port = Integer.parseInt(addr.substring(addr.indexOf(':') + 1));
         System.out.println(String.format("%s: %d", ip, port));
         address = new InetSocketAddress(ip, port);
         connection = new Socket();
+    }
+
+    public CryptoProvider getCryptoProvider()
+    {
+        return cryptoProvider;
     }
 
     public void onMessage(MessageEventListener listener)
@@ -165,8 +185,19 @@ public class Client
         }
     }
 
-    public void send(String msg)
+    public void send(MessageRequest msg) throws GeneralSecurityException, IOException
     {
-        outputStream.println(msg);
+        String message = msg.serialize();
+        // dlugosc wiadomosci
+        int msgLength = message.length();
+        outputStream.writeInt(msgLength);
+        // tresc wiadomosc
+        byte[] buffer;
+
+        if(cryptoEnabled)
+            buffer = cryptoProvider.encryptMessage(message);
+        else
+            buffer = message.getBytes();
+        outputStream.write(buffer, 0, msgLength);
     }
 }

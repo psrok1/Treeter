@@ -1,35 +1,92 @@
 package com.treeter_client;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 public class MainController
 {
     private ConnectView connectView;
     private MessageView messageView;
     private Client client;
 
+    private class MessageProcessor implements IMessageProcessor
+    {
+        @Override
+        public void processMessage(EchoResponse response)
+        {
+            messageView.addMessage(response.getMessage());
+        }
+
+        @Override
+        public void processMessage(HelloResponse helloResponse)
+        {
+            try
+            {
+                client.getCryptoProvider().importRSAPublicKey(helloResponse.getPublicKey());
+                client.getCryptoProvider().generateAESKey();
+                String aesKey = client.getCryptoProvider().exportAESKey();
+
+                StartEncryptionRequest startEncryptionRequest = new StartEncryptionRequest(aesKey);
+                client.send(startEncryptionRequest);
+            } catch(Exception e)
+            {
+                client.close();
+            }
+        }
+
+        @Override
+        public void processMessage(StartEncryptionResponse startEncryptionResponse)
+        {
+            connectView.hide();
+            messageView.show();
+        }
+    }
+
+    private MessageProcessor messageProcessor;
+
+    MainController()
+    {
+        messageProcessor = new MessageProcessor();
+    }
+
     public void connect(String address)
     {
         client = new Client(address);
-        client.onConnect(new Client.EventListener() {
+        client.onConnect(new Client.EventListener()
+        {
             @Override
-            public void action() {
-                connectView.hide();
-                messageView.show();
+            public void action()
+            {
+                try
+                {
+                    // @todo
+                    HelloRequest helloRequest = new HelloRequest();
+                    client.send(new HelloRequest());
+                } catch(Exception e)
+                {
+                    client.close();
+                }
             }
         });
-        client.onMessage(new Client.MessageEventListener() {
+        client.onMessage(new Client.MessageEventListener()
+        {
             @Override
-            public void action(String message) {
-                messageView.addMessage(message);
+            public void action(MessageResponse message)
+            {
+                message.process(messageProcessor);
             }
         });
-        client.onSuddenDisconnect(new Client.EventListener() {
+        client.onSuddenDisconnect(new Client.EventListener()
+        {
             @Override
-            public void action() {
+            public void action()
+            {
                 connectView.show();
                 messageView.hide();
             }
         });
-        client.onSocketError(new Client.EventListener() {
+        client.onSocketError(new Client.EventListener()
+        {
             @Override
             public void action() {
                 connectView.show();
@@ -41,7 +98,12 @@ public class MainController
 
     public void send(String message)
     {
-        client.send(message);
+        try {
+            client.send(new EchoRequest(message));
+        } catch(Exception e)
+        {
+            client.close();
+        }
     }
 
     public static void main(String args[])
@@ -54,7 +116,8 @@ public class MainController
         controller.connectView.show();
     }
 
-    public void disconnect() {
+    public void disconnect()
+    {
         client.close();
         messageView.hide();
         connectView.show();

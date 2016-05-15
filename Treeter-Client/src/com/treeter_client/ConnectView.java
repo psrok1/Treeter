@@ -6,7 +6,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ConnectView {
+public class ConnectView
+{
     private JFrame frame;
     private ImageIcon logoImage;
     private JLabel logo, logLabel, serverLabel, nickLabel, passwordLabel;
@@ -14,7 +15,8 @@ public class ConnectView {
     private JTextField serverField, nickField, passwordField;
     private JButton acceptButton, cancelButton;
 
-    ConnectView() {
+    ConnectView()
+    {
         frame = new JFrame();
         frame.setSize(600, 360);
         frame.setLayout(new BorderLayout());
