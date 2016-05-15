@@ -1,35 +1,82 @@
 package com.treeter_client;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 public class MainController
 {
     private ConnectView connectView;
     private MessageView messageView;
     private Client client;
 
+    private class MessageProcessor implements IMessageProcessor
+    {
+        @Override
+        public void processMessage(EchoResponse response)
+        {
+            messageView.addMessage(response.getMessage());
+        }
+
+        @Override
+        public void processMessage(HelloResponse helloResponse)
+        {
+            try {
+                client.getCryptoProvider().importRSAPublicKey(helloResponse.getPublicKey());
+                client.getCryptoProvider().generateAESKey();
+                String aesKey = client.getCryptoProvider().exportAESKey();
+                // send StartEncryptionRequest
+            } catch(IOException e) {
+
+            } catch(GeneralSecurityException e) {
+
+            }
+        }
+
+        @Override
+        public void processMessage(StartEncryptionResponse startEncryptionResponse)
+        {
+            connectView.hide();
+            messageView.show();
+        }
+    }
+
+    private MessageProcessor messageProcessor;
+
+    MainController()
+    {
+        messageProcessor = new MessageProcessor();
+    }
+
     public void connect(String address)
     {
         client = new Client(address);
-        client.onConnect(new Client.EventListener() {
+        client.onConnect(new Client.EventListener()
+        {
             @Override
-            public void action() {
-                connectView.hide();
-                messageView.show();
+            public void action()
+            {
+                // send HelloRequest
             }
         });
-        client.onMessage(new Client.MessageEventListener() {
+        client.onMessage(new Client.MessageEventListener()
+        {
             @Override
-            public void action(String message) {
-                messageView.addMessage(message);
+            public void action(MessageResponse message)
+            {
+                message.process(messageProcessor);
             }
         });
-        client.onSuddenDisconnect(new Client.EventListener() {
+        client.onSuddenDisconnect(new Client.EventListener()
+        {
             @Override
-            public void action() {
+            public void action()
+            {
                 connectView.show();
                 messageView.hide();
             }
         });
-        client.onSocketError(new Client.EventListener() {
+        client.onSocketError(new Client.EventListener()
+        {
             @Override
             public void action() {
                 connectView.show();
@@ -39,7 +86,7 @@ public class MainController
         client.open();
     }
 
-    public void send(String message)
+    public void send(MessageRequest message) throws GeneralSecurityException, IOException
     {
         client.send(message);
     }

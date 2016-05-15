@@ -22,7 +22,7 @@ public class Client
 
     public interface MessageEventListener
     {
-        void action(String message);
+        void action(MessageResponse messageObj);
     }
 
     private class ClientListener implements Runnable
@@ -69,7 +69,6 @@ public class Client
                     String message;
                     // wczytaj wiadomosc
                     inputStream.readFully(buffer);
-
                     if(cryptoEnabled)
                         message = cryptoProvider.decryptMessage(buffer);
                     else
@@ -87,7 +86,8 @@ public class Client
                     }
                     System.out.println("Received");
                     // Przetwarzaj wiadomość
-                    onMessageListener.action(message);
+                    MessageResponse messageObject = MessageResponse.deserialize(message);
+                    onMessageListener.action(messageObject);
                 } catch (final IOException e)
                 {
                     // Jeśli zamknięcie było niespodziewane
@@ -131,6 +131,11 @@ public class Client
         System.out.println(String.format("%s: %d", ip, port));
         address = new InetSocketAddress(ip, port);
         connection = new Socket();
+    }
+
+    public CryptoProvider getCryptoProvider()
+    {
+        return cryptoProvider;
     }
 
     public void onMessage(MessageEventListener listener)
@@ -180,18 +185,19 @@ public class Client
         }
     }
 
-    public void send(String msg) throws GeneralSecurityException, IOException
+    public void send(MessageRequest msg) throws GeneralSecurityException, IOException
     {
+        String message = msg.serialize();
         // dlugosc wiadomosci
-        int msgLength = msg.length();
+        int msgLength = message.length();
         outputStream.writeInt(msgLength);
         // tresc wiadomosc
         byte[] buffer;
 
         if(cryptoEnabled)
-            buffer = cryptoProvider.encryptMessage(msg);
+            buffer = cryptoProvider.encryptMessage(message);
         else
-            buffer = msg.getBytes();
+            buffer = message.getBytes();
         outputStream.write(buffer, 0, msgLength);
     }
 }
