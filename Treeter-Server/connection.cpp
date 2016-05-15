@@ -94,6 +94,7 @@ void Connection::operator()(Reference refConnection)
 
                 std::string msg(buffer,length);
 
+                std::cout << this->id << "< " << msg << "\n";
                 if(aesContext.isValid())
                     msg = aesContext.decrypt(msg);
 
@@ -131,12 +132,16 @@ void Connection::sendMessage(std::string msg)
     if(aesContext.isValid())
         msg = aesContext.encrypt(msg);
 
-    unsigned int bytesToSend = msg.size()+4;
-    unsigned int payloadSize = bytesToSend-4;
+    unsigned int payloadSize = msg.size();
+    unsigned int bytesToSend = payloadSize + 4;
     unsigned int invertedSize = htonl(payloadSize);
-    char* bufferptr = new char[bytesToSend];
-    memcpy(bufferptr,&invertedSize,4);
-    memcpy(bufferptr+4,msg.data(),payloadSize);
+
+    char* msgbuffer = new char[bytesToSend];
+
+    memcpy(msgbuffer,&invertedSize,4);
+    memcpy(msgbuffer+4,msg.data(),payloadSize);
+
+    char* bufferptr = msgbuffer;
     fd_set writeDescriptors;
 
     while(bytesToSend>0)
@@ -149,16 +154,16 @@ void Connection::sendMessage(std::string msg)
             break;
         }
 
-        int bytesSent = send(socketDescriptor,bufferptr,msg.size(),0);
+        int bytesSent = send(socketDescriptor,bufferptr,bytesToSend,0);
         if(bytesSent<0)
         {
             this->stopThread();
             break;
         }
-        bufferptr+=bytesSent;
+        bufferptr += bytesSent;
         bytesToSend -= bytesSent;
     }
-    delete[] bufferptr;
+    delete[] msgbuffer;
 }
 
 bool Connection::operator==(const Connection& comp_to)

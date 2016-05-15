@@ -9,16 +9,17 @@
 namespace Crypto
 {
     typedef std::shared_ptr<RSA> RSAPtr;
+    typedef std::shared_ptr<unsigned char> AESKey;
 
     class AESContext
     {
-        unsigned char* key;
+        AESKey key;
         static unsigned char iv[16];
         bool valid;
     public:
         AESContext();
-        AESContext(unsigned char* k);
-        ~AESContext();
+        AESContext(AESKey k);
+
         std::string encrypt(std::string msg);
         std::string decrypt(std::string msg);
         bool isValid() const;
@@ -30,7 +31,7 @@ namespace Crypto
         bool valid;
     public:
         RSAContext();
-        RSAContext(RSAPtr k);
+        RSAContext(RSAPtr k);        
         std::string getEncodedPublicKey();
         AESContext decodeAESKey(std::string aes_key);
         bool isValid() const;

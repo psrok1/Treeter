@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <system_error>
 
+#include <iostream>
+
 #include "pthread.h"
 
 #include "openssl/crypto.h"
@@ -63,16 +65,11 @@ namespace Crypto
     }
 
     AESContext::AESContext(): valid(false) {}
-    AESContext::AESContext(unsigned char* k): key(k), valid(true) { }
+    AESContext::AESContext(AESKey k): key(k), valid(true) { }
 
     bool AESContext::isValid() const
     {
         return this->valid;
-    }
-
-    AESContext::~AESContext()
-    {
-        delete [] key;
     }
 
     std::string AESContext::encrypt(std::string msg)
@@ -95,7 +92,7 @@ namespace Crypto
             if(ctx == nullptr)
                 throw std::system_error(ErrorHandling::ssl_error());
 
-            if(!EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+            if(!EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key.get(), iv))
                 throw std::system_error(ErrorHandling::ssl_error());
 
             if(!EVP_EncryptUpdate(ctx, ciphertext, &len, reinterpret_cast<const unsigned char*>(plaintext), plaintext_len))
@@ -143,7 +140,7 @@ namespace Crypto
             if(ctx == nullptr)
                 throw std::system_error(ErrorHandling::ssl_error());
 
-            if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+            if(!EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key.get(), iv))
                 throw std::system_error(ErrorHandling::ssl_error());
             if(!EVP_DecryptUpdate(ctx, plaintext, &len, reinterpret_cast<const unsigned char*>(ciphertext), ciphertext_len))
                 throw std::system_error(ErrorHandling::ssl_error());
@@ -204,15 +201,16 @@ namespace Crypto
             throw std::logic_error("RSAContext isn't valid object");
 
         std::string raw_encoded_aes = Base64::decode(aes_key);
-        unsigned char* raw_aes = new unsigned char[raw_encoded_aes.length()];
+        AESKey raw_aes = AESKey(new unsigned char[raw_encoded_aes.size()]);
 
         if(RSA_private_decrypt(raw_encoded_aes.size(),
                             reinterpret_cast<const unsigned char*>(raw_encoded_aes.data()),
-                            raw_aes, key.get(), RSA_PKCS1_PADDING) < 0)
+                            raw_aes.get(), key.get(), RSA_PKCS1_PADDING) < 0)
         {
-            delete [] raw_aes;
             throw std::system_error(ErrorHandling::ssl_error());
         }
+
+        std::cout << "AES key: "<<Base64::encode(std::string(reinterpret_cast<char*>(raw_aes.get()), 16)) << "\n";
 
         return AESContext(raw_aes);
     }
