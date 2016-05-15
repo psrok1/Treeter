@@ -20,16 +20,17 @@ public class MainController
         @Override
         public void processMessage(HelloResponse helloResponse)
         {
-            try {
+            try
+            {
                 client.getCryptoProvider().importRSAPublicKey(helloResponse.getPublicKey());
                 client.getCryptoProvider().generateAESKey();
                 String aesKey = client.getCryptoProvider().exportAESKey();
-                // @todo
-                // send StartEncryptionRequest
-            } catch(IOException e) {
 
-            } catch(GeneralSecurityException e) {
-
+                StartEncryptionRequest startEncryptionRequest = new StartEncryptionRequest(aesKey);
+                client.send(startEncryptionRequest);
+            } catch(Exception e)
+            {
+                client.close();
             }
         }
 
@@ -56,9 +57,15 @@ public class MainController
             @Override
             public void action()
             {
-                // @todo
-                //client.send(new HelloRequest());
-                // send HelloRequest
+                try
+                {
+                    // @todo
+                    HelloRequest helloRequest = new HelloRequest();
+                    client.send(new HelloRequest());
+                } catch(Exception e)
+                {
+                    client.close();
+                }
             }
         });
         client.onMessage(new Client.MessageEventListener()
@@ -93,12 +100,9 @@ public class MainController
     {
         try {
             client.send(new EchoRequest(message));
-        } catch(IOException e)
+        } catch(Exception e)
         {
-
-        } catch(GeneralSecurityException e)
-        {
-
+            client.close();
         }
     }
 

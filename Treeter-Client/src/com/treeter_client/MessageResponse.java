@@ -44,6 +44,6 @@ public abstract class MessageResponse
 interface IMessageProcessor
 {
     void processMessage(EchoResponse response);
-    void processMessage(HelloResponse helloResponse);
+    void processMessage(HelloResponse helloResponse) throws Exception;
     void processMessage(StartEncryptionResponse startEncryptionResponse);
 }
