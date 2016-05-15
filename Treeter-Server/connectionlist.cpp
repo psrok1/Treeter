@@ -9,6 +9,8 @@ void ConnectionList::insert(Connection::Reference conn)
 void ConnectionList::remove(Connection::Reference conn)
 {
     std::unique_lock<std::mutex> lck(mu);
+
+    // Find connection on list
     auto it = this->connections.begin();
 
     for(; it != this->connections.end() && !(**it == *conn);
@@ -17,8 +19,9 @@ void ConnectionList::remove(Connection::Reference conn)
     if(it == this->connections.end())
         return;
 
-    // Delete it from list
+    // Erase it
     this->connections.erase(it);
+    // No more active connections? Probably we should notify server in case of shutdown
     if(this->connections.empty())
         this->all_stopped.notify_all();
 }
@@ -26,6 +29,7 @@ void ConnectionList::remove(Connection::Reference conn)
 void ConnectionList::stopAll()
 {
     std::unique_lock<std::mutex> lck(mu);
+    // Request to stop all active connections
     for(auto& ptr_conn: this->connections)
         ptr_conn->stopThread();
 }

@@ -6,6 +6,8 @@ void MessageOutgoing::send()
     this->connection->sendMessage(this->toString());
 }
 
+/** EchoResponse **/
+
 std::string EchoResponse::toString()
 {
     nlohmann::json j;
@@ -14,6 +16,8 @@ std::string EchoResponse::toString()
     return j.dump();
 }
 
+/** HelloResponse **/
+
 std::string HelloResponse::toString()
 {
     nlohmann::json j;
@@ -21,6 +25,8 @@ std::string HelloResponse::toString()
     j["publicKey"] = publicKey;
     return j.dump();
 }
+
+/** StartEncryptionResponse **/
 
 std::string StartEncryptionResponse::toString()
 {

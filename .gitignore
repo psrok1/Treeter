@@ -71,9 +71,9 @@ Thumbs.db
 *.dll
 *.exe
 
-# Qt Creator project file
-Treeter-build-*
-build-Treeter-Desktop-*
+# Build files
+Treeter-Server/build/*.o
+Treeter-Server/build/Treeter
 
 # IntelliJ files
 Treeter-Client/out

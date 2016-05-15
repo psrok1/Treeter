@@ -13,8 +13,11 @@ unsigned Connection::NEXT_ID = 0;
 
 Connection::Connection(Server* srv, int socket): id(Connection::NEXT_ID++), server(srv), stopped(false)
 {
+    // Creating shutdown pipe
     if(pipe(this->shutdownPipe)==-1)
         throw std::system_error(std::error_code(errno, std::system_category()),"connection pipe() failed");
+
+    // Accepting connection on listening socket
     sockaddr_in addr;
     unsigned int length;
     if((socketDescriptor = accept(socket, (struct sockaddr*) &addr, &length))==-1)
@@ -45,6 +48,7 @@ bool Connection::readFromSocket(char* buffer, unsigned int length)
 
         if(FD_ISSET(shutdownPipe[0],&descriptors))
         {
+            // If shutdown: signal that message completing was interrupted
             return false;
         }
 
@@ -52,11 +56,13 @@ bool Connection::readFromSocket(char* buffer, unsigned int length)
         {
             recv_bytes += recv(socketDescriptor,(buffer+recv_bytes),(length-recv_bytes),0);
 
+            // Check whether whole message was received
             if(recv_bytes==length)
                 return true;
 
             if(recv_bytes <= 0)
             {
+                // If recv returns no data: connection is closed
                 std::cout << "Peer closed connection.\n";
                 return false;
             }
@@ -94,9 +100,9 @@ void Connection::operator()(Reference refConnection)
 
                 std::string msg(buffer,length);
 
-                std::cout << this->id << "< " << msg << "\n";
                 if(aesContext.isValid())
                     msg = aesContext.decrypt(msg);
+                std::cout << this->id << "> " << msg << "\n";
 
                 auto msgObject = MessageIncoming::fromString(msg);
                 delete[] buffer;
@@ -127,46 +133,58 @@ void Connection::stopThread()
 
 void Connection::sendMessage(std::string msg)
 {
-    std::cout<<this->id<<"> "<<msg<<"\n";
+    char* msgbuffer = nullptr;
+    std::cout<<this->id<<"< "<<msg<<"\n";
 
-    if(aesContext.isValid())
-        msg = aesContext.encrypt(msg);
-
-    unsigned int payloadSize = msg.size();
-    unsigned int bytesToSend = payloadSize + 4;
-    unsigned int invertedSize = htonl(payloadSize);
-
-    char* msgbuffer = new char[bytesToSend];
-
-    memcpy(msgbuffer,&invertedSize,4);
-    memcpy(msgbuffer+4,msg.data(),payloadSize);
-
-    char* bufferptr = msgbuffer;
-    fd_set writeDescriptors;
-
-    while(bytesToSend>0)
+    try
     {
-        FD_ZERO(&writeDescriptors);
-        FD_SET(socketDescriptor,&writeDescriptors);
-        if(select(socketDescriptor+1,nullptr,&writeDescriptors,nullptr,nullptr)==-1)
-        {
-            this->stopThread();
-            break;
-        }
+        // Encrypt message, when there is valid AES key
+        if(aesContext.isValid())
+            msg = aesContext.encrypt(msg);
 
-        int bytesSent = send(socketDescriptor,bufferptr,bytesToSend,0);
-        if(bytesSent<0)
+        unsigned int payloadSize = msg.size();
+        unsigned int bytesToSend = payloadSize + 4;
+        unsigned int invertedSize = htonl(payloadSize);
+
+        msgbuffer = new char[bytesToSend];
+
+        // Append message length to buffer
+        memcpy(msgbuffer,&invertedSize,4);
+        memcpy(msgbuffer+4,msg.data(),payloadSize);
+
+        char* bufferptr = msgbuffer;
+        fd_set writeDescriptors;
+
+        // Write completion loop
+        while(bytesToSend>0)
         {
-            this->stopThread();
-            break;
+            FD_ZERO(&writeDescriptors);
+            FD_SET(socketDescriptor,&writeDescriptors);
+            if(select(socketDescriptor+1,nullptr,&writeDescriptors,nullptr,nullptr)==-1)
+            {
+                throw std::system_error(std::error_code(errno, std::system_category()),"connection select() failed");
+            }
+
+            int bytesSent = send(socketDescriptor,bufferptr,bytesToSend,0);
+            if(bytesSent<0)
+            {
+                // Socket may be closed.
+                this->stopThread();
+                break;
+            }
+            bufferptr += bytesSent;
+            bytesToSend -= bytesSent;
         }
-        bufferptr += bytesSent;
-        bytesToSend -= bytesSent;
+    } catch(std::system_error e)
+    {
+        std::cout<<"Exception during send operation, terminating: "<<e.what()<<" errno="<<e.code();
+        this->stopThread();
     }
     delete[] msgbuffer;
 }
 
 bool Connection::operator==(const Connection& comp_to)
 {
+    // Connection objects are the same, when both have the same ID
     return this->id == comp_to.id;
 }
