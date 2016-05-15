@@ -24,6 +24,7 @@ public class MainController
                 client.getCryptoProvider().importRSAPublicKey(helloResponse.getPublicKey());
                 client.getCryptoProvider().generateAESKey();
                 String aesKey = client.getCryptoProvider().exportAESKey();
+                // @todo
                 // send StartEncryptionRequest
             } catch(IOException e) {
 
@@ -55,6 +56,8 @@ public class MainController
             @Override
             public void action()
             {
+                // @todo
+                //client.send(new HelloRequest());
                 // send HelloRequest
             }
         });
@@ -86,9 +89,17 @@ public class MainController
         client.open();
     }
 
-    public void send(MessageRequest message) throws GeneralSecurityException, IOException
+    public void send(String message)
     {
-        client.send(message);
+        try {
+            client.send(new EchoRequest(message));
+        } catch(IOException e)
+        {
+
+        } catch(GeneralSecurityException e)
+        {
+
+        }
     }
 
     public static void main(String args[])
