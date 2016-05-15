@@ -25,22 +25,26 @@ int main()
     srand(time(nullptr));
     struct sigaction sigIntHandler;
 
+    // Loading configuration file
     if(!Configuration::load())
         return 1;
 
+    // Initializing Crypto module
     Crypto::initialize();
     Crypto::RSAProvider::generate();
 
+    // Adding SIGINT handler
     sigIntHandler.sa_handler = handle_ctrlc;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
-
     sigaction(SIGINT, &sigIntHandler, NULL);
 
+    // Invoking server and waiting until shutdown
     serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
     serverInstance->createThread(serverInstance);
     serverInstance->joinThread();
 
+    // Freeing Crypto
     Crypto::free();
 
     return 0;

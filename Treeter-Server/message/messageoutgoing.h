@@ -15,6 +15,8 @@ public:
     MessageOutgoing(Connection::Reference conn): connection(conn) { }
 };
 
+/** EchoResponse **/
+
 class EchoResponse : public MessageOutgoing
 {
     std::string content;
@@ -25,6 +27,8 @@ public:
         MessageOutgoing(conn), content(message) { }
 };
 
+/** HelloResponse **/
+
 class HelloResponse: public MessageOutgoing
 {
 public:
@@ -34,6 +38,8 @@ public:
 private:
     std::string publicKey;
 };
+
+/** StartEncryptionResponse **/
 
 class StartEncryptionResponse: public MessageOutgoing
 {

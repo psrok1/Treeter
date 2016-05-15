@@ -16,17 +16,21 @@ class MessageProcessor;
  
 class Connection : public Threadloop<Connection>
 {
+    // Unique ID generation
     static unsigned NEXT_ID;
     unsigned id;
  
+    // Pointer to server instance
     Server* server;
  
+    // MessageProcessor is an integral part of Connection object
     friend class MessageProcessor;
  
+    // Connection socket and IP address
     int socketDescriptor;
     unsigned int ipAddress;
 
-    //select-related stuff
+    // Select-related stuff
     int maxdesc;
     fd_set descriptors;
 

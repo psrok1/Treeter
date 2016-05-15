@@ -34,3 +34,5 @@ HEADERS += \
     message/messagequeue.h \
     message/messagesender.h \
     message/json.hpp
+
+Debug:DESTDIR = debug

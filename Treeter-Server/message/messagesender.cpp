@@ -7,6 +7,7 @@ void MessageSender::operator()(Reference)
         MessageBase::Reference msg = messageQueue.get();
         if(msg->isEOF())
         {
+            // If stop signal: break sender loop
             break;
         }
         msg->send();

@@ -19,6 +19,7 @@
 
 namespace Crypto
 {
+    // Custom std::system_error handler for OpenSSL
     namespace ErrorHandling
     {
         struct ssl_error_category: public std::error_category
@@ -48,6 +49,7 @@ namespace Crypto
 
     typedef std::shared_ptr<RSA> RSAPtr;
 
+    // RSA-1024 key generation
     RSAPtr createRSAKey()
     {
         BIGNUM* e = BN_new();
@@ -67,6 +69,7 @@ namespace Crypto
     AESContext::AESContext(): valid(false) {}
     AESContext::AESContext(AESKey k): key(k), valid(true) { }
 
+    // Check, whether AESContext contains valid AES key
     bool AESContext::isValid() const
     {
         return this->valid;
@@ -170,11 +173,13 @@ namespace Crypto
     RSAContext::RSAContext(): valid(false) { }
     RSAContext::RSAContext(RSAPtr k): key(k), valid(true) { }
 
+    // Check whether RSAContext contains valid RSA keypair
     bool RSAContext::isValid() const
     {
         return this->valid;
     }
 
+    // Returns Base64-encoded PEM with RSA public key
     std::string RSAContext::getEncodedPublicKey()
     {
         if(!this->valid)
@@ -195,6 +200,7 @@ namespace Crypto
         return serialized;
     }
 
+    // Decrypts Base64-encoded and encrypted AES key using RSA private key
     AESContext RSAContext::decodeAESKey(std::string aes_key)
     {
         if(!this->valid)
@@ -210,22 +216,23 @@ namespace Crypto
             throw std::system_error(ErrorHandling::ssl_error());
         }
 
-        std::cout << "AES key: "<<Base64::encode(std::string(reinterpret_cast<char*>(raw_aes.get()), 16)) << "\n";
-
         return AESContext(raw_aes);
     }
 
+    // RSA keypair provider
     namespace RSAProvider
     {
         RSAPtr currentKey;
         std::mutex mu;
 
+        // Threadsafe keypair OpenSSL object setter
         void _set(RSAPtr key)
         {
             std::unique_lock<std::mutex> lck(mu);
             currentKey = key;
         }
 
+        // Threadsafe keypair OpenSSL object getter
         RSAPtr _get()
         {
             std::unique_lock<std::mutex> lck(mu);
@@ -233,12 +240,14 @@ namespace Crypto
             return currentKey;
         }
 
+        // Request key generation
         void generate()
         {
             RSAPtr newKey = createRSAKey();
             _set(newKey);
         }
 
+        // Keypair getter (wrapped in RSAContext object)
         RSAContext getKey()
         {
             return RSAContext(_get());

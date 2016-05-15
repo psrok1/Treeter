@@ -9,12 +9,16 @@ MessageProcessor::MessageProcessor(Connection::Reference conn): connection(conn)
     this->sender = conn->server->getSender();
 }
 
+/** EchoRequest **/
+
 bool MessageProcessor::processRequest(const EchoRequest& req)
 {
     MessageBase::Reference response(new EchoResponse(connection, req.getMessage()));
     this->sender->send(response);
     return true;
 }
+
+/** HelloRequest **/
 
 bool MessageProcessor::processRequest(const HelloRequest &)
 {
@@ -23,6 +27,8 @@ bool MessageProcessor::processRequest(const HelloRequest &)
     this->sender->send(response);
     return true;
 }
+
+/** StartEncryptionRequest **/
 
 bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
 {

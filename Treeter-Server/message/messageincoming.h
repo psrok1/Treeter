@@ -21,6 +21,8 @@ public:
     MessageIncoming(nlohmann::json obj): json_object(obj) { }
 };
 
+/** EchoRequest **/
+
 class EchoRequest: public MessageIncoming
 {
 public:
@@ -30,12 +32,16 @@ public:
     EchoRequest(nlohmann::json obj): MessageIncoming(obj) { }
 };
 
+/** HelloRequest **/
+
 class HelloRequest: public MessageIncoming
 {
 public:
     HelloRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
 };
+
+/** StartEncryptionRequest **/
 
 class StartEncryptionRequest: public MessageIncoming
 {

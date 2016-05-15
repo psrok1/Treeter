@@ -12,21 +12,24 @@
 
 Server::Server(unsigned short portNr): stopped(false), usedPort(portNr)
 {
+    // Creating shutdown pipe
     if(pipe(this->shutdownPipe)==-1)
         throw std::system_error(std::error_code(errno, std::system_category()),"server pipe() failed");
 
-    //Tworzenie socketa
+    // Creating socket
     if((socketDescriptor = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK,0))==-1)
         throw std::system_error(std::error_code(errno, std::system_category()),"socket() failed");
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_port = htons(usedPort);
+
     if(bind(socketDescriptor,(struct sockaddr*) &addr,sizeof(addr))==-1)
     {
         close(socketDescriptor);
         throw std::system_error(std::error_code(errno, std::system_category()),"bind() failed");
     }
+
     if(listen(socketDescriptor,8)==-1)
     {
         close(socketDescriptor);
@@ -45,6 +48,7 @@ Server::~Server()
 void Server::operator()(Reference)
 {
     std::cout << "Server started...\n";
+
     // Launch message sender instance
     messageSender = MessageSender::Reference(new MessageSender());
     messageSender->createThread(messageSender);
@@ -63,6 +67,7 @@ void Server::operator()(Reference)
             FD_SET(socketDescriptor,&descriptors);
             FD_SET(shutdownPipe[0], &descriptors);
 
+            // Wait for pending connection or shutdown signal
             if(select(maxdesc, &descriptors, nullptr, nullptr,nullptr)==-1)
             {
                 throw std::system_error(std::error_code(errno, std::system_category()),"server select() failed");
@@ -70,10 +75,13 @@ void Server::operator()(Reference)
 
             if(FD_ISSET(shutdownPipe[0],&descriptors))
             {
+                // If it was shutdown: break server loop
                 break;
             }
+
             if(FD_ISSET(socketDescriptor,&descriptors))
             {
+                // If it was socket: create new connection instance
                 createConnection();
             }
         }

@@ -16,10 +16,14 @@ MessageIncoming::Reference MessageIncoming::fromString(std::string message)
     return ctorMap[obj["request"]](obj);
 }
 
+/** EchoRequest **/
+
 std::string EchoRequest::getMessage() const
 {
     return json_object["message"];
 }
+
+/** StartEncryptionRequest **/
 
 std::string StartEncryptionRequest::getEncryptedKey() const
 {
