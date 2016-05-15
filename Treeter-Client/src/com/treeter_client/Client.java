@@ -13,6 +13,7 @@ public class Client
     private boolean cryptoEnabled = false;
     private ClientListener listener = null;
     private Thread listenerThread = null;
+
     private DataOutputStream outputStream;
 
     public interface EventListener
@@ -23,99 +24,6 @@ public class Client
     public interface MessageEventListener
     {
         void action(MessageResponse messageObj);
-    }
-
-    private class ClientListener implements Runnable
-    {
-        DataInputStream inputStream = null;
-        boolean expectedClose = false;
-
-        public void close()
-        {
-            expectedClose = true;
-        }
-
-        public void run()
-        {
-            // Nawiązanie połączenia i inicjalizacja strumieni
-            try
-            {
-                System.out.println("Connecting...");
-                connection.connect(address);
-                inputStream = new DataInputStream(
-                        new BufferedInputStream(connection.getInputStream()));
-                outputStream = new DataOutputStream(connection.getOutputStream());
-            } catch (final IOException e)
-            {
-                System.out.println("ARGH! NO!");
-                // Jeśli coś się nie udało: generuj zdarzenie błędu połączenia i uciekaj
-                if (onSocketErrorListener != null)
-                    onSocketErrorListener.action();
-                return;
-            }
-            // Jeśli połączono: generuj odpowiednie zdarzenie
-            System.out.println("Connected.");
-            if (onConnectListener != null)
-                onConnectListener.action();
-            // Główna pętla nasłuchująca
-            for (;;)
-            {
-                try
-                {
-                    // Czekaj i odbierz wiadomość
-                    // wczytaj dlugosc wiadomosci
-                    int msgLength = inputStream.readInt();
-                    byte[] buffer = new byte[msgLength];
-                    String message;
-                    // wczytaj wiadomosc
-                    inputStream.readFully(buffer);
-                    if(cryptoEnabled)
-                        message = cryptoProvider.decryptMessage(buffer);
-                    else
-                        message = new String(buffer);
-
-                    if(message == null)
-                    {
-                        if (!expectedClose)
-                        {
-                            // Generuj odpowiednie zdarzenie
-                            if (onSuddenDisconnectListener != null)
-                                onSuddenDisconnectListener.action();
-                        }
-                        return;
-                    }
-                    System.out.println("Received");
-                    // Przetwarzaj wiadomość
-                    MessageResponse messageObject = MessageResponse.deserialize(message);
-                    onMessageListener.action(messageObject);
-                } catch (final IOException e)
-                {
-                    // Jeśli zamknięcie było niespodziewane
-                    if (!expectedClose)
-                    {
-                        // Generuj odpowiednie zdarzenie
-                        if (onSuddenDisconnectListener != null)
-                            onSuddenDisconnectListener.action();
-                    }
-                    return;
-                } catch (final Exception e)
-                {
-                    e.printStackTrace();
-                    // Jeśli inny błąd...
-                    try
-                    {
-                        // Zamknij połączenie
-                        connection.close();
-                    } catch (final IOException ioe)
-                    {
-                    }
-                    // Następnie generuj odpowiednie zdarzenie
-                    if (onSocketErrorListener != null)
-                        onSocketErrorListener.action();
-                    return;
-                }
-            }
-        }
     }
 
     private EventListener onSuddenDisconnectListener = null;
@@ -156,6 +64,86 @@ public class Client
     public void onConnect(EventListener listener)
     {
         onConnectListener = listener;
+    }
+
+
+    private class ClientListener implements Runnable
+    {
+        DataInputStream inputStream = null;
+        boolean expectedClose = false;
+
+        public void close()
+        {
+            expectedClose = true;
+        }
+
+        private void connectToServer(SocketAddress address) throws IOException
+        {
+            // Nawiązanie połączenia
+            connection.connect(address);
+            // Inicjalizacja strumieni
+            inputStream = new DataInputStream(
+                new BufferedInputStream(connection.getInputStream()));
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            // Wygeneruj odpowiednie zdarzenie
+            if (onConnectListener != null)
+                onConnectListener.action();
+        }
+
+        private String readMessage() throws IOException, GeneralSecurityException
+        {
+            // Czekaj i odbierz wiadomość
+            // Wczytaj dlugosc wiadomosci
+            int msgLength = inputStream.readInt();
+            byte[] buffer = new byte[msgLength];
+            String message;
+            // Wczytaj wiadomosc
+            inputStream.readFully(buffer);
+            // Zdeszyfruj, jesli szyfrowanie jest aktywne
+            if (cryptoEnabled)
+                return cryptoProvider.decryptMessage(buffer);
+            else
+                return new String(buffer);
+        }
+
+        public void run()
+        {
+            try
+            {
+                // Polacz z serwerem
+                System.out.println("Connecting...");
+                connectToServer(address);
+                System.out.println("Connected.");
+                // Główna pętla nasłuchująca
+                for (;;)
+                {
+                    String message = readMessage();
+                    // Przetwarzaj wiadomość
+                    MessageResponse messageObject = MessageResponse.deserialize(message);
+                    onMessageListener.action(messageObject);
+                }
+            } catch(IOException e)
+            {
+                // Prawdopodobnie socket zostal zamknięty.
+                // Jeśli to nie było spodziewane zamknięcie
+                if (!expectedClose)
+                {
+                    // Generuj odpowiednie zdarzenie
+                    if (onSuddenDisconnectListener != null)
+                        onSuddenDisconnectListener.action();
+                }
+            } catch(Exception e)
+            {
+                e.printStackTrace();
+                // Jeśli inny błąd... zamknij polaczenie
+                try {
+                    connection.close();
+                } catch (final IOException ioe) {}
+                // Następnie generuj odpowiednie zdarzenie
+                if (onSocketErrorListener != null)
+                    onSocketErrorListener.action();
+            }
+        }
     }
 
     public void open()
