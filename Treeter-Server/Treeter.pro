@@ -16,7 +16,10 @@ SOURCES += main.cpp \
     message/messageoutgoing.cpp \
     message/messageprocessor.cpp \
     message/messagequeue.cpp \
-    message/messagesender.cpp
+    message/messagesender.cpp \
+    model/user.cpp \
+    model/datamodel.cpp \
+    model/group.cpp
 
 HEADERS += \
     threadloop.h \
@@ -33,6 +36,10 @@ HEADERS += \
     message/messageprocessor.h \
     message/messagequeue.h \
     message/messagesender.h \
-    message/json.hpp
+    message/json.hpp \
+    model/user.h \
+    model/datamodel.h \
+    model/group.h \
+    model/groupmessage.h
 
 Debug:DESTDIR = debug
