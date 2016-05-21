@@ -36,7 +36,7 @@ namespace Model
     {
         std::lock_guard<std::recursive_mutex> lck(mu);
 
-        if(this->users.find(login) == this->users.end())
+        if(this->users.find(login) != this->users.end())
             return nullptr;
 
         std::shared_ptr<User> user_ref(new User(login, password));

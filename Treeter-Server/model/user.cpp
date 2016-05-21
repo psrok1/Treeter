@@ -33,9 +33,7 @@ namespace Model
         std::lock_guard<std::recursive_mutex> lck(mu);
 
         std::string groupName = group->getName();
-        auto it = this->groups.find(groupName);
-
-        if(it == this->groups.end())
+        if(this->groups.find(groupName) != this->groups.end())
             return false;
 
         this->groups[groupName] = group;

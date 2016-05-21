@@ -1,16 +1,15 @@
 #include "group.h"
+#include "mapgetter.h"
 
 namespace Model
 {
     bool Group::validateName(std::string name)
     {
-
+        // @TODO
     }
 
-    Group::Group(std::string name, Group* parent)
-    {
-
-    }
+    Group::Group(std::string name, Group* parent):
+        name(name), parent(parent) { }
 
     std::string Group::getName() const
     {
@@ -24,7 +23,11 @@ namespace Model
 
     std::shared_ptr<Group> Group::createGroup(std::string name)
     {
+        std::lock_guard<std::recursive_mutex> lck(mu);
+        if(this->children.find(name) != this->children.end())
+            return nullptr;
 
+        return this->children[name] = std::shared_ptr<Group>(new Group(name, this));
     }
 
     bool Group::deleteGroup(std::string name)
@@ -34,7 +37,8 @@ namespace Model
 
     std::list<std::string> Group::listGroupNames() const
     {
-
+        std::lock_guard<std::recursive_mutex> lck(mu);
+        return getKeys(this->children);
     }
 
     std::shared_ptr<Group> Group::getGroupByName(std::string name) const
