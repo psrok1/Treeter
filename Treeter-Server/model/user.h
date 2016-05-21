@@ -44,7 +44,7 @@ namespace Model
         std::list<std::string> listGroupNames() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
 
-        bool invalidate();
+        void invalidate();
     };
 }
 

@@ -52,7 +52,7 @@ namespace Model
 
     }
 
-    bool Group::addMember(std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval)
+    bool Group::addMember(std::shared_ptr<User> user, MemberRole memberRole)
     {
 
     }

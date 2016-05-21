@@ -22,7 +22,7 @@ namespace Model
     void User::invalidate()
     {
         std::lock_guard<std::recursive_mutex> lck(mu);
-        this->isInvalidated = true;
+        this->invalidated = true;
     }
 
     User::User(std::string login, std::string password):
@@ -85,7 +85,7 @@ namespace Model
         return getKeys(this->groups);
     }
 
-    std::list<std::shared_ptr<Group>> listGroupReferences() const
+    std::list<std::shared_ptr<Group>> User::listGroupReferences() const
     {
         std::lock_guard<std::recursive_mutex> lck(mu);
         return getValues(this->groups);

@@ -7,34 +7,26 @@
 namespace Model
 {
     template<typename Map>
-    std::list<Map::key_type> getKeys(const Map& m)
+    std::list<typename Map::key_type> getKeys(const Map& m)
     {
-        std::list<Map::key_type> keys;
-        struct KeyGetter
-        {
-            template <typename T>
-            typename T::first_type operator()(T keyValuePair) const
-            {
+        std::list<typename Map::key_type> keys;
+
+        std::transform(m.begin(), m.end(), std::back_inserter(keys),
+            [](typename Map::allocator_type::value_type keyValuePair) -> typename Map::key_type {
                 return keyValuePair.first;
-            }
-        };
-        std::transform(m.begin(), m.end(), std::back_inserter(keys), KeyGetter());
+        });
         return keys;
     }
 
     template<typename Map>
-    std::list<Map::value_type> getValues(const Map& m)
+    std::list<typename Map::mapped_type> getValues(const Map& m)
     {
-        std::list<Map::value_type> values;
-        struct ValueGetter
-        {
-            template <typename T>
-            typename T::second_type operator()(T keyValuePair) const
-            {
+        std::list<typename Map::mapped_type> values;
+
+        std::transform(m.begin(), m.end(), std::back_inserter(values),
+            [](typename Map::allocator_type::value_type keyValuePair) -> typename Map::mapped_type {
                 return keyValuePair.second;
-            }
-        };
-        std::transform(m.begin(), m.end(), std::back_inserter(values), ValueGetter());
+        });
         return values;
     }
 }
