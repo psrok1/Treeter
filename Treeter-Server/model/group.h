@@ -47,6 +47,7 @@ namespace Model
         Group(std::string name, Group* parent);
 
         static bool validateName(std::string name);
+        std::string getName() const;
 
         std::shared_ptr<Group> createGroup(std::string name);
         bool deleteGroup(std::string name);

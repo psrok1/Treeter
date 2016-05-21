@@ -1,5 +1,6 @@
 #include "user.h"
 #include "group.h"
+#include "mapgetter.h"
 
 namespace Model
 {
@@ -11,6 +12,17 @@ namespace Model
     std::string User::hashPassword(std::string plain_password)
     {
         // @TODO
+    }
+
+    bool User::isInvalidated() const
+    {
+        return this->isInvalidated();
+    }
+
+    void User::invalidate()
+    {
+        std::lock_guard<std::recursive_mutex> lck(mu);
+        this->isInvalidated = true;
     }
 
     User::User(std::string login, std::string password):
@@ -70,6 +82,12 @@ namespace Model
     std::list<std::string> User::listGroupNames() const
     {
         std::lock_guard<std::recursive_mutex> lck(mu);
-        // @TODO
+        return getKeys(this->groups);
+    }
+
+    std::list<std::shared_ptr<Group>> listGroupReferences() const
+    {
+        std::lock_guard<std::recursive_mutex> lck(mu);
+        return getValues(this->groups);
     }
 }

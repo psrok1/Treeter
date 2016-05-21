@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "datamodel.h"
+#include "mapgetter.h"
 
 namespace Model
 {
@@ -28,15 +29,7 @@ namespace Model
     std::list<std::string> DataModel::listUserLogins() const
     {
         std::lock_guard<std::recursive_mutex> lck(mu);
-
-//        std::list<std::string> result_list;
-//        result_list.resize(this->users.size());
-
-//        typedef std::pair<std::string, std::shared_ptr<User>> UserEntry;
-//        std::transform(this->users.begin(), this->users.end(), this->users.begin(), result_list.begin(),
-//                       [](UserEntry user_entry, UserEntry) -> std::string { return user_entry.second; });
-
-//        return result_list;
+        return getKeys(this->users);
     }
 
     std::shared_ptr<User> DataModel::addUser(std::string login, std::string password)
@@ -46,7 +39,14 @@ namespace Model
         if(this->users.find(login) == this->users.end())
             return nullptr;
 
-        return (this->users[login] = std::shared_ptr<User>(new User(login, password)));
+        std::shared_ptr<User> user_ref(new User(login, password));
+
+        this->users[login] = user_ref;
+
+        // User should be added to root group
+        this->rootGroup->addMember(user_ref, Group::MemberRole::Member);
+
+        return user_ref;
     }
 
     bool DataModel::deleteUser(std::string login)
@@ -57,6 +57,17 @@ namespace Model
 
         if(it == this->users.end())
             return false;
+
+        std::shared_ptr<User> u = (*it).second;
+
+        // Invalidate user object
+        u->invalidate();
+
+        // Detach from groups
+        std::list<std::shared_ptr<Group>> groups = u->listGroupReferences();
+
+        for(std::shared_ptr<Group>& group_ptr: groups)
+            group_ptr->deleteMember(login);
 
         this->users.erase(it);
         return true;

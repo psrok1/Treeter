@@ -6,6 +6,7 @@
 #include <list>
 #include <unordered_map>
 #include <memory>
+#include <atomic>
 
 namespace Model
 {
@@ -17,17 +18,20 @@ namespace Model
 
         const std::string login;
         const std::string password;
+        std::atomic<bool> invalidated;
 
         std::unordered_map<std::string, std::shared_ptr<Group>> groups;
 
         mutable std::recursive_mutex mu;
 
-        // Can only be called by Group methods
-        // Double-locked: first group, second user
         static std::string hashPassword(std::string plain_password);
 
+        // Can only be called by Group methods
+        // Double-locked: first group, second user
         bool addGroup(std::shared_ptr<Group> group);
         bool removeGroup(std::string groupName);
+        // Must be called inside critical section
+        bool isInvalidated() const;
     public:
         User(std::string login, std::string password);
 
@@ -38,6 +42,9 @@ namespace Model
 
         std::shared_ptr<Group> getGroupByName(std::string groupName);
         std::list<std::string> listGroupNames() const;
+        std::list<std::shared_ptr<Group>> listGroupReferences() const;
+
+        bool invalidate();
     };
 }
 

@@ -40,6 +40,7 @@ HEADERS += \
     model/user.h \
     model/datamodel.h \
     model/group.h \
-    model/groupmessage.h
+    model/groupmessage.h \
+    model/mapgetter.h
 
 Debug:DESTDIR = debug
