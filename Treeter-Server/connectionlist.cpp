@@ -34,12 +34,6 @@ void ConnectionList::stopAll()
         ptr_conn->stopThread();
 }
 
-void ConnectionList::sendToAll(MessageBase::Reference msg)
-{
-    std::unique_lock<std::mutex> lck(mu);
-    // todo
-}
-
 void ConnectionList::waitUntilEmpty()
 {
     std::unique_lock<std::mutex> lck(mu);
