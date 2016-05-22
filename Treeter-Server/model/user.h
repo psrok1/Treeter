@@ -35,6 +35,9 @@ namespace Model
     public:
         User(std::string login, std::string password);
 
+        User(const User&) = delete;
+        User& operator=(const User&) = delete;
+
         static bool validateLogin(std::string login);
 
         std::string getLogin() const;

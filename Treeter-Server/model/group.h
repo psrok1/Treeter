@@ -9,7 +9,7 @@
 
 #include "../connectionlist.h"
 #include "groupmessage.h"
-#include "../message/messagebase.h"
+#include "../message/messageoutgoing.h"
 
 namespace Model
 {
@@ -42,9 +42,13 @@ namespace Model
 
         mutable std::recursive_mutex mu;
 
-        void sendNotification(MessageBase::Reference msg);
+        void sendNotification(MessageOutgoing::Reference msg);
+        void clean();
     public:
         Group(std::string name, Group* parent);
+
+        Group(const Group&) = delete;
+        Group& operator=(const Group&) = delete;
 
         static bool validateName(std::string name);
         std::string getName() const;
@@ -57,10 +61,10 @@ namespace Model
         void registerConnection(Connection::Reference connection);
         void unregisterConnection(Connection::Reference connection);
 
-        bool addMember(std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval);
+        bool addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval);
         bool deleteMember(std::string memberLogin);
         MemberRole getMemberPermission(std::string memberLogin) const;
-        void setMemberPermission(std::string memberLogin, MemberRole memberRole);
+        bool setMemberPermission(std::string memberLogin, MemberRole memberRole);
 
         std::list<std::string> listOfPendingApprovals() const;
         std::list<std::pair<std::string, MemberRole>> listOfMembers() const;

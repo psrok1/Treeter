@@ -16,7 +16,7 @@ namespace Model
 
     std::shared_ptr<User> DataModel::getUserByLogin(std::string login) const
     {
-        std::lock_guard<std::recursive_mutex> lck(mu);
+        std::unique_lock<std::recursive_mutex> lck(mu);
 
         auto it = this->users.find(login);
 
@@ -28,13 +28,13 @@ namespace Model
 
     std::list<std::string> DataModel::listUserLogins() const
     {
-        std::lock_guard<std::recursive_mutex> lck(mu);
+        std::unique_lock<std::recursive_mutex> lck(mu);
         return getKeys(this->users);
     }
 
     std::shared_ptr<User> DataModel::addUser(std::string login, std::string password)
     {
-        std::lock_guard<std::recursive_mutex> lck(mu);
+        std::unique_lock<std::recursive_mutex> lck(mu);
 
         if(this->users.find(login) != this->users.end())
             return nullptr;
@@ -44,14 +44,14 @@ namespace Model
         this->users[login] = user_ref;
 
         // User should be added to root group
-        this->rootGroup->addMember(user_ref, Group::MemberRole::Member);
+        this->rootGroup->addMember(this->rootGroup, user_ref, Group::MemberRole::Member);
 
         return user_ref;
     }
 
     bool DataModel::deleteUser(std::string login)
     {
-        std::lock_guard<std::recursive_mutex> lck(mu);
+        std::unique_lock<std::recursive_mutex> lck(mu);
 
         auto it = this->users.find(login);
 

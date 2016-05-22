@@ -20,6 +20,9 @@ namespace Model
     public:
         DataModel();
 
+        DataModel(const DataModel&) = delete;
+        DataModel& operator=(const DataModel&) = delete;
+
         std::shared_ptr<User> getUserByLogin(std::string login) const;
         std::list<std::string> listUserLogins() const;
         std::shared_ptr<User> addUser(std::string login, std::string password);
