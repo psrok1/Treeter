@@ -29,6 +29,9 @@ namespace Model
         {
             std::weak_ptr<User> user;
             MemberRole role;
+
+            Member(std::weak_ptr<User> user, MemberRole role)
+                : user(user), role(role) { }
         };
     private:
         const std::string name;

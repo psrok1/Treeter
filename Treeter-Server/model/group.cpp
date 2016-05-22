@@ -109,9 +109,10 @@ namespace Model
         if(this->members.find(name) != this->members.end())
             return false;
 
-        // TODO: Addition
-        (void)group_ref;
-        (void)memberRole;
+        if(!user->addGroup(group_ref))
+            return false;
+
+        this->members[name] = Member(user, memberRole);
         return true;
     }
 
@@ -124,7 +125,13 @@ namespace Model
         if(it == this->members.end())
             return false;
 
-        // TODO: Deletion
+        std::shared_ptr<User> user_ref = (it->second).user.lock();
+
+        if(user_ref)
+            user_ref->removeGroup(this->name);
+
+        this->members.erase(it);
+
         return true;
     }
 
