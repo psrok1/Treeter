@@ -16,9 +16,10 @@ namespace Model
     {
         friend class Group;
 
+        std::atomic<bool> invalidated;
+
         const std::string login;
         const std::string password;
-        std::atomic<bool> invalidated;
 
         std::unordered_map<std::string, std::shared_ptr<Group>> groups;
 
@@ -30,10 +31,9 @@ namespace Model
         // Double-locked: first group, second user
         bool addGroup(std::shared_ptr<Group> group);
         bool removeGroup(std::string groupName);
-        // Must be called inside critical section
-        bool isInvalidated() const;
     public:
         User(std::string login, std::string password);
+        void invalidate() { this->invalidated = true; }
 
         User(const User&) = delete;
         User& operator=(const User&) = delete;
@@ -46,8 +46,6 @@ namespace Model
         std::shared_ptr<Group> getGroupByName(std::string groupName);
         std::list<std::string> listGroupNames() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
-
-        void invalidate();
     };
 }
 

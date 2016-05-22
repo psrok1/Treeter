@@ -35,6 +35,8 @@ namespace Model
                 : user(user), role(role) { }
         };
     private:
+        std::atomic<bool> invalidated;
+
         const std::string name;
 
         Group* parent;
@@ -50,6 +52,7 @@ namespace Model
         void clean();
     public:
         Group(std::string name, Group* parent);
+        void invalidate() { this->invalidated = true; }
 
         Group(const Group&) = delete;
         Group& operator=(const Group&) = delete;
@@ -69,6 +72,7 @@ namespace Model
         bool deleteMember(std::string memberLogin);
         MemberRole getMemberPermission(std::string memberLogin) const;
         bool setMemberPermission(std::string memberLogin, MemberRole memberRole);
+        bool hasModerator() const;
 
         std::list<std::string> listOfPendingApprovals() const;
         std::list<std::pair<std::string, MemberRole>> listOfMembers() const;

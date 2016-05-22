@@ -8,7 +8,6 @@ namespace Model
 {
     struct GroupMessage
     {
-
         typedef std::chrono::system_clock::time_point Timestamp;
     private:
         const std::string author;
@@ -19,9 +18,9 @@ namespace Model
                      Timestamp timestamp = std::chrono::system_clock::now()):
             author(author), message(message), timestamp(timestamp) { }
 
-        std::string getAuthor() const { return author; }
-        std::string getMessage() const { return message; }
-        Timestamp   getTimestamp() const { return timestamp; }
+        const std::string getAuthor() const { return author; }
+        const std::string getMessage() const { return message; }
+        const Timestamp   getTimestamp() const { return timestamp; }
     };
 }
 
