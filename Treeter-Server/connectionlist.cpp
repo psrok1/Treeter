@@ -26,6 +26,18 @@ void ConnectionList::remove(Connection::Reference conn)
         this->all_stopped.notify_all();
 }
 
+void ConnectionList::sendToAll(MessageOutgoing::Reference message)
+{
+    std::unique_lock<std::mutex> lck(mu);
+
+    for(auto& ptr_conn: this->connections)
+    {
+        MessageOutgoing::Reference pointed_msg = message->clone();
+        pointed_msg->setConnection(ptr_conn);
+        ptr_conn->sendMessage(pointed_msg);
+    }
+}
+
 void ConnectionList::stopAll()
 {
     std::unique_lock<std::mutex> lck(mu);

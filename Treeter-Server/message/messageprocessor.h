@@ -10,8 +10,6 @@ class StartEncryptionRequest;
 
 class MessageProcessor {
     Connection::Reference connection;
-    MessageSender::Reference sender;
-
 public:
     MessageProcessor(Connection::Reference conn);
     // Copying is not allowed

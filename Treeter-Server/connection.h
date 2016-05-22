@@ -10,9 +10,11 @@
 
 #include "threadloop.h"
 #include "crypto/crypto.h"
+#include "message/messagebase.h"
  
 class Server;
 class MessageProcessor;
+class MessageSender;
  
 class Connection : public Threadloop<Connection>
 {
@@ -25,6 +27,8 @@ class Connection : public Threadloop<Connection>
  
     // MessageProcessor is an integral part of Connection object
     friend class MessageProcessor;
+    // MessageSender will be an integral part...
+    friend class MessageSender;
  
     // Connection socket and IP address
     int socketDescriptor;
@@ -42,13 +46,15 @@ class Connection : public Threadloop<Connection>
  
     Crypto::RSAContext rsaContext;
     Crypto::AESContext aesContext;
+
 public:
     Connection(Server* srv, int socket);
     ~Connection();
  
     virtual void stopThread();
- 
-    void sendMessage(std::string msg);
+
+    void sendMessage(MessageBase::Reference message);
+    void sendString(std::string msg);
  
     // Is "comp_to" the same as "this"?
     bool operator==(const Connection& comp_to);

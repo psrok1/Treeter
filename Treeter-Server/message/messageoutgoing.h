@@ -3,6 +3,7 @@
 
 #include "messagebase.h"
 #include <string>
+#include <memory>
 #include "../connection.h"
 
 class MessageOutgoing : public MessageBase
@@ -12,7 +13,11 @@ class MessageOutgoing : public MessageBase
     virtual std::string toString() = 0;
     virtual void send();
 public:
-    MessageOutgoing(Connection::Reference conn): connection(conn) { }
+    typedef std::shared_ptr<MessageOutgoing> Reference;
+
+    virtual void setConnection(Connection::Reference connection);
+
+    virtual Reference clone() = 0;
 };
 
 /** EchoResponse **/
@@ -23,29 +28,28 @@ class EchoResponse : public MessageOutgoing
 
     virtual std::string toString();
 public:
-    EchoResponse(Connection::Reference conn, std::string message):
-        MessageOutgoing(conn), content(message) { }
+    EchoResponse(std::string message): content(message) { }
+    virtual MessageOutgoing::Reference clone();
 };
 
 /** HelloResponse **/
 
 class HelloResponse: public MessageOutgoing
 {
-public:
-    HelloResponse(Connection::Reference conn, std::string pubKey): MessageOutgoing(conn), publicKey(pubKey) { }
-    virtual std::string toString();
-
-private:
     std::string publicKey;
+    virtual std::string toString();
+public:
+    HelloResponse(std::string pubKey): publicKey(pubKey) { }
+    virtual MessageOutgoing::Reference clone();
 };
 
 /** StartEncryptionResponse **/
 
 class StartEncryptionResponse: public MessageOutgoing
 {
-public:
-    StartEncryptionResponse(Connection::Reference conn): MessageOutgoing(conn) { }
     virtual std::string toString();
+public:
+    virtual MessageOutgoing::Reference clone();
 };
 
 #endif // MESSAGEOUTGOING_H
