@@ -30,6 +30,7 @@ namespace Model
             std::weak_ptr<User> user;
             MemberRole role;
 
+            Member() {}
             Member(std::weak_ptr<User> user, MemberRole role)
                 : user(user), role(role) { }
         };
