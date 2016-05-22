@@ -2,6 +2,7 @@
 #include "message/messageprocessor.h"
 #include "message/messageincoming.h"
 #include "message/messageoutgoing.h"
+#include "message/messagesender.h"
 #include "server.h"
 
 #include <cstdlib>
@@ -131,7 +132,7 @@ void Connection::stopThread()
     write(this->shutdownPipe[1], "goodbye", sizeof("goodbye"));
 }
 
-void Connection::sendMessage(std::string msg)
+void Connection::sendString(std::string msg)
 {
     char* msgbuffer = nullptr;
     std::cout<<this->id<<"< "<<msg<<"\n";
@@ -165,7 +166,7 @@ void Connection::sendMessage(std::string msg)
                 throw std::system_error(std::error_code(errno, std::system_category()),"connection select() failed");
             }
 
-            int bytesSent = send(socketDescriptor,bufferptr,bytesToSend,0);
+            int bytesSent = ::send(socketDescriptor,bufferptr,bytesToSend,0);
             if(bytesSent<0)
             {
                 // Socket may be closed.
@@ -187,4 +188,9 @@ bool Connection::operator==(const Connection& comp_to)
 {
     // Connection objects are the same, when both have the same ID
     return this->id == comp_to.id;
+}
+
+void Connection::sendMessage(MessageBase::Reference message)
+{
+    this->server->getSender()->send(message);
 }

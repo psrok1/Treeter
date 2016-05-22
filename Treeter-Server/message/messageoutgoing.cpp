@@ -3,7 +3,12 @@
 
 void MessageOutgoing::send()
 {
-    this->connection->sendMessage(this->toString());
+    this->connection->sendString(this->toString());
+}
+
+void MessageOutgoing::setConnection(Connection::Reference connection)
+{
+    this->connection = connection;
 }
 
 /** EchoResponse **/
@@ -16,6 +21,11 @@ std::string EchoResponse::toString()
     return j.dump();
 }
 
+MessageOutgoing::Reference EchoResponse::clone()
+{
+    return MessageOutgoing::Reference(new EchoResponse(content));
+}
+
 /** HelloResponse **/
 
 std::string HelloResponse::toString()
@@ -26,6 +36,11 @@ std::string HelloResponse::toString()
     return j.dump();
 }
 
+MessageOutgoing::Reference HelloResponse::clone()
+{
+    return MessageOutgoing::Reference(new HelloResponse(publicKey));
+}
+
 /** StartEncryptionResponse **/
 
 std::string StartEncryptionResponse::toString()
@@ -33,4 +48,9 @@ std::string StartEncryptionResponse::toString()
     nlohmann::json j;
     j["response"] = "startEncryption";
     return j.dump();
+}
+
+MessageOutgoing::Reference StartEncryptionResponse::clone()
+{
+    return MessageOutgoing::Reference(new StartEncryptionResponse());
 }

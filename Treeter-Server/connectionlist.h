@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <list>
 #include "connection.h"
+#include "message/messageoutgoing.h"
 
 class ConnectionList
 {
@@ -14,6 +15,7 @@ class ConnectionList
 public:
     void insert(Connection::Reference conn);
     void remove(Connection::Reference conn);
+    void sendToAll(MessageOutgoing::Reference message);
     void stopAll();
     void waitUntilEmpty();
 };
