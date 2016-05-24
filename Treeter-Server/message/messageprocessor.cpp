@@ -78,3 +78,51 @@ bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
     // TODO
     return true;
 }
+
+/** AddUserToGroupRequest **/
+
+bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** RemoveUserFromGroupRequest **/
+
+bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** GetGroupPathsRequest **/
+
+bool MessageProcessor::processRequest(const GetGroupPathsRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** GetGroupUsersRequest **/
+
+bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** AddMeToGroupRequest **/
+
+bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** GetGroupPendingUsers **/
+
+bool MessageProcessor::processRequest(const GetGroupPendingUsersRequest &req)
+{
+    // TODO
+    return true;
+}

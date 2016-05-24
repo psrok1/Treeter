@@ -102,4 +102,107 @@ public:
     GetSubgroupsResponse(std::vector<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): subgroups(subgroups), error(error) { }
     virtual std::string toString();
 };
+
+/** AddUserToGroupResponse **/
+
+class AddUserToGroupResponse: public MessageOutgoing
+{
+    ResponseErrorCode error;
+public:
+    AddUserToGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    virtual std::string toString();
+};
+
+
+/** RemoveUserFromGroupResponse **/
+
+class RemoveUserFromGroupResponse: public MessageOutgoing
+{
+    ResponseErrorCode error;
+public:
+    RemoveUserFromGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
+    virtual std::string toString();
+};
+
+/** GetGroupPathsResponse **/
+
+class GetGroupPathsResponse: public MessageOutgoing
+{
+    std::vector<std::string> groupPaths;
+    ResponseErrorCode error;
+public:
+    GetGroupPathsResponse(std::vector<std::string> groupPaths, ResponseErrorCode error = ResponseErrorCode::OK) : groupPaths(groupPaths), error(error) { }
+    virtual std::string toString();
+};
+
+
+/** GetGroupUsersResponse **/
+
+class GetGroupUsersResponse: public MessageOutgoing
+{
+    std::vector<std::string> moderators, users;
+    ResponseErrorCode error;
+public:
+    GetGroupUsersResponse(std::vector<std::string> moderators, std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : moderators(moderators), users(users), error(error) { }
+    virtual std::string toString();
+};
+
+/** AddMeToGroupResponse **/
+
+class AddMeToGroupResponse: public MessageOutgoing
+{
+    ResponseErrorCode error;
+public:
+    AddMeToGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
+    virtual std::string toString();
+};
+
+
+/** GetGroupPendingUsersResponse **/
+
+class GetGroupPendingUsersResponse: public MessageOutgoing
+{
+    std::vector<std::string> users;
+    ResponseErrorCode error;
+public:
+    GetGroupPendingUsersResponse(std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
+    virtual std::string toString();
+};
+
+/** NOTIFICATIONS **/
+
+/** AddUserToGroupNotification **/
+
+class AddUserToGroupNotification: public MessageOutgoing
+{
+    std::string path, username;
+    ResponseErrorCode error;
+public:
+    AddUserToGroupNotification(std::string path, std::string username, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), username(username), error(error) { }
+    virtual std::string toString();
+};
+
+/** AddedToGroupNotification **/
+
+class AddedToGroupNotification: public MessageOutgoing
+{
+    std::string path;
+    bool moderator;
+    ResponseErrorCode error;
+public:
+    AddedToGroupNotification(std::string path, bool moderator, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), moderator(moderator), error(error) { }
+    virtual std::string toString();
+};
+
+/** RemovedFromGroupNotification **/
+
+class RemovedFromGroupNotification: public MessageOutgoing
+{
+    std::string path;
+    ResponseErrorCode error;
+public:
+    RemovedFromGroupNotification(std::string path, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), error(error) { }
+    virtual std::string toString();
+};
+
 #endif // MESSAGEOUTGOING_H

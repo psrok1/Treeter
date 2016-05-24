@@ -83,3 +83,104 @@ std::string GetSubgroupsResponse::toString()
         ;   // TODO
     return j.dump();
 }
+
+/** AddUserToGroupResponse **/
+
+std::string AddUserToGroupResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "addUserToGroup";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** RemoveUserFromGroupResponse **/
+
+std::string RemoveUserFromGroupResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "removeUserFromGroup";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** GetGroupPathsResponse **/
+
+std::string GetGroupPathsResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "getGroupPaths";
+    j["paths"] = groupPaths;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** GetGroupUsersResponse **/
+std::string GetGroupUsersResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "getGroupUsers";
+    j["moderators"] = moderators;
+    j["users"] = users;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** AddMeToGroupResponse **/
+std::string AddMeToGroupResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "addMeToGroup";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** GetGroupPendingUsersResponse **/
+std::string GetGroupPendingUsersResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "getGroupPendingUsers";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** AddUserToGroupNotification **/
+std::string AddUserToGroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "addUserToGroup";
+    j["path"] = path;
+    j["username"] = username;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** AddedToGroupNotification **/
+std::string AddedToGroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "addedToGroup";
+    j["path"] = path;
+    j["moderator"] = moderator;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** RemovedFromGroupNotification **/
+std::string RemovedFromGroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "removedFromGroup";
+    j["path"] = path;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}

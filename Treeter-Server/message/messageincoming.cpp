@@ -74,3 +74,50 @@ std::string GetSubgroupsRequest::getPath() const
 {
     return json_object["path"];
 }
+
+/** AddUserToGroupRequest **/
+
+std::string AddUserToGroupRequest::getUsername() const
+{
+    return json_object["username"];
+}
+
+std::string AddUserToGroupRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+bool AddUserToGroupRequest::getModerator() const
+{
+    return json_object["moderator"];
+}
+
+/** RemoveUserFromGroupRequest **/
+
+std::string RemoveUserFromGroupRequest::getUsername() const
+{
+    return json_object["username"];
+}
+
+std::string RemoveUserFromGroupRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+/** GetGroupUsersRequest **/
+std::string GetGroupUsersRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+/** AddMeToGroupRequest **/
+std::string AddMeToGroupRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+/** GetGroupPendingUsersRequest **/
+std::string GetGroupPendingUsersRequest::getPath() const
+{
+    return json_object["path"];
+}
