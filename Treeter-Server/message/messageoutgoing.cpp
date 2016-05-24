@@ -1,16 +1,6 @@
 #include "json.hpp"
 #include "messageoutgoing.h"
 
-void MessageOutgoing::send()
-{
-    this->connection->sendString(this->toString());
-}
-
-void MessageOutgoing::setConnection(Connection::Reference connection)
-{
-    this->connection = connection;
-}
-
 /** EchoResponse **/
 
 std::string EchoResponse::toString()

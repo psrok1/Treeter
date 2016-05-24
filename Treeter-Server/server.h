@@ -16,8 +16,6 @@
 
 class Server : public Threadloop<Server>
 {
-    MessageSender::Reference messageSender;
-
     ConnectionList connectionList;
     std::atomic<bool> stopped;
     int shutdownPipe[2];
@@ -31,7 +29,6 @@ public:
     void createConnection();
     void deleteConnection(Connection::Reference connection);
 
-    MessageSender::Reference getSender() const;
     virtual void stopThread();
 
     virtual void operator()(Reference refServer);

@@ -11,10 +11,10 @@
 #include "threadloop.h"
 #include "crypto/crypto.h"
 #include "message/messagebase.h"
+#include "message/messagesender.h"
  
 class Server;
 class MessageProcessor;
-class MessageSender;
  
 class Connection : public Threadloop<Connection>
 {
@@ -24,6 +24,9 @@ class Connection : public Threadloop<Connection>
  
     // Pointer to server instance
     Server* server;
+
+    // Message sender instance
+    MessageSender::Reference messageSender;
  
     // MessageProcessor is an integral part of Connection object
     friend class MessageProcessor;
@@ -47,6 +50,7 @@ class Connection : public Threadloop<Connection>
     Crypto::RSAContext rsaContext;
     Crypto::AESContext aesContext;
 
+    void sendString(std::string msg);
 public:
     Connection(Server* srv, int socket);
     ~Connection();
@@ -54,8 +58,7 @@ public:
     virtual void stopThread();
 
     void sendMessage(MessageBase::Reference message);
-    void sendString(std::string msg);
- 
+
     // Is "comp_to" the same as "this"?
     bool operator==(const Connection& comp_to);
     virtual void operator()(Reference refConnection);

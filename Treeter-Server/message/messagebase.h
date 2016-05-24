@@ -2,20 +2,21 @@
 #define MESSAGE_H
 
 #include <memory>
+#include <string>
 
 class MessageBase
 {
     friend class MessageSender;
     virtual bool isEOF() { return false; }
-    virtual void send() = 0;
 public:
     typedef std::shared_ptr<MessageBase> Reference;
+
+    virtual std::string serialize() { return std::string(); }
 };
 
 class EOFMessage: public MessageBase
 {
     virtual bool isEOF() { return true; }
-    virtual void send() { }
 };
 
 #endif // MESSAGE_H
