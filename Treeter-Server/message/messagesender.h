@@ -14,7 +14,7 @@ public:
     MessageSender(Connection* connection): connection(connection) { }
 
     virtual void stopThread();
-    void send(MessageBase::Reference msg);
+    void send(MessageOutgoing::Reference msg);
 
     virtual void operator()(Reference refMessageSender);
 };

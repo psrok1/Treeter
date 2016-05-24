@@ -1,13 +1,12 @@
 #ifndef MESSAGEINCOMING_H
 #define MESSAGEINCOMING_H
 
-#include "messagebase.h"
 #include "messageprocessor.h"
 #include "json.hpp"
 #include <string>
 #include <memory>
 
-class MessageIncoming: public MessageBase
+class MessageIncoming
 {
 protected:
     nlohmann::json json_object;

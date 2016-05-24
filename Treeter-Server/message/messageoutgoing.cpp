@@ -11,11 +11,6 @@ std::string EchoResponse::toString()
     return j.dump();
 }
 
-MessageOutgoing::Reference EchoResponse::clone()
-{
-    return MessageOutgoing::Reference(new EchoResponse(content));
-}
-
 /** HelloResponse **/
 
 std::string HelloResponse::toString()
@@ -26,11 +21,6 @@ std::string HelloResponse::toString()
     return j.dump();
 }
 
-MessageOutgoing::Reference HelloResponse::clone()
-{
-    return MessageOutgoing::Reference(new HelloResponse(publicKey));
-}
-
 /** StartEncryptionResponse **/
 
 std::string StartEncryptionResponse::toString()
@@ -38,11 +28,6 @@ std::string StartEncryptionResponse::toString()
     nlohmann::json j;
     j["response"] = "startEncryption";
     return j.dump();
-}
-
-MessageOutgoing::Reference StartEncryptionResponse::clone()
-{
-    return MessageOutgoing::Reference(new StartEncryptionResponse());
 }
 
 /** AuthUserResponse **/
@@ -55,11 +40,6 @@ std::string AuthUserResponse::toString()
     return j.dump();
 }
 
-MessageOutgoing::Reference AuthUserResponse::clone()
-{
-    return MessageOutgoing::Reference(new AuthUserResponse());
-}
-
 /** CreateAccountResponse **/
 std::string CreateAccountResponse::toString()
 {
@@ -68,11 +48,6 @@ std::string CreateAccountResponse::toString()
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();
-}
-
-MessageOutgoing::Reference CreateAccountResponse::clone()
-{
-    return MessageOutgoing::Reference(new CreateAccountResponse());
 }
 
 /** CreateGroupResponse **/
@@ -86,11 +61,6 @@ std::string CreateGroupResponse::toString()
     return j.dump();
 }
 
-MessageOutgoing::Reference CreateGroupResponse::clone()
-{
-    return MessageOutgoing::Reference(new CreateGroupResponse());
-}
-
 /** RemoveGroupResponse **/
 
 std::string RemoveGroupResponse::toString()
@@ -100,11 +70,6 @@ std::string RemoveGroupResponse::toString()
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();
-}
-
-MessageOutgoing::Reference RemoveGroupResponse::clone()
-{
-    return MessageOutgoing::Reference(new RemoveGroupResponse());
 }
 
 /** GetSubgroupsResponse **/
@@ -117,9 +82,4 @@ std::string GetSubgroupsResponse::toString()
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();
-}
-
-MessageOutgoing::Reference GetSubgroupsResponse::clone()
-{
-    return MessageOutgoing::Reference(new GetSubgroupsResponse(subgroups));
 }

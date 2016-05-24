@@ -29,7 +29,6 @@ HEADERS += \
     connectionlist.h \
     crypto/base64.h \
     crypto/crypto.h \
-    message/messagebase.h \
     message/messageincoming.h \
     message/messageincomingctor.h \
     message/messageoutgoing.h \

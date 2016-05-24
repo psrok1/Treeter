@@ -198,7 +198,7 @@ bool Connection::operator==(const Connection& comp_to)
     return this->id == comp_to.id;
 }
 
-void Connection::sendMessage(MessageBase::Reference message)
+void Connection::sendMessage(MessageOutgoing::Reference message)
 {
     this->messageSender->send(message);
 }

@@ -12,8 +12,8 @@
 #include "crypto/crypto.h"
 
 #include "model/user.h"
-#include "message/messagebase.h"
 #include "message/messagesender.h"
+#include "message/messageoutgoing.h"
  
 class Server;
 class MessageProcessor;
@@ -63,7 +63,7 @@ public:
  
     virtual void stopThread();
 
-    void sendMessage(MessageBase::Reference message);
+    void sendMessage(MessageOutgoing::Reference message);
 
     // Is "comp_to" the same as "this"?
     bool operator==(const Connection& comp_to);
