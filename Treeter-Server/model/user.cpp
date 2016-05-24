@@ -10,9 +10,9 @@ namespace Model
     */
     bool User::validateLogin(std::string login)
     {
-        // @TODO
-        (void)login;
-        return true;
+        return std::all_of(login.begin(), login.end(), [](const char c) {
+           return std::isalnum(c) || (c == '_');
+        });
     }
 
     /**

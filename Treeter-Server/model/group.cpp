@@ -11,9 +11,9 @@ namespace Model
      */
     bool Group::validateName(std::string name)
     {
-        // @TODO
-        (void)name;
-        return true;
+        return std::all_of(name.begin(), name.end(), [](const char c) {
+           return std::isalnum(c) || (c == '_') || (c == ' ');
+        });
     }
 
     Group::Group(std::string name, Group* parent):
