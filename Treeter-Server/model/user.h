@@ -30,7 +30,7 @@ namespace Model
         // Can only be called by Group methods
         // Double-locked: first group, second user
         bool addGroup(std::shared_ptr<Group> group);
-        bool removeGroup(std::string groupName);
+        bool removeGroup(std::string groupPath);
     public:
         User(std::string login, std::string password);
         void invalidate() { this->invalidated = true; }
@@ -43,8 +43,8 @@ namespace Model
         std::string getLogin() const;
         bool verifyPassword(std::string pass) const;
 
-        std::shared_ptr<Group> getGroupByName(std::string groupName);
-        std::list<std::string> listGroupNames() const;
+        std::shared_ptr<Group> getGroupByPath(std::string groupPath);
+        std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
     };
 }

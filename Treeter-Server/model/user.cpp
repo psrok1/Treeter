@@ -42,13 +42,13 @@ namespace Model
         if(this->invalidated)
             return false;
 
-        // getName is non-blocking
-        std::string groupName = group->getName();
+        // getAbsolutePath is non-blocking
+        std::string groupPath = group->getAbsolutePath();
 
-        if(this->groups.find(groupName) != this->groups.end())
+        if(this->groups.find(groupPath) != this->groups.end())
             return false;
 
-        this->groups[groupName] = group;
+        this->groups[groupPath] = group;
         return true;
     }
 
@@ -57,11 +57,11 @@ namespace Model
      * Private method: used internally by Group::deleteMember
      * Unregisters group from user's list
      */
-    bool User::removeGroup(std::string groupName)
+    bool User::removeGroup(std::string groupPath)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
-        auto it = this->groups.find(groupName);
+        auto it = this->groups.find(groupPath);
 
         if(it == this->groups.end())
             return false;
@@ -93,15 +93,15 @@ namespace Model
     }
 
     /**
-     * @brief User::getGroupByName
-     * Gets register group by name.
+     * @brief User::getGroupByPath
+     * Gets register group by path.
      * Returns nullptr, when group wasn't registered
      */
-    std::shared_ptr<Group> User::getGroupByName(std::string groupName)
+    std::shared_ptr<Group> User::getGroupByPath(std::string groupPath)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
-        auto it = this->groups.find(groupName);
+        auto it = this->groups.find(groupPath);
 
         if(it == this->groups.end())
             return nullptr;
@@ -110,10 +110,10 @@ namespace Model
     }
 
     /**
-     * @brief User::listGroupNames
-     * Gets list of registered group names
+     * @brief User::listGroupPaths
+     * Gets list of registered group paths
      */
-    std::list<std::string> User::listGroupNames() const
+    std::list<std::string> User::listGroupPaths() const
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
         return getKeys(this->groups);
