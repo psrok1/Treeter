@@ -1,4 +1,5 @@
 #include "messagesender.h"
+#include "connection.h"
 
 void MessageSender::operator()(Reference)
 {
@@ -10,7 +11,7 @@ void MessageSender::operator()(Reference)
             // If stop signal: break sender loop
             break;
         }
-        msg->send();
+        this->connection->sendString(msg->serialize());
     }
 }
 

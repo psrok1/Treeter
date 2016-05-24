@@ -11,16 +11,19 @@ enum class ResponseErrorCode { OK };
 
 class MessageOutgoing : public MessageBase
 {
-    Connection::Reference connection;
-
     virtual std::string toString() = 0;
-    virtual void send();
 public:
     typedef std::shared_ptr<MessageOutgoing> Reference;
 
-    virtual void setConnection(Connection::Reference connection);
-
+    // @TODO: Deprecated
     virtual Reference clone() = 0;
+    // @TODO: Need to be refactored
+    // serialize() method is only a bypass - toString must be public
+    // Moreover, MessageBase hierarchy in this form, doesn't have sense with separate senders
+    // @TODO: Missing const!
+    virtual std::string serialize() { return this->toString(); }
+    // @TODO: Delete line below and do refactoring in messageprocessor
+    virtual void setConnection(Connection::Reference) { }
 };
 
 /** EchoResponse **/

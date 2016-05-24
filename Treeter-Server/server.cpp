@@ -49,10 +49,6 @@ void Server::operator()(Reference)
 {
     std::cout << "Server started...\n";
 
-    // Launch message sender instance
-    messageSender = MessageSender::Reference(new MessageSender());
-    messageSender->createThread(messageSender);
-
     //Set descriptors up
     fd_set descriptors;
     int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
@@ -99,9 +95,6 @@ void Server::operator()(Reference)
     connectionList.stopAll();
     connectionList.waitUntilEmpty();
 
-    // Close sender instance
-    messageSender->stopThread();
-    messageSender->joinThread();
     std::cout << "Server stopped...\n";
 }
 
@@ -128,8 +121,4 @@ void Server::createConnection()
 void Server::deleteConnection(Connection::Reference connection)
 {
     connectionList.remove(connection);
-}
-
-MessageSender::Reference Server::getSender() const {
-    return this->messageSender;
 }

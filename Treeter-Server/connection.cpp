@@ -76,6 +76,10 @@ void Connection::operator()(Reference refConnection)
     MessageProcessor processor(refConnection);
     std::cout << "Connection " << this->id << " started...\n";
 
+    // Launch message sender instance
+    messageSender = MessageSender::Reference(new MessageSender(this));
+    messageSender->createThread(messageSender);
+
     //Set max. descriptor value
     maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
 
@@ -116,6 +120,10 @@ void Connection::operator()(Reference refConnection)
     }
 
     shutdown(socketDescriptor, SHUT_RD);
+
+    // Close sender instance
+    messageSender->stopThread();
+    messageSender->joinThread();
 
     std::cout << "Connection " << this->id << " finished...\n";
     this->server->deleteConnection(refConnection);
@@ -192,5 +200,5 @@ bool Connection::operator==(const Connection& comp_to)
 
 void Connection::sendMessage(MessageBase::Reference message)
 {
-    this->server->getSender()->send(message);
+    this->messageSender->send(message);
 }
