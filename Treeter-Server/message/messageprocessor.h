@@ -7,6 +7,8 @@
 class EchoRequest;
 class HelloRequest;
 class StartEncryptionRequest;
+class AuthUserRequest;
+class CreateAccountRequest;
 
 class MessageProcessor {
     Connection::Reference connection;
@@ -19,6 +21,8 @@ public:
     bool processRequest(const EchoRequest&);
     bool processRequest(const HelloRequest &);
     bool processRequest(const StartEncryptionRequest &req);
+    bool processRequest(const AuthUserRequest &req);
+    bool processRequest(const CreateAccountRequest &req);
 };
 
 #endif // MESSAGEPROCESSOR_H

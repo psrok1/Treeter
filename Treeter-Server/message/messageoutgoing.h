@@ -6,6 +6,8 @@
 #include <memory>
 #include "../connection.h"
 
+enum class ResponseErrorCode { OK };
+
 class MessageOutgoing : public MessageBase
 {
     Connection::Reference connection;
@@ -49,6 +51,28 @@ class StartEncryptionResponse: public MessageOutgoing
 {
     virtual std::string toString();
 public:
+    virtual MessageOutgoing::Reference clone();
+};
+
+/** AuthUserResponse **/
+
+class AuthUserResponse: public MessageOutgoing
+{
+    virtual std::string toString();
+    ResponseErrorCode error;
+public:
+    AuthUserResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    virtual MessageOutgoing::Reference clone();
+};
+
+/** CreateAccountResponse **/
+
+class CreateAccountResponse: public MessageOutgoing
+{
+    virtual std::string toString();
+    ResponseErrorCode error;
+public:
+    CreateAccountResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual MessageOutgoing::Reference clone();
 };
 

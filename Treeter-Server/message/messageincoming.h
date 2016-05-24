@@ -51,4 +51,26 @@ public:
     std::string getEncryptedKey() const;
 };
 
+/** AuthUserRequest **/
+
+class AuthUserRequest: public MessageIncoming
+{
+public:
+    AuthUserRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
+    std::string getLogin() const;
+    std::string getPassword() const;
+};
+
+/** CreateAccountRequest **/
+
+class CreateAccountRequest: public MessageIncoming
+{
+public:
+    CreateAccountRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
+    std::string getLogin() const;
+    std::string getPassword() const;
+};
+
 #endif // MESSAGEINCOMING_H

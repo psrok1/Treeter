@@ -54,3 +54,33 @@ MessageOutgoing::Reference StartEncryptionResponse::clone()
 {
     return MessageOutgoing::Reference(new StartEncryptionResponse());
 }
+
+/** AuthUserResponse **/
+std::string AuthUserResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "authUser";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+MessageOutgoing::Reference AuthUserResponse::clone()
+{
+    return MessageOutgoing::Reference(new AuthUserResponse());
+}
+
+/** CreateAccountResponse **/
+std::string CreateAccountResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "createAccount";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+MessageOutgoing::Reference CreateAccountResponse::clone()
+{
+    return MessageOutgoing::Reference(new CreateAccountResponse());
+}

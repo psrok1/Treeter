@@ -42,3 +42,19 @@ bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
     this->connection->sendMessage(response);
     return true;
 }
+
+/** AuthUserRequest **/
+
+bool MessageProcessor::processRequest(const AuthUserRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** CreateAccountRequest **/
+
+bool MessageProcessor::processRequest(const CreateAccountRequest &req)
+{
+    // TODO
+    return true;
+}

@@ -29,3 +29,27 @@ std::string StartEncryptionRequest::getEncryptedKey() const
 {
     return json_object["encryptedKey"];
 }
+
+/** AuthUserRequest **/
+
+std::string AuthUserRequest::getLogin() const
+{
+    return json_object["login"];
+}
+
+std::string AuthUserRequest::getPassword() const
+{
+    return json_object["password"];
+}
+
+/** CreateAccountRequest **/
+
+std::string CreateAccountRequest::getLogin() const
+{
+    return json_object["login"];
+}
+
+std::string CreateAccountRequest::getPassword() const
+{
+    return json_object["password"];
+}
