@@ -9,6 +9,9 @@ class HelloRequest;
 class StartEncryptionRequest;
 class AuthUserRequest;
 class CreateAccountRequest;
+class CreateGroupRequest;
+class RemoveGroupRequest;
+class GetSubgroupsRequest;
 
 class MessageProcessor {
     Connection::Reference connection;
@@ -23,6 +26,9 @@ public:
     bool processRequest(const StartEncryptionRequest &req);
     bool processRequest(const AuthUserRequest &req);
     bool processRequest(const CreateAccountRequest &req);
+    bool processRequest(const CreateGroupRequest &req);
+    bool processRequest(const RemoveGroupRequest &req);
+    bool processRequest(const GetSubgroupsRequest &req);
 };
 
 #endif // MESSAGEPROCESSOR_H

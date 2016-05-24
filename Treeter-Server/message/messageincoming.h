@@ -68,9 +68,39 @@ class CreateAccountRequest: public MessageIncoming
 {
 public:
     CreateAccountRequest(nlohmann::json obj): MessageIncoming(obj) { }
-    virtual bool process(MessageProcessor& processor) const { return processor.processRequest(*this); }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getLogin() const;
     std::string getPassword() const;
+};
+
+/** CreateGroupRequest **/
+
+class CreateGroupRequest: public MessageIncoming
+{
+public:
+    CreateGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getPath() const;
+};
+
+/** RemoveGroupRequest **/
+
+class RemoveGroupRequest: public MessageIncoming
+{
+public:
+    RemoveGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getPath() const;
+};
+
+/** GetSubgroupsRequest **/
+
+class GetSubgroupsRequest: public MessageIncoming
+{
+public:
+    GetSubgroupsRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getPath() const;
 };
 
 #endif // MESSAGEINCOMING_H

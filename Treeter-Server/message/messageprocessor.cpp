@@ -58,3 +58,27 @@ bool MessageProcessor::processRequest(const CreateAccountRequest &req)
     // TODO
     return true;
 }
+
+/** CreateGroupRequest **/
+
+bool MessageProcessor::processRequest(const CreateGroupRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** RemoveGroupRequest **/
+
+bool MessageProcessor::processRequest(const RemoveGroupRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** GetSubgroupsRequest **/
+
+bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
+{
+    // TODO
+    return true;
+}

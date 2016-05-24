@@ -3,6 +3,7 @@
 
 #include "messagebase.h"
 #include <string>
+#include <vector>
 #include <memory>
 #include "../connection.h"
 
@@ -76,4 +77,36 @@ public:
     virtual MessageOutgoing::Reference clone();
 };
 
+/** CreateGroupResponse **/
+
+class CreateGroupResponse: public MessageOutgoing
+{
+    virtual std::string toString();
+    ResponseErrorCode error;
+public:
+    CreateGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    virtual MessageOutgoing::Reference clone();
+};
+
+/** RemoveGroupResponse **/
+
+class RemoveGroupResponse: public MessageOutgoing
+{
+    virtual std::string toString();
+    ResponseErrorCode error;
+public:
+    RemoveGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    virtual MessageOutgoing::Reference clone();
+};
+
+/** GetSubgroupsResponse **/
+class GetSubgroupsResponse: public MessageOutgoing
+{
+    virtual std::string toString();
+    std::vector<std::string> subgroups;
+    ResponseErrorCode error;
+public:
+    GetSubgroupsResponse(std::vector<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): subgroups(subgroups), error(error) { }
+    virtual MessageOutgoing::Reference clone();
+};
 #endif // MESSAGEOUTGOING_H

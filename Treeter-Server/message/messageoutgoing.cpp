@@ -84,3 +84,52 @@ MessageOutgoing::Reference CreateAccountResponse::clone()
 {
     return MessageOutgoing::Reference(new CreateAccountResponse());
 }
+
+/** CreateGroupResponse **/
+
+std::string CreateGroupResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "createGroup";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+MessageOutgoing::Reference CreateGroupResponse::clone()
+{
+    return MessageOutgoing::Reference(new CreateGroupResponse());
+}
+
+/** RemoveGroupResponse **/
+
+std::string RemoveGroupResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "removeGroup";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+MessageOutgoing::Reference RemoveGroupResponse::clone()
+{
+    return MessageOutgoing::Reference(new RemoveGroupResponse());
+}
+
+/** GetSubgroupsResponse **/
+
+std::string GetSubgroupsResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "getSubgroups";
+    j["subgroups"] = subgroups;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+MessageOutgoing::Reference GetSubgroupsResponse::clone()
+{
+    return MessageOutgoing::Reference(new GetSubgroupsResponse(subgroups));
+}
