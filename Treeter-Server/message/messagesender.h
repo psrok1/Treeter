@@ -4,10 +4,15 @@
 #include "../threadloop.h"
 #include "messagequeue.h"
 
+class Connection;
+
 class MessageSender : public Threadloop<MessageSender>
 {
+    Connection* connection;
     MessageQueue messageQueue;
 public:
+    MessageSender(Connection* connection): connection(connection) { }
+
     virtual void stopThread();
     void send(MessageBase::Reference msg);
 

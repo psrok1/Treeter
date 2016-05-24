@@ -9,7 +9,6 @@
 
 class MessageIncoming: public MessageBase
 {
-    virtual void send() { }
 protected:
     nlohmann::json json_object;
 public:
