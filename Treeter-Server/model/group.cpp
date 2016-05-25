@@ -17,7 +17,7 @@ namespace Model
     }
 
     Group::Group(std::string name, Group* parent):
-        invalidated(false), name(name), parent(parent) { }
+        invalidated(false), name(name), absolutePath(parent->absolutePath+"/"+name), parent(parent) { }
 
     /**
      * @brief Group::getName
@@ -25,9 +25,20 @@ namespace Model
      * Property is immutable, so critical section is unnecessary.
      * @NEEDS-THREAD-SAFETY-CHECK
      */
-    std::string Group::getName() const
+    std::string Group::getGroupName() const
     {
         return this->name;
+    }
+
+    /**
+     * @brief Group::getAbsolutePath
+     * Group absolute path getter
+     * Property is immutable, so critical section is unnecessary.
+     * @NEEDS-THREAD-SAFETY-CHECK
+     */
+    std::string Group::getAbsolutePath() const
+    {
+        return this->absolutePath;
     }
 
     /**
@@ -168,15 +179,15 @@ namespace Model
         if(invalidated)
             return false;
 
-        std::string name = user->getLogin();
+        std::string login = user->getLogin();
 
-        if(this->members.find(name) != this->members.end())
+        if(this->members.find(login) != this->members.end())
             return false;
 
         if(!user->addGroup(group_ref))
             return false;
 
-        this->members[name] = Member(user, memberRole);
+        this->members[login] = Member(user, memberRole);
         return true;
     }
 
@@ -200,7 +211,7 @@ namespace Model
         std::shared_ptr<User> user_ref = (it->second).user.lock();
 
         if(user_ref)
-            user_ref->removeGroup(this->name);
+            user_ref->removeGroup(this->absolutePath);
 
         this->members.erase(it);
 

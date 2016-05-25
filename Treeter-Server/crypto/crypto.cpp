@@ -8,6 +8,8 @@
 #include <system_error>
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "pthread.h"
 
@@ -16,6 +18,7 @@
 #include "openssl/err.h"
 #include "openssl/conf.h"
 #include "openssl/pem.h"
+#include "openssl/sha.h"
 
 namespace Crypto
 {
@@ -282,5 +285,24 @@ namespace Crypto
     {
         CRYPTO_set_locking_callback(NULL);
         delete [] locks;
+    }
+
+    std::string sha256(std::string message)
+    {
+        unsigned char hash[SHA256_DIGEST_LENGTH];
+        SHA256_CTX ctx;
+
+        SHA256_Init(&ctx);
+        SHA256_Update(&ctx, message.data(), message.size());
+        SHA256_Final(hash, &ctx);
+
+        std::stringstream ss_hash;
+        for(size_t i = 0; i < SHA256_DIGEST_LENGTH; i++)
+        {
+            ss_hash << std::hex << std::setfill('0')
+                    << std::uppercase << std::setw(2)
+                    << static_cast<int>(hash[i]);
+        }
+        return ss_hash.str();
     }
 }

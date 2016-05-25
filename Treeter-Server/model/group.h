@@ -38,6 +38,7 @@ namespace Model
         std::atomic<bool> invalidated;
 
         const std::string name;
+        const std::string absolutePath;
 
         Group* parent;
         std::unordered_map<std::string, std::shared_ptr<Group>> children;
@@ -58,7 +59,8 @@ namespace Model
         Group& operator=(const Group&) = delete;
 
         static bool validateName(std::string name);
-        std::string getName() const;
+        std::string getGroupName() const;
+        std::string getAbsolutePath() const;
 
         std::shared_ptr<Group> createGroup(std::string name);
         bool deleteGroup(std::string name);
