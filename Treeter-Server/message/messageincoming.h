@@ -78,7 +78,8 @@ class CreateGroupRequest: public MessageIncoming
 public:
     CreateGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    std::string getPath() const;
+    std::string getParentPath() const;
+    std::string getSubgroupName() const;
 };
 
 /** RemoveGroupRequest **/
@@ -88,7 +89,8 @@ class RemoveGroupRequest: public MessageIncoming
 public:
     RemoveGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    std::string getPath() const;
+    std::string getParentPath() const;
+    std::string getSubgroupName() const;
 };
 
 /** GetSubgroupsRequest **/

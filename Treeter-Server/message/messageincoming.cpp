@@ -56,17 +56,28 @@ std::string CreateAccountRequest::getPassword() const
 
 /** CreateGroupRequest **/
 
-std::string CreateGroupRequest::getPath() const
+std::string CreateGroupRequest::getParentPath() const
 {
     return json_object["path"];
+}
+
+std::string CreateGroupRequest::getSubgroupName() const
+{
+    return json_object["subgroup"];
 }
 
 /** RemoveGroupRequest **/
 
-std::string RemoveGroupRequest::getPath() const
+std::string RemoveGroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
+
+std::string RemoveGroupRequest::getSubgroupName() const
+{
+    return json_object["subgroup"];
+}
+
 
 /** GetSubgroupsRequest **/
 
