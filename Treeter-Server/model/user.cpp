@@ -2,6 +2,8 @@
 #include "group.h"
 #include "mapgetter.h"
 
+#include "crypto/crypto.h"
+
 namespace Model
 {
     /**
@@ -21,8 +23,7 @@ namespace Model
      */
     std::string User::hashPassword(std::string plain_password)
     {
-        // @TODO
-        return plain_password;
+        return Crypto::sha256(plain_password);
     }
 
     User::User(std::string login, std::string password):
