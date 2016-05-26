@@ -17,7 +17,8 @@ namespace Model
     }
 
     Group::Group(std::string name, Group* parent):
-        invalidated(false), name(name), absolutePath(parent->absolutePath+"/"+name), parent(parent) { }
+        invalidated(false), name(name),
+        absolutePath((parent != nullptr ? parent->absolutePath : "")+"/"+name), parent(parent) { }
 
     /**
      * @brief Group::getName
