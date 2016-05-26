@@ -27,8 +27,8 @@ public class MainController
                 String aesKey = client.getCryptoProvider().exportAESKey();
 
                 StartEncryptionRequest startEncryptionRequest = new StartEncryptionRequest(aesKey);
+                client.enableCryptoForNextResponse();
                 client.send(startEncryptionRequest);
-                client.enableCrypto();
             } catch(Exception e)
             {
                 e.printStackTrace();
@@ -61,7 +61,7 @@ public class MainController
             {
                 try
                 {
-                    // @todo
+                    System.out.println("Action!");
                     HelloRequest helloRequest = new HelloRequest();
                     client.send(new HelloRequest());
                 } catch(Exception e)
@@ -84,6 +84,9 @@ public class MainController
             @Override
             public void action()
             {
+                System.out.println("Closed!");
+                client.close();
+                System.out.println("Closed!");
                 connectView.show();
                 messageView.hide();
             }

@@ -12,7 +12,8 @@ public class Client
     private Socket connection;
 
     private CryptoProvider cryptoProvider;
-    private AtomicBoolean cryptoEnabled = new AtomicBoolean(false);
+    private boolean cryptoEnableRequest = false;
+    private boolean cryptoEnabled = false;
 
     private ClientListener clientListener;
     private ClientSender clientSender;
@@ -75,7 +76,9 @@ public class Client
             // Wczytaj wiadomosc
             inputStream.readFully(buffer);
             // Zdeszyfruj, jesli szyfrowanie jest aktywne
-            if (cryptoEnabled.get())
+            if(cryptoEnableRequest)
+                cryptoEnabled = true;
+            if (cryptoEnabled)
                 return cryptoProvider.decryptMessage(buffer);
             else
                 return new String(buffer);
@@ -87,7 +90,7 @@ public class Client
         {
             //Główna pętla nasłuchująca
             try {
-                for (; ; )
+                for (;;)
                 {
                     String message = readMessage();
                     // Przetwarzaj wiadomość
@@ -102,6 +105,11 @@ public class Client
                 e.printStackTrace();
                 SwingUtilities.invokeLater(() -> onErrorListener.action());
             }
+        }
+
+        public void stop()
+        {
+
         }
     }
 
@@ -120,7 +128,7 @@ public class Client
             String message = msg.serialize();
             byte[] buffer;
 
-            if(cryptoEnabled.get())
+            if(cryptoEnabled)
                 buffer = cryptoProvider.encryptMessage(message);
             else
                 buffer = message.getBytes();
@@ -150,15 +158,16 @@ public class Client
                     try
                     {
                         request = requests.take();
-                    } catch(InterruptedException e) { }
-
-                    if(request != null)
+                    } catch(InterruptedException e)
                     {
-                        sendMessage(request);
+                        break;
                     }
+
+                    sendMessage(request);
                 }
             } catch(IOException e)
             {
+                System.out.println("Sender thread error");
                 SwingUtilities.invokeLater(() -> onErrorListener.action());
             } catch(Exception e)
             {
@@ -169,7 +178,13 @@ public class Client
 
         public void putMessageToSend(MessageRequest msg)
         {
+            System.out.println("Message offered!");
             requests.offer(msg);
+        }
+
+        public void stop()
+        {
+
         }
     }
 
@@ -199,16 +214,17 @@ public class Client
                 DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
                 // Powolanie watku listenera
                 clientListener = new ClientListener(inputStream);
-                clientListenerThread = new Thread();
+                clientListenerThread = new Thread(clientListener);
                 clientListenerThread.start();
                 // Powolanie watku sendera
                 clientSender = new ClientSender(outputStream);
-                clientSenderThread = new Thread();
+                clientSenderThread = new Thread(clientSender);
                 clientSenderThread.start();
                 // Powolanie zdarzenia onConnect
                 SwingUtilities.invokeLater(() -> onConnectListener.action());
             } catch(IOException e)
             {
+                e.printStackTrace();
                 SwingUtilities.invokeLater(() -> onErrorListener.action());
             }
         }
@@ -229,6 +245,7 @@ public class Client
         int port = Integer.parseInt(address.substring(address.indexOf(':') + 1));
 
         SocketAddress addr = new InetSocketAddress(ip, port);
+        new Thread(new ClientOpener(addr)).start();
     }
 
     public void send(MessageRequest messageRequest)
@@ -242,6 +259,10 @@ public class Client
         {
             if (connection != null && connection.isConnected())
                 connection.close();
+
+            clientListenerThread.interrupt();
+            clientSenderThread.interrupt();
+
             if (clientListenerThread.isAlive())
                 clientListenerThread.join();
             if (clientSenderThread.isAlive())
@@ -259,10 +280,11 @@ public class Client
     public CryptoProvider getCryptoProvider()
     {
         return this.cryptoProvider;
+
     }
 
-    public void enableCrypto()
+    public void enableCryptoForNextResponse()
     {
-        this.cryptoEnabled.set(true);
+        this.cryptoEnableRequest = true;
     }
 }
