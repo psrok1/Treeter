@@ -27,8 +27,8 @@ public class MainController
                 String aesKey = client.getCryptoProvider().exportAESKey();
 
                 StartEncryptionRequest startEncryptionRequest = new StartEncryptionRequest(aesKey);
+                client.enableCryptoForNextResponse();
                 client.send(startEncryptionRequest);
-                client.enableCrypto();
             } catch(Exception e)
             {
                 e.printStackTrace();
@@ -53,7 +53,7 @@ public class MainController
 
     public void connect(String address)
     {
-        client = new Client(address);
+        client = new Client();
         client.onConnect(new Client.EventListener()
         {
             @Override
@@ -61,7 +61,7 @@ public class MainController
             {
                 try
                 {
-                    // @todo
+                    System.out.println("Action!");
                     HelloRequest helloRequest = new HelloRequest();
                     client.send(new HelloRequest());
                 } catch(Exception e)
@@ -78,35 +78,25 @@ public class MainController
                 message.process(messageProcessor);
             }
         });
-        client.onSuddenDisconnect(new Client.EventListener()
+
+        client.onError(new Client.EventListener()
         {
             @Override
             public void action()
             {
+                System.out.println("Closed!");
+                client.close();
+                System.out.println("Closed!");
                 connectView.show();
                 messageView.hide();
             }
         });
-        client.onSocketError(new Client.EventListener()
-        {
-            @Override
-            public void action() {
-                connectView.show();
-                messageView.hide();
-            }
-        });
-        client.open();
+        client.open(address);
     }
 
     public void send(String message)
     {
-        try {
-            client.send(new EchoRequest(message));
-        } catch(Exception e)
-        {
-            e.printStackTrace();
-            client.close();
-        }
+        client.send(new EchoRequest(message));
     }
 
     public static void main(String args[])
