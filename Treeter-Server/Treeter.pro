@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     message/messagesender.cpp \
     model/user.cpp \
     model/datamodel.cpp \
-    model/group.cpp
+    model/group.cpp \
+    model/groupmessage.cpp
 
 HEADERS += \
     threadloop.h \

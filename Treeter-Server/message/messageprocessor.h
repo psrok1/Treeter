@@ -18,6 +18,8 @@ class GetGroupPathsRequest;
 class GetGroupUsersRequest;
 class AddMeToGroupRequest;
 class GetGroupPendingUsersRequest;
+class SendMessageRequest;
+class GetMessagesRequest;
 
 class MessageProcessor {
     Connection::Reference connection;
@@ -41,6 +43,8 @@ public:
     bool processRequest(const GetGroupUsersRequest &req);
     bool processRequest(const AddMeToGroupRequest &req);
     bool processRequest(const GetGroupPendingUsersRequest &req);
+    bool processRequest(const SendMessageRequest &req);
+    bool processRequest(const GetMessagesRequest &req);
 };
 
 #endif // MESSAGEPROCESSOR_H

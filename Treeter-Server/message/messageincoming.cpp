@@ -1,5 +1,6 @@
 #include "messageincoming.h"
 #include "messageincomingctor.h"
+#include <chrono>
 
 using json = nlohmann::json;
 
@@ -116,19 +117,52 @@ std::string RemoveUserFromGroupRequest::getPath() const
 }
 
 /** GetGroupUsersRequest **/
+
 std::string GetGroupUsersRequest::getPath() const
 {
     return json_object["path"];
 }
 
 /** AddMeToGroupRequest **/
+
 std::string AddMeToGroupRequest::getPath() const
 {
     return json_object["path"];
 }
 
 /** GetGroupPendingUsersRequest **/
+
 std::string GetGroupPendingUsersRequest::getPath() const
 {
     return json_object["path"];
+}
+
+/** SendMessageRequest **/
+
+std::string SendMessageRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+Model::GroupMessage SendMessageRequest::getMessage() const
+{
+    std::string author = json_object["message"]["author"];
+    std::string content = json_object["message"]["content"];
+    return Model::GroupMessage(author, content);    // Ignore timestamp stored in incoming message
+}
+
+/** GetMessagesRequest **/
+
+std::string GetMessagesRequest::getPath() const
+{
+    return json_object["path"];
+}
+
+std::chrono::system_clock::time_point GetMessagesRequest::getLastMsgTimestamp() const
+{
+    if (json_object.count("lastMsgTimestamp"))
+    {
+        return std::chrono::system_clock::from_time_t(json_object["lastMsgTimestamp"]);
+    }
+    return std::chrono::system_clock::from_time_t(0);
 }
