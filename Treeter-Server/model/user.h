@@ -46,6 +46,9 @@ namespace Model
         std::shared_ptr<Group> getGroupByPath(std::string groupPath);
         std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
+
+        void importFromDatabase();
+        void exportToDatabase();
     };
 }
 

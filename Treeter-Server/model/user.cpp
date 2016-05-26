@@ -130,4 +130,21 @@ namespace Model
         std::unique_lock<std::recursive_mutex> lck(mu);
         return getValues(this->groups);
     }
+
+    void User::importFromDatabase()
+    {
+        /**
+         * @TODO:
+         * Just import password from database.
+         * Probably this method will be doing something more.
+         */
+    }
+
+    void User::exportToDatabase()
+    {
+        /**
+         * @TODO:
+         * Export full user entry to database
+         */
+    }
 }

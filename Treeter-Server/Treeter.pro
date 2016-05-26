@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     message/messagesender.cpp \
     model/user.cpp \
     model/datamodel.cpp \
-    model/group.cpp
+    model/group.cpp \
+    database/database.cpp
 
 HEADERS += \
     threadloop.h \
@@ -40,6 +41,7 @@ HEADERS += \
     model/datamodel.h \
     model/group.h \
     model/groupmessage.h \
-    model/mapgetter.h
+    model/mapgetter.h \
+    database/database.h
 
 Debug:DESTDIR = debug

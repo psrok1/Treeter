@@ -1,4 +1,5 @@
 #include "group.h"
+#include "datamodel.h"
 #include "mapgetter.h"
 #include <utility>
 #include <algorithm>
@@ -340,5 +341,52 @@ namespace Model
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
         return this->messages;
+    }
+
+    void Group::importFromDatabase(DataModel& model)
+    {
+        std::list<std::string> groupNames;
+        /**
+         * @TODO
+         * Get all children group names
+         */
+        for(auto& groupName: groupNames)
+            this->createGroup(groupName);
+
+        for(auto& child: this->children)
+        {
+            const std::string& groupName = child.first;
+            const std::shared_ptr<Group>& groupPtr = child.second;
+
+            std::list<std::pair<std::string, MemberRole>> groupMembers;
+            /**
+             * @TODO
+             * Get all member data (login, role)
+             */
+            for(std::pair<std::string, MemberRole>& member: groupMembers)
+                this->addMember(groupPtr, model.getUserByLogin(member.first), member.second);
+
+            groupPtr->importFromDatabase(model);
+        }
+    }
+
+    void Group::exportToDatabase()
+    {
+        /**
+         * @TODO
+         * Export group path and parent path info
+         **/
+        for(const std::pair<std::string, Member>& member: this->members)
+        {
+            const std::string& memberLogin = member.first;
+            const MemberRole& memberRole = member.second.role;
+            /**
+             * @TODO
+             * Export group member info
+             **/
+        }
+
+        for(std::shared_ptr<Group>& group: getValues(this->children))
+            group->exportToDatabase();
     }
 }

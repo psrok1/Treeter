@@ -29,6 +29,9 @@ namespace Model
         bool deleteUser(std::string login);
 
         std::shared_ptr<Group> getRootGroup() const;
+
+        void importFromDatabase();
+        void exportToDatabase();
     };
 }
 

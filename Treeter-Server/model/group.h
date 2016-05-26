@@ -13,6 +13,7 @@
 
 namespace Model
 {
+    class DataModel;
     class User;
 
     struct Group
@@ -83,6 +84,9 @@ namespace Model
 
         std::list<GroupMessage> getMessages(GroupMessage::Timestamp fromPoint) const;
         std::list<GroupMessage> getMessages() const;
+
+        void importFromDatabase(DataModel& model);
+        void exportToDatabase();
     };
 }
 

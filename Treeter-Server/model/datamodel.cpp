@@ -105,4 +105,28 @@ namespace Model
         this->users.erase(it);
         return true;
     }
+
+    void DataModel::importFromDatabase()
+    {
+        std::list<std::string> userList;
+
+        /**
+         * @TODO
+         * Get list of users
+         **/
+
+        for(auto& userLogin: userList)
+        {
+            std::shared_ptr<User> user = this->addUser(userLogin, "");
+            user->importFromDatabase();
+        }
+        this->rootGroup->importFromDatabase(*this);
+    }
+
+    void DataModel::exportToDatabase()
+    {
+        for(std::shared_ptr<User> user: getValues(this->users))
+            user->exportToDatabase();
+        this->rootGroup->exportToDatabase();
+    }
 }
