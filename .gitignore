@@ -74,6 +74,7 @@ Thumbs.db
 # Build files
 Treeter-Server/build/*.o
 Treeter-Server/build/Treeter
+build-Treeter-Desktop-Debug
 
 # IntelliJ files
 Treeter-Client/out

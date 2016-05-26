@@ -10,8 +10,10 @@
 
 #include "threadloop.h"
 #include "crypto/crypto.h"
-#include "message/messagebase.h"
+
+#include "model/user.h"
 #include "message/messagesender.h"
+#include "message/messageoutgoing.h"
  
 class Server;
 class MessageProcessor;
@@ -47,8 +49,12 @@ class Connection : public Threadloop<Connection>
     bool readMsgLength(int length);
     bool readFromSocket(char* buffer, unsigned int length);
  
+    // Crypto key wrappers
     Crypto::RSAContext rsaContext;
     Crypto::AESContext aesContext;
+
+    // Logged user
+    std::shared_ptr<Model::User> user;
 
     void sendString(std::string msg);
 public:
@@ -57,7 +63,7 @@ public:
  
     virtual void stopThread();
 
-    void sendMessage(MessageBase::Reference message);
+    void sendMessage(MessageOutgoing::Reference message);
 
     // Is "comp_to" the same as "this"?
     bool operator==(const Connection& comp_to);

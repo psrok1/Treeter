@@ -45,6 +45,8 @@ namespace Crypto
 
     extern void initialize();
     extern void free();
+
+    extern std::string sha256(std::string message);
 }
 
 #endif // CRYPTO_H

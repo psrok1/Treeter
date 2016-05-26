@@ -16,7 +16,11 @@ SOURCES += main.cpp \
     message/messageoutgoing.cpp \
     message/messageprocessor.cpp \
     message/messagequeue.cpp \
-    message/messagesender.cpp
+    message/messagesender.cpp \
+    model/user.cpp \
+    model/datamodel.cpp \
+    model/group.cpp \
+    model/groupmessage.cpp
 
 HEADERS += \
     threadloop.h \
@@ -26,13 +30,17 @@ HEADERS += \
     connectionlist.h \
     crypto/base64.h \
     crypto/crypto.h \
-    message/messagebase.h \
     message/messageincoming.h \
     message/messageincomingctor.h \
     message/messageoutgoing.h \
     message/messageprocessor.h \
     message/messagequeue.h \
     message/messagesender.h \
-    message/json.hpp
+    message/json.hpp \
+    model/user.h \
+    model/datamodel.h \
+    model/group.h \
+    model/groupmessage.h \
+    model/mapgetter.h
 
 Debug:DESTDIR = debug
