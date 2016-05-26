@@ -1,20 +1,28 @@
 package com.treeter_client;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Client
 {
-    private final Socket connection;
-    private final SocketAddress address;
+    private Socket connection;
 
     private CryptoProvider cryptoProvider;
-    private boolean cryptoEnabled = false;
-    private ClientListener listener = null;
-    private Thread listenerThread = null;
+    private AtomicBoolean cryptoEnabled = new AtomicBoolean(false);
 
-    private DataOutputStream outputStream;
+    private ClientListener clientListener;
+    private ClientSender clientSender;
+
+    private Thread clientListenerThread;
+    private Thread clientSenderThread;
+
+    /************************************************************************/
+    /*************************** Client events ******************************/
+    /************************************************************************/
 
     public interface EventListener
     {
@@ -26,68 +34,35 @@ public class Client
         void action(MessageResponse messageObj);
     }
 
-    private EventListener onSuddenDisconnectListener = null;
-    private EventListener onSocketErrorListener = null;
+    private EventListener onErrorListener = null;
     private EventListener onConnectListener = null;
     private MessageEventListener onMessageListener = null;
-
-    public Client(String addr)
-    {
-        cryptoProvider = new CryptoProvider();
-        String ip = addr.substring(0, addr.indexOf(':'));
-        int port = Integer.parseInt(addr.substring(addr.indexOf(':') + 1));
-        System.out.println(String.format("%s: %d", ip, port));
-        address = new InetSocketAddress(ip, port);
-        connection = new Socket();
-    }
-
-    public CryptoProvider getCryptoProvider()
-    {
-        return cryptoProvider;
-    }
 
     public void onMessage(MessageEventListener listener)
     {
         onMessageListener = listener;
     }
 
-    public void onSuddenDisconnect(EventListener listener)
+    public void onError(EventListener listener)
     {
-        onSuddenDisconnectListener = listener;
-    }
-
-    public void onSocketError(EventListener listener)
-    {
-        onSocketErrorListener = listener;
+        onErrorListener = listener;
     }
 
     public void onConnect(EventListener listener)
     {
         onConnectListener = listener;
     }
-
+    /************************************************************************/
+    /*************************** ClientListener *****************************/
+    /************************************************************************/
 
     private class ClientListener implements Runnable
     {
-        DataInputStream inputStream = null;
-        boolean expectedClose = false;
+        private DataInputStream inputStream;
 
-        public void close()
+        public ClientListener(DataInputStream inputStream)
         {
-            expectedClose = true;
-        }
-
-        private void connectToServer(SocketAddress address) throws IOException
-        {
-            // Nawiązanie połączenia
-            connection.connect(address);
-            // Inicjalizacja strumieni
-            inputStream = new DataInputStream(
-                new BufferedInputStream(connection.getInputStream()));
-            outputStream = new DataOutputStream(connection.getOutputStream());
-            // Wygeneruj odpowiednie zdarzenie
-            if (onConnectListener != null)
-                onConnectListener.action();
+            this.inputStream = inputStream;
         }
 
         private String readMessage() throws IOException, GeneralSecurityException
@@ -100,98 +75,194 @@ public class Client
             // Wczytaj wiadomosc
             inputStream.readFully(buffer);
             // Zdeszyfruj, jesli szyfrowanie jest aktywne
-            if (cryptoEnabled)
+            if (cryptoEnabled.get())
                 return cryptoProvider.decryptMessage(buffer);
             else
                 return new String(buffer);
         }
 
+
+        @Override
         public void run()
         {
-            try
-            {
-                // Polacz z serwerem
-                System.out.println("Connecting...");
-                connectToServer(address);
-                System.out.println("Connected.");
-                // Główna pętla nasłuchująca
-                for (;;)
+            //Główna pętla nasłuchująca
+            try {
+                for (; ; )
                 {
                     String message = readMessage();
                     // Przetwarzaj wiadomość
                     MessageResponse messageObject = MessageResponse.deserialize(message);
-                    onMessageListener.action(messageObject);
+                    SwingUtilities.invokeLater(() -> onMessageListener.action(messageObject));
                 }
-            } catch(IOException e)
+            } catch (IOException e)
             {
-                // Prawdopodobnie socket zostal zamknięty.
-                // Jeśli to nie było spodziewane zamknięcie
-                if (!expectedClose)
-                {
-                    // Generuj odpowiednie zdarzenie
-                    if (onSuddenDisconnectListener != null)
-                        onSuddenDisconnectListener.action();
-                }
-            } catch(Exception e)
+                SwingUtilities.invokeLater(() -> onErrorListener.action());
+            } catch (Exception e) //GeneralSecurityException i ParseException i inne...
             {
                 e.printStackTrace();
-                // Jeśli inny błąd... zamknij polaczenie
-                try {
-                    connection.close();
-                } catch (final IOException ioe) {}
-                // Następnie generuj odpowiednie zdarzenie
-                if (onSocketErrorListener != null)
-                    onSocketErrorListener.action();
+                SwingUtilities.invokeLater(() -> onErrorListener.action());
             }
         }
     }
 
-    public void open()
+    /************************************************************************/
+    /**************************** ClientSender ******************************/
+    /************************************************************************/
+
+    private class ClientSender implements Runnable
     {
-        listener = new ClientListener();
-        listenerThread = new Thread(listener);
-        listenerThread.start();
+        private DataOutputStream outputStream;
+        private LinkedBlockingQueue<MessageRequest> requests;
+        private boolean availableRequest = false;
+
+        private void sendMessage(MessageRequest msg) throws GeneralSecurityException, IOException
+        {
+            String message = msg.serialize();
+            byte[] buffer;
+
+            if(cryptoEnabled.get())
+                buffer = cryptoProvider.encryptMessage(message);
+            else
+                buffer = message.getBytes();
+
+            // dlugosc wiadomosci
+            int msgLength = buffer.length;
+            outputStream.writeInt(msgLength);
+            // tresc wiadomosci
+            outputStream.write(buffer, 0, msgLength);
+        }
+
+
+        public ClientSender(DataOutputStream outputStream)
+        {
+            this.outputStream = outputStream;
+            this.requests = new LinkedBlockingQueue<MessageRequest>();
+        }
+
+        @Override
+        public void run()
+        {
+            try {
+                MessageRequest request;
+                for (;;)
+                {
+                    request = null;
+                    try
+                    {
+                        request = requests.take();
+                    } catch(InterruptedException e) { }
+
+                    if(request != null)
+                    {
+                        sendMessage(request);
+                    }
+                }
+            } catch(IOException e)
+            {
+                SwingUtilities.invokeLater(() -> onErrorListener.action());
+            } catch(Exception e)
+            {
+                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> onErrorListener.action());
+            }
+        }
+
+        public void putMessageToSend(MessageRequest msg)
+        {
+            requests.offer(msg);
+        }
+    }
+
+    /************************************************************************/
+    /**************************** ClientOpener ******************************/
+    /************************************************************************/
+
+    private class ClientOpener implements Runnable
+    {
+        SocketAddress address;
+
+        public ClientOpener(SocketAddress address)
+        {
+            this.address = address;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                connection = new Socket();
+                // Nawiązanie połączenia
+                connection.connect(address);
+                // Inicjalizacja strumieni
+                DataInputStream inputStream = new DataInputStream(new BufferedInputStream(connection.getInputStream()));
+                DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+                // Powolanie watku listenera
+                clientListener = new ClientListener(inputStream);
+                clientListenerThread = new Thread();
+                clientListenerThread.start();
+                // Powolanie watku sendera
+                clientSender = new ClientSender(outputStream);
+                clientSenderThread = new Thread();
+                clientSenderThread.start();
+                // Powolanie zdarzenia onConnect
+                SwingUtilities.invokeLater(() -> onConnectListener.action());
+            } catch(IOException e)
+            {
+                SwingUtilities.invokeLater(() -> onErrorListener.action());
+            }
+        }
+    }
+
+    /************************************************************************/
+    /*************************** Client methods *****************************/
+    /************************************************************************/
+
+    public Client() {
+        cryptoProvider = new CryptoProvider();
+
+    }
+
+    public void open(String address)
+    {
+        String ip = address.substring(0, address.indexOf(':'));
+        int port = Integer.parseInt(address.substring(address.indexOf(':') + 1));
+
+        SocketAddress addr = new InetSocketAddress(ip, port);
+    }
+
+    public void send(MessageRequest messageRequest)
+    {
+        clientSender.putMessageToSend(messageRequest);
     }
 
     public void close()
     {
         try
         {
-            if (listener != null)
-                listener.close();
             if (connection != null && connection.isConnected())
                 connection.close();
-            if (listenerThread.isAlive())
-                listenerThread.join();
+            if (clientListenerThread.isAlive())
+                clientListenerThread.join();
+            if (clientSenderThread.isAlive())
+                clientSenderThread.join();
         } catch (final Exception e)
         {
             e.printStackTrace();
         } finally
         {
-            listener = null;
-            listenerThread = null;
+            clientListenerThread = null;
+            clientSenderThread = null;
         }
     }
 
-    public void send(MessageRequest msg) throws GeneralSecurityException, IOException
+    public CryptoProvider getCryptoProvider()
     {
-        String message = msg.serialize();
-        byte[] buffer;
-
-        if(cryptoEnabled)
-            buffer = cryptoProvider.encryptMessage(message);
-        else
-            buffer = message.getBytes();
-
-        // dlugosc wiadomosci
-        int msgLength = buffer.length;
-        outputStream.writeInt(msgLength);
-        // tresc wiadomosci
-        outputStream.write(buffer, 0, msgLength);
+        return this.cryptoProvider;
     }
 
     public void enableCrypto()
     {
-        this.cryptoEnabled = true;
+        this.cryptoEnabled.set(true);
     }
 }
