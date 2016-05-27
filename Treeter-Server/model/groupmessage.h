@@ -15,12 +15,14 @@ namespace Model
         const Timestamp   timestamp;
     public:
         GroupMessage(std::string author, std::string message,
-                     Timestamp timestamp = std::chrono::system_clock::now()):
+                     Timestamp timestamp = std::chrono::system_clock::now() ):
             author(author), message(message), timestamp(timestamp) { }
 
         const std::string getAuthor() const { return author; }
         const std::string getMessage() const { return message; }
-        const Timestamp   getTimestamp() const { return timestamp; }
+        const Timestamp getTimestamp() const { return timestamp; }
+
+        const std::string toString() const;
     };
 }
 

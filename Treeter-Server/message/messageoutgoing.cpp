@@ -31,6 +31,7 @@ std::string StartEncryptionResponse::toString()
 }
 
 /** AuthUserResponse **/
+
 std::string AuthUserResponse::toString()
 {
     nlohmann::json j;
@@ -41,6 +42,7 @@ std::string AuthUserResponse::toString()
 }
 
 /** CreateAccountResponse **/
+
 std::string CreateAccountResponse::toString()
 {
     nlohmann::json j;
@@ -119,6 +121,7 @@ std::string GetGroupPathsResponse::toString()
 }
 
 /** GetGroupUsersResponse **/
+
 std::string GetGroupUsersResponse::toString()
 {
     nlohmann::json j;
@@ -131,6 +134,7 @@ std::string GetGroupUsersResponse::toString()
 }
 
 /** AddMeToGroupResponse **/
+
 std::string AddMeToGroupResponse::toString()
 {
     nlohmann::json j;
@@ -141,6 +145,7 @@ std::string AddMeToGroupResponse::toString()
 }
 
 /** GetGroupPendingUsersResponse **/
+
 std::string GetGroupPendingUsersResponse::toString()
 {
     nlohmann::json j;
@@ -150,7 +155,38 @@ std::string GetGroupPendingUsersResponse::toString()
     return j.dump();
 }
 
+/** SendMessageResponse **/
+
+std::string SendMessageResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "sendMessage";
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** GetMessagesResponse **/
+
+std::string GetMessagesResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "getMessages";
+
+    std::vector<std::string> msgVect;
+    for (auto msg : messages)
+    {
+        msgVect.push_back(msg.toString());
+    }
+    j["messages"] = msgVect;
+
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
 /** AddUserToGroupNotification **/
+
 std::string AddUserToGroupNotification::toString()
 {
     nlohmann::json j;
@@ -163,6 +199,7 @@ std::string AddUserToGroupNotification::toString()
 }
 
 /** AddedToGroupNotification **/
+
 std::string AddedToGroupNotification::toString()
 {
     nlohmann::json j;
@@ -175,11 +212,25 @@ std::string AddedToGroupNotification::toString()
 }
 
 /** RemovedFromGroupNotification **/
+
 std::string RemovedFromGroupNotification::toString()
 {
     nlohmann::json j;
     j["notification"] = "removedFromGroup";
     j["path"] = path;
+    if (error != ResponseErrorCode::OK)
+        ;   // TODO
+    return j.dump();
+}
+
+/** NewMessageNotification **/
+
+std::string NewMessageNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "newMessage";
+    j["path"] = path;
+    j["message"] = message.toString();
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();

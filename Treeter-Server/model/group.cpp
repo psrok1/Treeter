@@ -1,6 +1,7 @@
 #include "group.h"
 #include "datamodel.h"
 #include "mapgetter.h"
+#include "message/messageoutgoing.h"
 #include <utility>
 #include <algorithm>
 
@@ -313,9 +314,9 @@ namespace Model
     void Group::sendMessage(GroupMessage message)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
-        // @TODO
-        (void)message;
-        // sendNotification
+        // @TODO: Adding message to db or message list
+        MessageOutgoing::Reference newMsgNotification(new NewMessageNotification(this->absolutePath, message));
+        sendNotification(newMsgNotification);
     }
 
     /**

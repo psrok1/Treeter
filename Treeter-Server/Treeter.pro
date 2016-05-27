@@ -21,6 +21,7 @@ SOURCES += main.cpp \
     model/user.cpp \
     model/datamodel.cpp \
     model/group.cpp \
+    model/groupmessage.cpp \
     database/database.cpp \
     database/sqlite3.c
 

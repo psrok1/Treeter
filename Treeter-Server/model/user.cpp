@@ -26,8 +26,9 @@ namespace Model
         return Crypto::sha256(plain_password);
     }
 
-    User::User(std::string login, std::string password):
-        invalidated(false), login(login), password(User::hashPassword(password)) { }
+    User::User(std::string login, std::string password, bool plaintextPassword):
+        invalidated(false), login(login),
+        password(plaintextPassword ? User::hashPassword(password) : password) { }
 
     /**
      * @brief User::addGroup

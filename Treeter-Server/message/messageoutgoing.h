@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <model/groupmessage.h>
 
 enum class ResponseErrorCode { OK };
 
@@ -169,6 +170,27 @@ public:
     virtual std::string toString();
 };
 
+/** SendMessageResponse **/
+
+class SendMessageResponse: public MessageOutgoing
+{
+    ResponseErrorCode error;
+public:
+    SendMessageResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
+    virtual std::string toString();
+};
+
+/** GetMessagesResponse **/
+
+class GetMessagesResponse: public MessageOutgoing
+{
+    std::vector<Model::GroupMessage> messages;
+    ResponseErrorCode error;
+public:
+    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error): messages(messages), error(error) { }
+    virtual std::string toString();
+};
+
 /** NOTIFICATIONS **/
 
 /** AddUserToGroupNotification **/
@@ -202,6 +224,18 @@ class RemovedFromGroupNotification: public MessageOutgoing
     ResponseErrorCode error;
 public:
     RemovedFromGroupNotification(std::string path, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), error(error) { }
+    virtual std::string toString();
+};
+
+/** NewMessageNotification **/
+
+class NewMessageNotification: public MessageOutgoing
+{
+    std::string path;
+    Model::GroupMessage message;
+    ResponseErrorCode error;
+public:
+    NewMessageNotification(std::string path, Model::GroupMessage message, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), message(message), error(error) { }
     virtual std::string toString();
 };
 

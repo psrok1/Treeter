@@ -5,6 +5,7 @@
 #include "json.hpp"
 #include <string>
 #include <memory>
+#include "model/groupmessage.h"
 
 class MessageIncoming
 {
@@ -157,14 +158,36 @@ public:
     std::string getPath() const;
 };
 
-/** GetGroupPendingUsers **/
+/** GetGroupPendingUsersRequest **/
 
 class GetGroupPendingUsersRequest: public MessageIncoming
 {
+public:
     GetGroupPendingUsersRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getPath() const;
 };
 
+/** SendMessageRequest **/
+
+class SendMessageRequest: public MessageIncoming
+{
+public:
+    SendMessageRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    Model::GroupMessage getMessage() const;
+    std::string getPath() const;
+};
+
+/** GetMessagesRequest **/
+
+class GetMessagesRequest: public MessageIncoming
+{
+public:
+    GetMessagesRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getPath() const;
+    std::chrono::system_clock::time_point getLastMsgTimestamp() const;
+};
 
 #endif // MESSAGEINCOMING_H

@@ -119,9 +119,23 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
     return true;
 }
 
-/** GetGroupPendingUsers **/
+/** GetGroupPendingUsersRequest **/
 
 bool MessageProcessor::processRequest(const GetGroupPendingUsersRequest &req)
+{
+    // TODO
+    return true;
+}
+
+/** SendMessageRequest **/
+
+bool MessageProcessor::processRequest(const SendMessageRequest &req)
+{
+    // TODO
+    return true;
+}
+
+bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 {
     // TODO
     return true;

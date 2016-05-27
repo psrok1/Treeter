@@ -32,7 +32,7 @@ namespace Model
         bool addGroup(std::shared_ptr<Group> group);
         bool removeGroup(std::string groupPath);
     public:
-        User(std::string login, std::string password);
+        User(std::string login, std::string password, bool plaintextPassword = true);
         void invalidate() { this->invalidated = true; }
 
         User(const User&) = delete;
