@@ -8,6 +8,10 @@ public class MainView
     private JFrame frame;
     private GroupTreeModel model;
 
+    private GroupMessageView messageView;
+    private GroupMemberView memberView;
+    private GroupSubgroupView subgroupView;
+
     public MainView(GroupTreeModel model)
     {
         this.model = model;
@@ -30,13 +34,15 @@ public class MainView
             }
         });
 
-        GroupMessageView groupMessageView = new GroupMessageView();
+        messageView = new GroupMessageView();
+        memberView = new GroupMemberView();
+        subgroupView = new GroupSubgroupView();
+
         JTabbedPane tabbedPane = new JTabbedPane();
-        JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
-        tabbedPane.addTab("Konwersacja", groupMessageView);
-        tabbedPane.addTab("Uczestnicy", panel2);
-        tabbedPane.addTab("Podgrupy", panel3);
+        tabbedPane.addTab("Konwersacja", messageView);
+        tabbedPane.addTab("Uczestnicy", memberView);
+        tabbedPane.addTab("Podgrupy", subgroupView);
 
         frame.add(groupTreePanel, BorderLayout.WEST);
         frame.add(tabbedPane, BorderLayout.CENTER);

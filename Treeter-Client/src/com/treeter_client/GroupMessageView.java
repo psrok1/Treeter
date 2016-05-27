@@ -49,12 +49,10 @@ public class GroupMessageView extends JPanel
         this.add(sendMessagePanel, BorderLayout.SOUTH);
     }
 
-    public void updateMessages(Vector<String> messages)
+    public void updateGroup(GroupTreeModel.Group group)
     {
-        messageList.setListData(messages);
+        messageList.setListData(group.messagesStringified);
         messageList.revalidate();
         messageList.repaint();
     }
-
-
 }

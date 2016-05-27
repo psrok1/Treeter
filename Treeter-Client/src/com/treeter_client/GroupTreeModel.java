@@ -4,6 +4,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * Created by psrok1 on 27.05.2016.
@@ -15,6 +16,11 @@ public class GroupTreeModel
         String author;
         String content;
         Date timestamp;
+
+        @Override
+        public String toString() {
+            return "";
+        }
     }
 
     public enum GroupState
@@ -24,6 +30,19 @@ public class GroupTreeModel
         Notified
     }
 
+    public enum GroupMemberRole
+    {
+        Standard,
+        Moderator,
+        PendingApproval
+    }
+
+    public class GroupMember
+    {
+        String login;
+        GroupMemberRole role;
+    }
+
     public class Group
     {
         String name;
@@ -31,12 +50,19 @@ public class GroupTreeModel
         GroupState state;
 
         ArrayList<GroupMessage> messages;
+        Vector<String> messagesStringified;
 
         Group(String path)
         {
             this.absolutePath = path;
             this.name = path.substring(path.lastIndexOf('/')+1);
             this.state = GroupState.Default;
+        }
+
+        void addMessage(GroupMessage message)
+        {
+            messages.add(message);
+            messagesStringified.add(message.toString());
         }
     }
 
@@ -149,7 +175,7 @@ public class GroupTreeModel
         if(group == null)
             return;
 
-        group.messages.add(msg);
+        group.addMessage(msg);
     }
 
     public DefaultMutableTreeNode getRoot()

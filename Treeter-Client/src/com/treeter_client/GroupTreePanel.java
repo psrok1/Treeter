@@ -18,54 +18,6 @@ public class GroupTreePanel extends JPanel
     private JTree groupTree;
     private DefaultTreeModel treeModel;
 
-    public class GroupTreeCellRenderer extends DefaultTreeCellRenderer {
-
-        @Override
-        public Color getBackgroundNonSelectionColor() {
-            return (null);
-        }
-
-        @Override
-        public Color getBackgroundSelectionColor() {
-            return (null);
-        }
-
-        @Override
-        public Color getBackground() {
-            return (null);
-        }
-
-        @Override
-        public Component getTreeCellRendererComponent(final JTree tree, final Object value, final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
-            final Component ret = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-
-            final DefaultMutableTreeNode node = ((DefaultMutableTreeNode) (value));
-            GroupTreeModel.Group group = (GroupTreeModel.Group)(node.getUserObject());
-            switch(group.state)
-            {
-                case Notified:
-                    this.setForeground(Color.YELLOW);
-                    break;
-                case Active:
-                    this.setForeground(Color.WHITE);
-                    this.setFont(new Font("default", Font.BOLD, 14));
-                    break;
-                default:
-                    this.setForeground(Color.WHITE);
-                    this.setFont(new Font("default", Font.PLAIN, 14));
-            }
-            if(group.absolutePath.equals("/"))
-            {
-                this.setText("Treeter");
-                this.setFont(new Font("default", Font.ITALIC, 18));
-            }
-            else {
-                this.setText(group.name);
-            }
-            return ret;
-        }
-    }
-
     public void update()
     {
         this.treeModel.reload();
@@ -104,5 +56,53 @@ public class GroupTreePanel extends JPanel
                 treeModel.nodeStructureChanged(node);
             }
         });
+    }
+}
+
+class GroupTreeCellRenderer extends DefaultTreeCellRenderer {
+
+    @Override
+    public Color getBackgroundNonSelectionColor() {
+        return (null);
+    }
+
+    @Override
+    public Color getBackgroundSelectionColor() {
+        return (null);
+    }
+
+    @Override
+    public Color getBackground() {
+        return (null);
+    }
+
+    @Override
+    public Component getTreeCellRendererComponent(final JTree tree, final Object value, final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
+        final Component ret = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+        final DefaultMutableTreeNode node = ((DefaultMutableTreeNode) (value));
+        GroupTreeModel.Group group = (GroupTreeModel.Group)(node.getUserObject());
+        switch(group.state)
+        {
+            case Notified:
+                this.setForeground(Color.YELLOW);
+                break;
+            case Active:
+                this.setForeground(Color.WHITE);
+                this.setFont(new Font("default", Font.BOLD, 14));
+                break;
+            default:
+                this.setForeground(Color.WHITE);
+                this.setFont(new Font("default", Font.PLAIN, 14));
+        }
+        if(group.absolutePath.equals("/"))
+        {
+            this.setText("Treeter");
+            this.setFont(new Font("default", Font.ITALIC, 18));
+        }
+        else {
+            this.setText(group.name);
+        }
+        return ret;
     }
 }
