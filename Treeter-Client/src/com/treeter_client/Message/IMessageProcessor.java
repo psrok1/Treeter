@@ -12,4 +12,10 @@ public interface IMessageProcessor
     void processMessage(AuthUserResponse response);
     void processMessage(GetGroupPathsResponse response);
     void processMessage(GetGroupPendingUsersResponse response);
+    void processMessage(GetGroupUsersResponse response);
+    void processMessage(GetMessagesResponse response);
+    void processMessage(GetSubgroupsResponse response);
+    void processMessage(RemoveGroupResponse response);
+    void processMessage(RemoveUserFromGroupResponse response);
+    void processMessage(SendMessageResponse response);
 }

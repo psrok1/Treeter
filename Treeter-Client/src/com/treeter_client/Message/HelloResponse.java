@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 
 public class HelloResponse extends MessageResponse
 {
-
     public HelloResponse(JSONObject jsonObj)
     {
         super(jsonObj);

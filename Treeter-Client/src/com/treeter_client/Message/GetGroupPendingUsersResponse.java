@@ -17,7 +17,7 @@ public class GetGroupPendingUsersResponse extends MessageResponse
         processor.processMessage(this);
     }
 
-    public ArrayList<String> getPaths()
+    public ArrayList<String> getUsers()
     {
         ArrayList<String> result = new ArrayList<String>();
         JSONArray jsonArray = (JSONArray) jsonObject.get("users");
