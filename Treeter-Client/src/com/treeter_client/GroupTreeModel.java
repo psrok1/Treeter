@@ -53,7 +53,7 @@ public class GroupTreeModel
         root = new DefaultMutableTreeNode(rootGroup);
     }
 
-    private Group getGroupByPath(String path, DefaultMutableTreeNode node, boolean createIfNotExist)
+    private DefaultMutableTreeNode getNodeByPath(String path, DefaultMutableTreeNode node, boolean createIfNotExist)
     {
         String name;
         String child_path;
@@ -68,7 +68,7 @@ public class GroupTreeModel
         }
 
         if(name.equals(""))
-            return (Group)node.getUserObject();
+            return node;
 
         Enumeration<DefaultMutableTreeNode> children = node.children();
         while(children.hasMoreElements())
@@ -76,7 +76,7 @@ public class GroupTreeModel
             DefaultMutableTreeNode child = children.nextElement();
             Group childGroup = (Group) child.getUserObject();
             if(childGroup.name.equals(name))
-                return getGroupByPath(child_path, child, createIfNotExist);
+                return getNodeByPath(child_path, child, createIfNotExist);
         }
 
         if(createIfNotExist)
@@ -90,14 +90,19 @@ public class GroupTreeModel
             Group newGroup = new Group(newGroupPath);
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newGroup);
             node.add(newNode);
-            return getGroupByPath(child_path, newNode, createIfNotExist);
+            return getNodeByPath(child_path, newNode, createIfNotExist);
         } else
             return null;
     }
 
+    private DefaultMutableTreeNode getNodeByPath(String path, boolean createIfNotExist)
+    {
+        return getNodeByPath(path.substring(1), root, createIfNotExist);
+    }
+
     private Group getGroupByPath(String path, boolean createIfNotExist)
     {
-        return getGroupByPath(path.substring(1), root, createIfNotExist);
+        return (Group)getNodeByPath(path, createIfNotExist).getUserObject();
     }
 
     public Group addGroup(String path)
@@ -107,7 +112,12 @@ public class GroupTreeModel
 
     public void deleteGroup(String path)
     {
+        DefaultMutableTreeNode node = getNodeByPath(path, false);
 
+        if(node == null)
+            return;
+
+        node.removeFromParent();
     }
 
     public void notifyGroup(String path)
