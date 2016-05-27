@@ -1,7 +1,6 @@
 package com.treeter_client;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import com.treeter_client.Message.*;
 
 public class MainController
 {
