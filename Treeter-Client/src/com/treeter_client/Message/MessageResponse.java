@@ -22,6 +22,19 @@ public abstract class MessageResponse
                 put("echo",            (JSONObject jsonObj) -> new EchoResponse(jsonObj));
                 put("hello",           (JSONObject jsonObj) -> new HelloResponse(jsonObj));
                 put("startEncryption", (JSONObject jsonObj) -> new StartEncryptionResponse(jsonObj));
+                put("addMeToGroup", (JSONObject jsonObject) -> new AddMeToGroupResponse(jsonObject));
+                put("addUserToGroup", (JSONObject jsonObject) -> new AddUserToGroupResponse(jsonObject));
+                put("authUser", (JSONObject jsonObject) -> new AuthUserResponse(jsonObject));
+                put("createAccount", (JSONObject jsonObject) -> new CreateAccountResponse(jsonObject));
+                put("createGroup", (JSONObject jsonObject) -> new CreateGroupResponse(jsonObject));
+                put("getGroupPaths", (JSONObject jsonObject) -> new GetGroupPathsResponse(jsonObject));
+                put("getGroupPendingUsers", (JSONObject jsonObject) -> new GetGroupPendingUsersResponse(jsonObject));
+                put("getGroupUsers", (JSONObject jsonObject) -> new GetGroupUsersResponse(jsonObject));
+                put("getMessages", (JSONObject jsonObject) -> new GetMessagesResponse(jsonObject));
+                put("getSubgroups", (JSONObject jsonObject) -> new GetSubgroupsResponse(jsonObject));
+                put("removeGroup", (JSONObject jsonObject) -> new RemoveGroupResponse(jsonObject));
+                put("removeUserFromGroup", (JSONObject jsonObject) -> new RemoveUserFromGroupResponse(jsonObject));
+                put("sendMessage", (JSONObject jsonObject) -> new SendMessageResponse(jsonObject));
             }});
 
     public static MessageResponse deserialize(String message) throws ParseException

@@ -2,16 +2,11 @@ package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
-public class HelloResponse extends MessageResponse
+public class CreateAccountResponse extends MessageResponse
 {
-    public HelloResponse(JSONObject jsonObj)
+    public CreateAccountResponse(JSONObject jsonObj)
     {
         super(jsonObj);
-    }
-
-    public String getPublicKey()
-    {
-        return (String) jsonObject.get("publicKey");
     }
 
     public void process(IMessageProcessor processor)

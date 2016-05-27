@@ -11,7 +11,7 @@ public class MainController
     private class MessageProcessor implements IMessageProcessor
     {
         @Override
-        public void processMessage(EchoResponse response)
+        public void processMessage(CreateGroupResponse response)
         {
             messageView.addMessage(response.getMessage());
         }
