@@ -1,8 +1,6 @@
 package com.treeter_client;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
 public class MainView
@@ -32,8 +30,16 @@ public class MainView
             }
         });
 
-        frame.add(groupTreePanel, BorderLayout.WEST);
+        GroupMessageView groupMessageView = new GroupMessageView();
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        tabbedPane.addTab("Konwersacja", groupMessageView);
+        tabbedPane.addTab("Uczestnicy", panel2);
+        tabbedPane.addTab("Podgrupy", panel3);
 
+        frame.add(groupTreePanel, BorderLayout.WEST);
+        frame.add(tabbedPane, BorderLayout.CENTER);
     }
 
     public static void main(String[] args)
@@ -42,12 +48,12 @@ public class MainView
         treeModel.addGroup("/TIN");
         treeModel.addGroup("/JPS");
         treeModel.addGroup("/TIN/Projekt");
-        treeModel.addGroup("/TIN/Projekt/Gawkowski");
-        treeModel.addGroup("/TIN/Projekt/Derezinska");
-        treeModel.addGroup("/TIN/Projekt/Cabaj");
-        treeModel.addGroup("/TIN/Projekt/Cabaj/Debile");
-        treeModel.addGroup("/TIN/Projekt/Cabaj/Pajace");
-        treeModel.addGroup("/TIN/Projekt/Gawkowski/Treeter");
+        treeModel.addGroup("/TIN/Projekt/Kowalski");
+        treeModel.addGroup("/TIN/Projekt/Nowak");
+        treeModel.addGroup("/TIN/Projekt/Srokosz");
+        treeModel.addGroup("/TIN/Projekt/Srokosz/Madrzy ludzie");
+        treeModel.addGroup("/TIN/Projekt/Srokosz/Debile");
+        treeModel.addGroup("/TIN/Projekt/Srokosz/Treeter");
         MainView view = new MainView(treeModel);
         view.frame.setVisible(true);
     }
