@@ -1,12 +1,16 @@
 package com.treeter_client;
 
+import com.treeter_client.Model.GroupModel;
+import com.treeter_client.Model.GroupTreeModel;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class MainView
 {
     private JFrame frame;
-    private GroupTreeModel model;
+    private GroupTreeModel groupTreeModel;
+    private GroupTreePanel groupTreePanel;
 
     private GroupMessageView messageView;
     private GroupMemberView memberView;
@@ -14,7 +18,7 @@ public class MainView
 
     public MainView(GroupTreeModel model)
     {
-        this.model = model;
+        this.groupTreeModel = model;
 
         frame = new JFrame();
         frame.setSize(800, 600);
@@ -25,14 +29,14 @@ public class MainView
         UIManager.put("Tree.collapsedIcon", new ImageIcon(getClass().getResource("/tree-closed.png")));
         UIManager.put("Tree.expandedIcon", new ImageIcon(getClass().getResource("/tree-opened.png")));
 
-        GroupTreePanel groupTreePanel = new GroupTreePanel(model.getRoot());
-        groupTreePanel.setGroupSelectListener(new GroupTreeSelectListener() {
-            @Override
-            public void groupSelected(GroupTreeModel.Group group) {
-                System.out.println(group.absolutePath);
-                model.setActiveGroup(group.absolutePath);
-            }
-        });
+        groupTreePanel = new GroupTreePanel(groupTreeModel.getRoot());
+//        groupTreePanel.setGroupSelectListener(new GroupTreeSelectListener() {
+//            @Override
+//            public void groupSelected(GroupTreeModelGroup group) {
+//                System.out.println(group.absolutePath);
+//                groupTreeModel.setActiveGroup(group.absolutePath);
+//            }
+//        });
 
         messageView = new GroupMessageView();
         memberView = new GroupMemberView();
@@ -46,6 +50,13 @@ public class MainView
 
         frame.add(groupTreePanel, BorderLayout.WEST);
         frame.add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    public void updateGroup(GroupModel group)
+    {
+        messageView.updateGroup(group);
+        memberView.updateGroup(group);
+        subgroupView.updateGroup(group);
     }
 
     public static void main(String[] args)
