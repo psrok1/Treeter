@@ -1,8 +1,12 @@
 package com.treeter_client;
 
+import com.treeter_client.Model.GroupMessageListModel;
+import com.treeter_client.Model.GroupModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class GroupMessageView extends JPanel
@@ -49,9 +53,10 @@ public class GroupMessageView extends JPanel
         this.add(sendMessagePanel, BorderLayout.SOUTH);
     }
 
-    public void updateGroup(GroupTreeModel.Group group)
+    public void updateGroup(GroupModel group)
     {
-        messageList.setListData(group.messagesStringified);
+        GroupMessageListModel model = group.getMessageList();
+        messageList.setListData(model.getData());
         messageList.revalidate();
         messageList.repaint();
     }

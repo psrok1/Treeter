@@ -1,5 +1,9 @@
 package com.treeter_client;
 
+import com.treeter_client.Model.GroupMessageListModel;
+import com.treeter_client.Model.GroupModel;
+import com.treeter_client.Model.GroupSubgroupListModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -15,7 +19,7 @@ public class GroupSubgroupView extends JPanel
     JMenuItem subgroupJoin;
     JMenuItem subgroupDelete;
 
-    JList<GroupTreeModel.Group> subgroupList;
+    JList<String> subgroupList;
     JScrollPane subgroupScrollPane;
 
     private final JPanel addSubgroupPanel;
@@ -40,7 +44,7 @@ public class GroupSubgroupView extends JPanel
         subgroupMenu.add(subgroupJoin = new JMenuItem("Poproś o dodanie do grupy"));
         subgroupMenu.add(subgroupDelete = new JMenuItem("Usuń grupę"));
 
-        subgroupList = new JList<GroupTreeModel.Group>();
+        subgroupList = new JList<String>();
         subgroupList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         subgroupList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         subgroupList.setLayoutOrientation(JList.VERTICAL);
@@ -62,59 +66,13 @@ public class GroupSubgroupView extends JPanel
         addSubgroupButton = new JButton(new ImageIcon(getClass().getResource("/add.png")));
         addSubgroupButton.setPreferredSize(new Dimension(36, 36));
         addSubgroupPanel.add(addSubgroupButton, BorderLayout.EAST);
-
     }
-}
 
-class GroupSubgroupCellRenderer extends DefaultListCellRenderer
-{
-    private JLabel label;
-    private Color textSelectionColor = Color.BLACK;
-    private Color backgroundSelectionColor = Color.CYAN;
-    private Color textNonSelectionColor = Color.BLACK;
-    private Color backgroundNonSelectionColor = Color.WHITE;
-
-    GroupSubgroupCellRenderer()
+    public void updateGroup(GroupModel group)
     {
-        label = new JLabel();
-        label.setOpaque(true);
-    }
-
-    @Override
-    public Component getListCellRendererComponent(
-            JList list,
-            Object value,
-            int index,
-            boolean selected,
-            boolean expanded) {
-
-        GroupTreeModel.GroupMember member = (GroupTreeModel.GroupMember)value;
-        String memberText = member.login;
-        switch(member.role)
-        {
-            case Standard:
-                label.setIcon(new ImageIcon(getClass().getResource("/user-standard.png")));
-                break;
-            case Moderator:
-                memberText += " [moderator]";
-                label.setIcon(new ImageIcon(getClass().getResource("/user-moderator.png")));
-                break;
-            case PendingApproval:
-                memberText += " [oczekuje na dodanie]";
-                label.setIcon(new ImageIcon(getClass().getResource("/user-pending.png")));
-                break;
-        }
-        label.setText(memberText);
-        label.setToolTipText("");
-
-        if (selected) {
-            label.setBackground(backgroundSelectionColor);
-            label.setForeground(textSelectionColor);
-        } else {
-            label.setBackground(backgroundNonSelectionColor);
-            label.setForeground(textNonSelectionColor);
-        }
-
-        return label;
+        GroupSubgroupListModel model = group.getSubgroupList();
+        subgroupList.setListData(model.getData());
+        subgroupList.revalidate();
+        subgroupList.repaint();
     }
 }

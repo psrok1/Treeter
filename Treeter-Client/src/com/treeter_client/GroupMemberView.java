@@ -1,5 +1,9 @@
 package com.treeter_client;
 
+import com.treeter_client.Model.GroupMember;
+import com.treeter_client.Model.GroupMemberListModel;
+import com.treeter_client.Model.GroupModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -12,7 +16,7 @@ public class GroupMemberView extends JPanel
 {
     JLabel panelTitle;
 
-    JList<GroupTreeModel.GroupMember> memberList;
+    JList<GroupMember> memberList;
     JScrollPane memberScrollPane;
 
     JPopupMenu membersMenu;
@@ -41,7 +45,7 @@ public class GroupMemberView extends JPanel
         membersMenu.add(memberAccept = new JMenuItem("Akceptuj"));
         membersMenu.add(memberReject = new JMenuItem("Wyrzuć"));
 
-        memberList = new JList<GroupTreeModel.GroupMember>();
+        memberList = new JList<GroupMember>();
         memberList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         memberList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         memberList.setLayoutOrientation(JList.VERTICAL);
@@ -65,9 +69,10 @@ public class GroupMemberView extends JPanel
         inviteMemberPanel.add(inviteMemberButton, BorderLayout.EAST);
     }
 
-    public void updateMemberList(Vector<GroupTreeModel.GroupMember> members)
+    public void updateGroup(GroupModel group)
     {
-        memberList.setListData(members);
+        GroupMemberListModel model = group.getMemberList();
+        memberList.setListData(model.getData());
         memberList.revalidate();
         memberList.repaint();
     }
@@ -95,7 +100,7 @@ class GroupMemberCellRenderer extends DefaultListCellRenderer
             boolean selected,
             boolean expanded) {
 
-        GroupTreeModel.GroupMember member = (GroupTreeModel.GroupMember)value;
+        GroupMember member = (GroupMember)value;
         String memberText = member.login;
         switch(member.role)
         {
