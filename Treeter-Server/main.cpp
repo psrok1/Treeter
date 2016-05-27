@@ -5,6 +5,7 @@
 #include <ctime>
 #include <signal.h>
 #include <unistd.h>
+#include "database/database.h"
 
 #include "config.h"
 #include "crypto/crypto.h"
