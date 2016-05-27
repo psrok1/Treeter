@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     model/group.cpp \
     model/groupmessage.cpp \
     database/database.cpp \
-    database/sqlite3.c
+    database/sqlite3.c \
+    database/resultset.cpp
 
 HEADERS += \
     threadloop.h \
@@ -47,6 +48,7 @@ HEADERS += \
     model/mapgetter.h \
     database/database.h \
     database/sqlite3.h \
-    database/sqlite3ext.h
+    database/sqlite3ext.h \
+    database/resultset.h
 
 Debug:DESTDIR = debug
