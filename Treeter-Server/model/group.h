@@ -11,8 +11,11 @@
 #include "groupmessage.h"
 #include "../message/messageoutgoing.h"
 
+extern Database DB;
+
 namespace Model
 {
+    class DataModel;
     class User;
 
     struct Group
@@ -62,7 +65,7 @@ namespace Model
         std::string getGroupName() const;
         std::string getAbsolutePath() const;
 
-        std::shared_ptr<Group> createGroup(std::string name);
+        std::shared_ptr<Group> createGroup(std::string name, bool imported = false);
         bool deleteGroup(std::string name);
         std::list<std::string> listGroupNames() const;
         std::shared_ptr<Group> getGroupByName(std::string name) const;
@@ -70,7 +73,7 @@ namespace Model
         void registerConnection(Connection::Reference connection);
         void unregisterConnection(Connection::Reference connection);
 
-        bool addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval);
+        bool addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval, bool imported = false);
         bool deleteMember(std::string memberLogin);
         MemberRole getMemberPermission(std::string memberLogin) const;
         bool setMemberPermission(std::string memberLogin, MemberRole memberRole);
@@ -83,6 +86,9 @@ namespace Model
 
         std::list<GroupMessage> getMessages(GroupMessage::Timestamp fromPoint) const;
         std::list<GroupMessage> getMessages() const;
+
+        void importFromDatabase(DataModel& model);
+        void exportToDatabase();
     };
 }
 
