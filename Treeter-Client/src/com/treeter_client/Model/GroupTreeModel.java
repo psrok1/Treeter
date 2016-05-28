@@ -65,7 +65,7 @@ public class GroupTreeModel
         return getNodeByPath(path.substring(1), root, createIfNotExist);
     }
 
-    private GroupModel getGroupByPath(String path, boolean createIfNotExist)
+    public GroupModel getGroupByPath(String path, boolean createIfNotExist)
     {
         return (GroupModel)getNodeByPath(path, createIfNotExist).getUserObject();
     }
@@ -85,29 +85,28 @@ public class GroupTreeModel
         node.removeFromParent();
     }
 
-    public void notifyGroup(String path)
+    public void notifyGroup(GroupModel group)
     {
-        GroupModel group = getGroupByPath(path, false);
-
-        if(group == null)
-            return;
-
         if(group.uiState == GroupUIState.Default)
             group.uiState = GroupUIState.Notified;
     }
 
-    public GroupModel setActiveGroup(String path)
+    public GroupModel setActiveGroup(GroupModel group)
     {
-        GroupModel group = getGroupByPath(path, false);
-
-        if(group == null)
-            return null;
-
         if(activeGroup != null)
             activeGroup.uiState = GroupUIState.Default;
+
         activeGroup = group;
-        activeGroup.uiState = GroupUIState.Active;
+
+        if(group != null)
+            activeGroup.uiState = GroupUIState.Active;
+
         return group;
+    }
+
+    public boolean isActiveGroup(GroupModel group)
+    {
+        return activeGroup == group;
     }
 
     public DefaultMutableTreeNode getRoot()

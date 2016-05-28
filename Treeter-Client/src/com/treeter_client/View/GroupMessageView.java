@@ -1,5 +1,6 @@
-package com.treeter_client;
+package com.treeter_client.View;
 
+import com.treeter_client.MainController;
 import com.treeter_client.Model.GroupMessageListModel;
 import com.treeter_client.Model.GroupModel;
 

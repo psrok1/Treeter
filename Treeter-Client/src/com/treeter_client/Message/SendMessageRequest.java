@@ -17,7 +17,7 @@ public class SendMessageRequest extends MessageRequest
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("request", "sendMessage");
         jsonObject.put("path", path);
-        jsonObject.put("message", message);
+        jsonObject.put("content", message);
         return jsonObject.toJSONString();
     }
 }

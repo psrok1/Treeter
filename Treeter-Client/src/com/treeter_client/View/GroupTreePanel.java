@@ -1,5 +1,6 @@
-package com.treeter_client;
+package com.treeter_client.View;
 
+import com.treeter_client.MainController;
 import com.treeter_client.Model.GroupModel;
 
 import javax.swing.*;
@@ -20,11 +21,6 @@ public class GroupTreePanel extends JPanel
     private JTree groupTree;
     private DefaultTreeModel treeModel;
 
-    public void update()
-    {
-        this.treeModel.reload();
-    }
-
     public GroupTreePanel(DefaultMutableTreeNode treeRoot)
     {
         this.setLayout(new BorderLayout());
@@ -42,6 +38,11 @@ public class GroupTreePanel extends JPanel
 
         groupTree.setCellRenderer(treeRenderer);
         this.add(groupTree, BorderLayout.CENTER);
+    }
+
+    public void setRoot(DefaultMutableTreeNode treeRoot)
+    {
+        this.treeModel.setRoot(treeRoot);
     }
 
     public void setGroupSelectListener(GroupTreeSelectListener listener)

@@ -1,5 +1,6 @@
 package com.treeter_client.Message;
 
+import com.treeter_client.Model.GroupMember;
 import com.treeter_client.Model.MemberRole;
 import org.json.simple.JSONObject;
 
@@ -23,14 +24,12 @@ public class AddedToGroupNotification extends MessageResponse
         return (String)this.jsonObject.get("path");
     }
 
-    public String getUsername()
+    public GroupMember getMember()
     {
-        return (String)this.jsonObject.get("username");
-    }
-
-    public MemberRole getRole()
-    {
-        return MemberRole.fromString((String)this.jsonObject.get("role"));
+        GroupMember member = new GroupMember();
+        member.login = (String)this.jsonObject.get("username");
+        member.role = MemberRole.fromString((String)this.jsonObject.get("role"));
+        return member;
     }
 }
 

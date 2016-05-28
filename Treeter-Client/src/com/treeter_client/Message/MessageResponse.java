@@ -70,5 +70,13 @@ public abstract class MessageResponse
         jsonObject = jsonObj;
     }
 
+    public ErrorCodeResponse getErrorCode()
+    {
+        if(jsonObject.containsKey("error"))
+            return ErrorCodeResponse.OK;
+        else
+            return ErrorCodeResponse.valueOf((int)jsonObject.get("error"));
+    }
+
     public abstract void process(IMessageProcessor processor);
 }

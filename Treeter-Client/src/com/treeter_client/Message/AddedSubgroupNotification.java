@@ -22,11 +22,6 @@ public class AddedSubgroupNotification extends MessageResponse
         return (String)this.jsonObject.get("path");
     }
 
-    public String getUsername()
-    {
-        return (String)this.jsonObject.get("username");
-    }
-
     public String getSubgroup()
     {
         return (String)this.jsonObject.get("subgroup");

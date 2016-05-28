@@ -54,4 +54,14 @@ public class GroupModel extends DataModel
     {
         return subgroupListModel;
     }
+
+    public void setPermissions(MemberRole permissions)
+    {
+        this.permissions = permissions;
+    }
+
+    public MemberRole getPermissions()
+    {
+        return this.permissions;
+    }
 }

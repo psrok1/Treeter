@@ -1,5 +1,12 @@
-package com.treeter_client;
+/**
+ * TODO:
+ * Rozwikłać sprawę, czy jestem pendingApproval
+ * Moja grupa została usunięta: jak aktualnie mam ją aktywną, powinna zniknąć z widoku
+ */
 
+package com.treeter_client.View;
+
+import com.treeter_client.MainController;
 import com.treeter_client.Model.GroupModel;
 import com.treeter_client.Model.GroupTreeModel;
 
@@ -54,16 +61,26 @@ public class MainView
 
         waitingPanel = new GroupWaitingPanel();
 
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setBackground(new Color(0xA6, 0x80, 0xB8));
+
         cardPanel = new JPanel(new CardLayout());
         cardPanel.add(waitingPanel, "WaitingLayout");
         cardPanel.add(tabbedPane, "GroupLayout");
+        cardPanel.add(emptyPanel, "EmptyLayout");
 
         // @TODO TESTOWO
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
-        cardLayout.show(cardPanel, "WaitingLayout");
+        cardLayout.show(cardPanel, "EmptyLayout");
 
         frame.add(groupTreePanel, BorderLayout.WEST);
         frame.add(cardPanel, BorderLayout.CENTER);
+    }
+
+    public void setModel(GroupTreeModel model)
+    {
+        this.groupTreeModel = model;
+        this.groupTreePanel.setRoot(model.getRoot());
     }
 
     public void updateGroup(GroupModel group)
@@ -81,6 +98,12 @@ public class MainView
         waitingPanel.setText(message);
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "WaitingLayout");
+    }
+
+    public void lockWithEmptyLayout()
+    {
+        CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
+        cardLayout.show(cardPanel, "EmptyLayout");
     }
 
     public void attachController(MainController controller)
@@ -102,5 +125,15 @@ public class MainView
         treeModel.addGroup("/TIN/Projekt/Srokosz/Treeter");
         MainView view = new MainView(treeModel);
         view.frame.setVisible(true);
+    }
+
+    public void show()
+    {
+        frame.setVisible(true);
+    }
+
+    public void hide()
+    {
+        frame.setVisible(false);
     }
 }

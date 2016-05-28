@@ -1,4 +1,4 @@
-package com.treeter_client;
+package com.treeter_client.View;
 
 import javax.swing.*;
 import java.awt.*;
