@@ -8,6 +8,9 @@
 
 #include "group.h"
 #include "user.h"
+#include "database/database.h"
+
+extern Database DB;
 
 namespace Model
 {
@@ -25,7 +28,7 @@ namespace Model
 
         std::shared_ptr<User> getUserByLogin(std::string login) const;
         std::list<std::string> listUserLogins() const;
-        std::shared_ptr<User> addUser(std::string login, std::string password);
+        std::shared_ptr<User> addUser(std::string login, std::string password, bool plaintextPassword = true);
         bool deleteUser(std::string login);
 
         std::shared_ptr<Group> getRootGroup() const;

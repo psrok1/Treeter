@@ -11,6 +11,8 @@
 #include "groupmessage.h"
 #include "../message/messageoutgoing.h"
 
+extern Database DB;
+
 namespace Model
 {
     class DataModel;

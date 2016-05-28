@@ -56,7 +56,7 @@ namespace Model
      * Adds user using specified login and password
      * Returns pointer to brand-new user object, or nullptr if operation wasn't successful
      */
-    std::shared_ptr<User> DataModel::addUser(std::string login, std::string password)
+    std::shared_ptr<User> DataModel::addUser(std::string login, std::string password, bool plaintextPassword)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
@@ -64,7 +64,7 @@ namespace Model
         if(this->users.find(login) != this->users.end())
             return nullptr;
 
-        std::shared_ptr<User> user_ref(new User(login, password));
+        std::shared_ptr<User> user_ref(new User(login, password, plaintextPassword));
 
         this->users[login] = user_ref;
 
@@ -108,17 +108,11 @@ namespace Model
 
     void DataModel::importFromDatabase()
     {
-        std::list<std::string> userList;
+        ResultSet userList = DB.importUsers();
 
-        /**
-         * @TODO
-         * Get list of users
-         **/
-
-        for(auto& userLogin: userList)
+        for(auto& userdata: userList)
         {
-            std::shared_ptr<User> user = this->addUser(userLogin, "");
-            user->importFromDatabase();
+            this->addUser(userdata[0], userdata[1], false);
         }
         this->rootGroup->importFromDatabase(*this);
     }

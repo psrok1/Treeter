@@ -347,13 +347,10 @@ namespace Model
 
     void Group::importFromDatabase(DataModel& model)
     {
-        std::list<std::string> groupNames;
-        /**
-         * @TODO
-         * Get all children group names
-         */
+        ResultSet groupNames = DB.importChildren(this->absolutePath);
+
         for(auto& groupName: groupNames)
-            this->createGroup(groupName);
+            this->createGroup(groupName[0]);
 
         for(auto& child: this->children)
         {
@@ -361,12 +358,10 @@ namespace Model
             const std::shared_ptr<Group>& groupPtr = child.second;
 
             std::list<std::pair<std::string, MemberRole>> groupMembers;
-            /**
-             * @TODO
-             * Get all member data (login, role)
-             */
-            for(std::pair<std::string, MemberRole>& member: groupMembers)
-                this->addMember(groupPtr, model.getUserByLogin(member.first), member.second);
+            ResultSet members = DB.importMembers(this->absolutePath);
+
+            for(auto member: members)
+                this->addMember(groupPtr, model.getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())));
 
             groupPtr->importFromDatabase(model);
         }
