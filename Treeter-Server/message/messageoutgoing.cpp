@@ -36,6 +36,7 @@ std::string AuthUserResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "authUser";
+    j["paths"] = paths;
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();
@@ -52,9 +53,9 @@ std::string CreateAccountResponse::toString()
     return j.dump();
 }
 
-/** CreateGroupResponse **/
+/** createSubgroupResponse **/
 
-std::string CreateGroupResponse::toString()
+std::string createSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "createGroup";
@@ -63,9 +64,9 @@ std::string CreateGroupResponse::toString()
     return j.dump();
 }
 
-/** RemoveGroupResponse **/
+/** removeSubgroupResponse **/
 
-std::string RemoveGroupResponse::toString()
+std::string removeSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "removeGroup";
@@ -108,18 +109,6 @@ std::string RemoveUserFromGroupResponse::toString()
     return j.dump();
 }
 
-/** GetGroupPathsResponse **/
-
-std::string GetGroupPathsResponse::toString()
-{
-    nlohmann::json j;
-    j["response"] = "getGroupPaths";
-    j["paths"] = groupPaths;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
-    return j.dump();
-}
-
 /** GetGroupUsersResponse **/
 
 std::string GetGroupUsersResponse::toString()
@@ -139,17 +128,6 @@ std::string AddMeToGroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "addMeToGroup";
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
-    return j.dump();
-}
-
-/** GetGroupPendingUsersResponse **/
-
-std::string GetGroupPendingUsersResponse::toString()
-{
-    nlohmann::json j;
-    j["response"] = "getGroupPendingUsers";
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();

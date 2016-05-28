@@ -58,8 +58,9 @@ public:
 class AuthUserResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
+    std::vector<std::string> paths;
 public:
-    AuthUserResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    AuthUserResponse(std::vector<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
     virtual std::string toString();
 };
 
@@ -73,23 +74,23 @@ public:
     virtual std::string toString();
 };
 
-/** CreateGroupResponse **/
+/** createSubgroupResponse **/
 
-class CreateGroupResponse: public MessageOutgoing
+class createSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    CreateGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    createSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
-/** RemoveGroupResponse **/
+/** removeSubgroupResponse **/
 
-class RemoveGroupResponse: public MessageOutgoing
+class removeSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    RemoveGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    removeSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
@@ -125,18 +126,6 @@ public:
     virtual std::string toString();
 };
 
-/** GetGroupPathsResponse **/
-
-class GetGroupPathsResponse: public MessageOutgoing
-{
-    std::vector<std::string> groupPaths;
-    ResponseErrorCode error;
-public:
-    GetGroupPathsResponse(std::vector<std::string> groupPaths, ResponseErrorCode error = ResponseErrorCode::OK) : groupPaths(groupPaths), error(error) { }
-    virtual std::string toString();
-};
-
-
 /** GetGroupUsersResponse **/
 
 class GetGroupUsersResponse: public MessageOutgoing
@@ -155,18 +144,6 @@ class AddMeToGroupResponse: public MessageOutgoing
     ResponseErrorCode error;
 public:
     AddMeToGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
-    virtual std::string toString();
-};
-
-
-/** GetGroupPendingUsersResponse **/
-
-class GetGroupPendingUsersResponse: public MessageOutgoing
-{
-    std::vector<std::string> users;
-    ResponseErrorCode error;
-public:
-    GetGroupPendingUsersResponse(std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
     virtual std::string toString();
 };
 

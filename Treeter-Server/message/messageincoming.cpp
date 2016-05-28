@@ -55,26 +55,26 @@ std::string CreateAccountRequest::getPassword() const
     return json_object["password"];
 }
 
-/** CreateGroupRequest **/
+/** createSubgroupRequest **/
 
-std::string CreateGroupRequest::getParentPath() const
+std::string createSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string CreateGroupRequest::getSubgroupName() const
+std::string createSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
 
-/** RemoveGroupRequest **/
+/** removeSubgroupRequest **/
 
-std::string RemoveGroupRequest::getParentPath() const
+std::string removeSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string RemoveGroupRequest::getSubgroupName() const
+std::string removeSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
@@ -97,11 +97,6 @@ std::string AddUserToGroupRequest::getUsername() const
 std::string AddUserToGroupRequest::getPath() const
 {
     return json_object["path"];
-}
-
-bool AddUserToGroupRequest::getModerator() const
-{
-    return json_object["moderator"];
 }
 
 /** RemoveUserFromGroupRequest **/
@@ -130,13 +125,6 @@ std::string AddMeToGroupRequest::getPath() const
     return json_object["path"];
 }
 
-/** GetGroupPendingUsersRequest **/
-
-std::string GetGroupPendingUsersRequest::getPath() const
-{
-    return json_object["path"];
-}
-
 /** SendMessageRequest **/
 
 std::string SendMessageRequest::getPath() const
@@ -144,11 +132,9 @@ std::string SendMessageRequest::getPath() const
     return json_object["path"];
 }
 
-Model::GroupMessage SendMessageRequest::getMessage() const
+std::string SendMessageRequest::getMessage() const
 {
-    std::string author = json_object["message"]["author"];
-    std::string content = json_object["message"]["content"];
-    return Model::GroupMessage(author, content);    // Ignore timestamp stored in incoming message
+    return json_object["content"];
 }
 
 /** GetMessagesRequest **/
@@ -158,11 +144,7 @@ std::string GetMessagesRequest::getPath() const
     return json_object["path"];
 }
 
-std::chrono::system_clock::time_point GetMessagesRequest::getLastMsgTimestamp() const
-{
-    if (json_object.count("lastMsgTimestamp"))
-    {
-        return std::chrono::system_clock::from_time_t(json_object["lastMsgTimestamp"]);
-    }
-    return std::chrono::system_clock::from_time_t(0);
-}
+
+/** SetMemberPermissionRequest **/
+
+// complete this
