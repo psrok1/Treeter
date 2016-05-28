@@ -5,13 +5,11 @@ import org.json.simple.JSONObject;
 public class AddUserToGroupRequest extends MessageRequest
 {
     String username, path;
-    boolean moderator;
 
-    public AddUserToGroupRequest(String username, String path, boolean moderator)
+    public AddUserToGroupRequest(String username, String path)
     {
         this.username = username;
         this.path = path;
-        this.moderator = moderator;
     }
 
     public String serialize()
@@ -20,7 +18,6 @@ public class AddUserToGroupRequest extends MessageRequest
         jsonObject.put("request", "addUserToGroup");
         jsonObject.put("username", username);
         jsonObject.put("path", path);
-        jsonObject.put("moderator", moderator);
         return jsonObject.toJSONString();
     }
 }

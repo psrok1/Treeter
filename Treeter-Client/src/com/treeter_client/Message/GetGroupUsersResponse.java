@@ -1,5 +1,7 @@
 package com.treeter_client.Message;
 
+import com.treeter_client.Model.GroupMember;
+import com.treeter_client.Model.MemberRole;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,24 +19,26 @@ public class GetGroupUsersResponse extends MessageResponse
         processor.processMessage(this);
     }
 
-    public ArrayList<String> getUsers()
+    public ArrayList<GroupMember> getMemberList()
     {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<GroupMember> result = new ArrayList<GroupMember>();
         JSONArray jsonArray = (JSONArray) jsonObject.get("users");
         for(int i=0; i<jsonArray.size(); i++)
         {
-            result.add((String)jsonArray.get(i));
-        }
-        return result;
-    }
+            GroupMember groupMember = new GroupMember();
+            JSONObject jsonMemberObject = (JSONObject) jsonArray.get(i);
 
-    public ArrayList<String> getModerators()
-    {
-        ArrayList<String> result = new ArrayList<String>();
-        JSONArray jsonArray = (JSONArray) jsonObject.get("moderators");
-        for(int i=0; i<jsonArray.size(); i++)
-        {
-            result.add((String)jsonArray.get(i));
+            groupMember.login = (String)jsonMemberObject.get("login");
+
+            String jsonMemberRole = (String)jsonMemberObject.get("role");
+            if(jsonMemberRole.equalsIgnoreCase("standard"))
+                groupMember.role = MemberRole.Standard;
+            else if(jsonMemberRole.equalsIgnoreCase("moderator"))
+                groupMember.role = MemberRole.Moderator;
+            else if(jsonMemberRole.equalsIgnoreCase("pending"))
+                groupMember.role = MemberRole.PendingApproval;
+
+            result.add(groupMember);
         }
         return result;
     }

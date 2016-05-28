@@ -2,9 +2,12 @@ package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
-public class CreateGroupResponse extends MessageResponse
+/**
+ * Created by psrok1 on 28.05.2016.
+ */
+public class SetMemberPermissionResponse extends MessageResponse
 {
-    public CreateGroupResponse(JSONObject jsonObj)
+    public SetMemberPermissionResponse(JSONObject jsonObj)
     {
         super(jsonObj);
     }
@@ -13,4 +16,5 @@ public class CreateGroupResponse extends MessageResponse
     {
         processor.processMessage(this);
     }
+
 }

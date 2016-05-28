@@ -9,7 +9,7 @@ public class AddMeToGroupRequest extends MessageRequest
     public AddMeToGroupRequest(String path, String subgroup)
     {
         this.path = path;
-        this.subgroup= subgroup;
+        this.subgroup = subgroup;
     }
 
     public String serialize()

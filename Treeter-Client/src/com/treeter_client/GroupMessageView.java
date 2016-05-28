@@ -31,8 +31,7 @@ public class GroupMessageView extends JPanel
         this.add(groupName, BorderLayout.NORTH);
 
         // lista wiadomosci
-        String[] data = {"one", "two", "three", "four"};
-        messageList = new JList<String>(data);
+        messageList = new JList<String>();
         messageList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         messageList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         messageList.setLayoutOrientation(JList.VERTICAL);

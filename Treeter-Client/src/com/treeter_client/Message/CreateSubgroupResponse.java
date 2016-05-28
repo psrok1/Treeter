@@ -2,9 +2,9 @@ package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
-public class RemoveGroupResponse extends MessageResponse
+public class CreateSubgroupResponse extends MessageResponse
 {
-    public RemoveGroupResponse(JSONObject jsonObj)
+    public CreateSubgroupResponse(JSONObject jsonObj)
     {
         super(jsonObj);
     }

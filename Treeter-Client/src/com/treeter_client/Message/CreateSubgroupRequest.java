@@ -2,20 +2,22 @@ package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
-public class GetGroupPendingUsersRequest extends MessageRequest
+public class CreateSubgroupRequest extends MessageRequest
 {
-    String path;
+    String path, subgroup;
 
-    public GetGroupPendingUsersRequest(String path)
+    public CreateSubgroupRequest(String path, String subgroup)
     {
         this.path = path;
+        this.subgroup = subgroup;
     }
 
     public String serialize()
     {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("request", "getGroupPendingUsers");
+        jsonObject.put("request", "createSubgroup");
         jsonObject.put("path", path);
+        jsonObject.put("subgroup", subgroup);
         return jsonObject.toJSONString();
     }
 }

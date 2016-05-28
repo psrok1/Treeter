@@ -9,14 +9,13 @@ public interface IMessageProcessor
     void processMessage(AddMeToGroupResponse response);
     void processMessage(AddUserToGroupResponse response);
     void processMessage(CreateAccountResponse response);
-    void processMessage(CreateGroupResponse response);
+    void processMessage(CreateSubgroupResponse response);
     void processMessage(AuthUserResponse response);
-    void processMessage(GetGroupPathsResponse response);
-    void processMessage(GetGroupPendingUsersResponse response);
     void processMessage(GetGroupUsersResponse response);
     void processMessage(GetMessagesResponse response);
     void processMessage(GetSubgroupsResponse response);
-    void processMessage(RemoveGroupResponse response);
+    void processMessage(RemoveSubgroupResponse response);
     void processMessage(RemoveUserFromGroupResponse response);
     void processMessage(SendMessageResponse response);
+    void processMessage(SetMemberPermissionResponse setMemberPermissionResponse);
 }

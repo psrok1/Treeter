@@ -23,6 +23,7 @@ public class GetMessagesResponse extends MessageResponse
         JSONArray jsonArray = (JSONArray) jsonObject.get("messages");
         for(int i=0; i<jsonArray.size(); i++)
         {
+            // @TODO
             result.add((String)jsonArray.get(i));
         }
         return result;

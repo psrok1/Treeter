@@ -17,7 +17,7 @@ public class GetSubgroupsResponse extends MessageResponse
         processor.processMessage(this);
     }
 
-    public ArrayList<String> getUSubgroups()
+    public ArrayList<String> getSubgroups()
     {
         ArrayList<String> result = new ArrayList<String>();
         JSONArray jsonArray = (JSONArray) jsonObject.get("subgroups");

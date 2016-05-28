@@ -26,15 +26,14 @@ public abstract class MessageResponse
                 put("addUserToGroup", (JSONObject jsonObject) -> new AddUserToGroupResponse(jsonObject));
                 put("authUser", (JSONObject jsonObject) -> new AuthUserResponse(jsonObject));
                 put("createAccount", (JSONObject jsonObject) -> new CreateAccountResponse(jsonObject));
-                put("createGroup", (JSONObject jsonObject) -> new CreateGroupResponse(jsonObject));
-                put("getGroupPaths", (JSONObject jsonObject) -> new GetGroupPathsResponse(jsonObject));
-                put("getGroupPendingUsers", (JSONObject jsonObject) -> new GetGroupPendingUsersResponse(jsonObject));
                 put("getGroupUsers", (JSONObject jsonObject) -> new GetGroupUsersResponse(jsonObject));
                 put("getMessages", (JSONObject jsonObject) -> new GetMessagesResponse(jsonObject));
                 put("getSubgroups", (JSONObject jsonObject) -> new GetSubgroupsResponse(jsonObject));
-                put("removeGroup", (JSONObject jsonObject) -> new RemoveGroupResponse(jsonObject));
+                put("createSubgroup", (JSONObject jsonObject) -> new CreateSubgroupResponse(jsonObject));
+                put("removeSubgroup", (JSONObject jsonObject) -> new RemoveSubgroupResponse(jsonObject));
                 put("removeUserFromGroup", (JSONObject jsonObject) -> new RemoveUserFromGroupResponse(jsonObject));
                 put("sendMessage", (JSONObject jsonObject) -> new SendMessageResponse(jsonObject));
+                put("setMemberPermission", (JSONObject jsonObject) -> new SetMemberPermissionResponse(jsonObject));
             }});
 
     public static MessageResponse deserialize(String message) throws ParseException
