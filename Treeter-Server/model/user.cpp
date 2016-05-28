@@ -143,9 +143,6 @@ namespace Model
 
     void User::exportToDatabase()
     {
-        /**
-         * @TODO:
-         * Export full user entry to database
-         */
+        DB.insertUser(login,password);
     }
 }

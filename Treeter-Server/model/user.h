@@ -7,6 +7,9 @@
 #include <unordered_map>
 #include <memory>
 #include <atomic>
+#include <database/database.h>
+
+extern Database DB;
 
 namespace Model
 {

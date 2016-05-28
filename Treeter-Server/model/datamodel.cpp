@@ -68,6 +68,9 @@ namespace Model
 
         this->users[login] = user_ref;
 
+        if(plaintextPassword)
+            user_ref->exportToDatabase();
+
         // User should be added to root group
         this->rootGroup->addMember(this->rootGroup, user_ref, Group::MemberRole::Member);
 
@@ -103,6 +106,10 @@ namespace Model
             group_ptr->deleteMember(login);
 
         this->users.erase(it);
+
+        // Remove from DB
+        DB.deleteUser(login);
+
         return true;
     }
 
