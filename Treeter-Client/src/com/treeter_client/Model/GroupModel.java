@@ -9,10 +9,10 @@ public class GroupModel extends DataModel
     GroupMessageListModel messageListModel;
     GroupSubgroupListModel subgroupListModel;
 
-    String name;
-    String absolutePath;
+    public String name;
+    public String absolutePath;
 
-    GroupUIState uiState;
+    public GroupUIState uiState;
     MemberRole permissions;
 
     public GroupModel(String path)

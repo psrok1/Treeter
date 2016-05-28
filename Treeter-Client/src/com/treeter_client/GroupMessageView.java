@@ -60,4 +60,9 @@ public class GroupMessageView extends JPanel
         messageList.revalidate();
         messageList.repaint();
     }
+
+    public void attachController(MainController controller)
+    {
+
+    }
 }

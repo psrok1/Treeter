@@ -75,4 +75,9 @@ public class GroupSubgroupView extends JPanel
         subgroupList.revalidate();
         subgroupList.repaint();
     }
+
+    public void attachController(MainController controller)
+    {
+
+    }
 }

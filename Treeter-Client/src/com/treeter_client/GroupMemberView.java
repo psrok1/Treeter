@@ -76,6 +76,11 @@ public class GroupMemberView extends JPanel
         memberList.revalidate();
         memberList.repaint();
     }
+
+    public void attachController(MainController controller)
+    {
+
+    }
 }
 
 class GroupMemberCellRenderer extends DefaultListCellRenderer

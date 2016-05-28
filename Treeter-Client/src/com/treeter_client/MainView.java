@@ -59,6 +59,16 @@ public class MainView
         subgroupView.updateGroup(group);
     }
 
+    public void lockWithWaitingMessage(String message)
+    {
+
+    }
+
+    public void attachController(MainController controller)
+    {
+
+    }
+
     public static void main(String[] args)
     {
         GroupTreeModel treeModel = new GroupTreeModel();

@@ -8,15 +8,9 @@ public class MainController
     private MessageView messageView;
     private Client client;
 
-    private class MessageProcessor implements IMessageProcessor
+    private class MessageProcessor
     {
-        @Override
-        public void processMessage(CreateGroupResponse response)
-        {
-            messageView.addMessage(response.getMessage());
-        }
-
-        @Override
+//        @Override
         public void processMessage(HelloResponse helloResponse)
         {
             try
@@ -35,7 +29,7 @@ public class MainController
             }
         }
 
-        @Override
+  //      @Override
         public void processMessage(StartEncryptionResponse startEncryptionResponse)
         {
             connectView.hide();
@@ -74,7 +68,7 @@ public class MainController
             @Override
             public void action(MessageResponse message)
             {
-                message.process(messageProcessor);
+                //message.process(messageProcessor);
             }
         });
 

@@ -4,6 +4,7 @@ package com.treeter_client.Message;
 public interface IMessageProcessor
 {
     void processMessage(HelloResponse helloResponse);
+    void processMessage(EchoResponse echoResponse);
     void processMessage(StartEncryptionResponse startEncryptionResponse);
     void processMessage(AddMeToGroupResponse response);
     void processMessage(AddUserToGroupResponse response);

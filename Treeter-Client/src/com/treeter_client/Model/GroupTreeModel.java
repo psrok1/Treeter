@@ -11,6 +11,13 @@ public class GroupTreeModel
     DefaultMutableTreeNode root;
     GroupModel activeGroup;
 
+    public GroupTreeModel()
+    {
+        GroupModel groupRoot = new GroupModel("/");
+        root = new DefaultMutableTreeNode(groupRoot);
+        activeGroup = null;
+    }
+
     private DefaultMutableTreeNode getNodeByPath(String path, DefaultMutableTreeNode node, boolean createIfNotExist)
     {
         String name;
@@ -96,7 +103,8 @@ public class GroupTreeModel
         if(group == null)
             return null;
 
-        activeGroup.uiState = GroupUIState.Default;
+        if(activeGroup != null)
+            activeGroup.uiState = GroupUIState.Default;
         activeGroup = group;
         activeGroup.uiState = GroupUIState.Active;
         return group;

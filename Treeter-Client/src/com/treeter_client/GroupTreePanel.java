@@ -1,5 +1,7 @@
 package com.treeter_client;
 
+import com.treeter_client.Model.GroupModel;
+
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -10,7 +12,7 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 interface GroupTreeSelectListener {
-    void groupSelected(GroupTreeModel.Group group);
+    void groupSelected(GroupModel group);
 }
 
 public class GroupTreePanel extends JPanel
@@ -52,10 +54,15 @@ public class GroupTreePanel extends JPanel
                 /* if nothing is selected */
                 if (node == null) return;
 
-                listener.groupSelected((GroupTreeModel.Group)node.getUserObject());
+                listener.groupSelected((GroupModel)node.getUserObject());
                 treeModel.nodeStructureChanged(node);
             }
         });
+    }
+
+    public void attachController(MainController controller)
+    {
+
     }
 }
 
@@ -81,8 +88,8 @@ class GroupTreeCellRenderer extends DefaultTreeCellRenderer {
         final Component ret = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
         final DefaultMutableTreeNode node = ((DefaultMutableTreeNode) (value));
-        GroupTreeModel.Group group = (GroupTreeModel.Group)(node.getUserObject());
-        switch(group.state)
+        GroupModel group = (GroupModel)(node.getUserObject());
+        switch(group.uiState)
         {
             case Notified:
                 this.setForeground(Color.YELLOW);
