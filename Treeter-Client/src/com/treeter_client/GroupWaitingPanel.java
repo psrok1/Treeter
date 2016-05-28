@@ -20,7 +20,7 @@ public class GroupWaitingPanel extends JPanel
 
         icon = new ImageIcon(getClass().getResource("/refresh.png"));
         iconLabel = new JLabel(icon);
-        textLabel = new JLabel("Komunikat...");
+        textLabel = new JLabel("");
         textLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         textLabel.setForeground(Color.white);
         textLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
@@ -36,6 +36,6 @@ public class GroupWaitingPanel extends JPanel
 
     public void setText(String text)
     {
-
+        textLabel.setText(text);
     }
 }
