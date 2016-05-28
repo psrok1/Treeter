@@ -16,6 +16,10 @@ public class MainView
     private GroupMemberView memberView;
     private GroupSubgroupView subgroupView;
 
+    private GroupWaitingPanel waitingPanel;
+
+    private JPanel cardPanel;
+
     public MainView(GroupTreeModel model)
     {
         this.groupTreeModel = model;
@@ -48,8 +52,18 @@ public class MainView
         tabbedPane.addTab("Uczestnicy", memberView);
         tabbedPane.addTab("Podgrupy", subgroupView);
 
+        waitingPanel = new GroupWaitingPanel();
+
+        cardPanel = new JPanel(new CardLayout());
+        cardPanel.add(waitingPanel, "WaitingLayout");
+        cardPanel.add(tabbedPane, "GroupLayout");
+
+        // @TODO TESTOWO
+        CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
+        cardLayout.show(cardPanel, "WaitingLayout");
+
         frame.add(groupTreePanel, BorderLayout.WEST);
-        frame.add(tabbedPane, BorderLayout.CENTER);
+        frame.add(cardPanel, BorderLayout.CENTER);
     }
 
     public void updateGroup(GroupModel group)
@@ -57,11 +71,15 @@ public class MainView
         messageView.updateGroup(group);
         memberView.updateGroup(group);
         subgroupView.updateGroup(group);
+
+        CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
+        cardLayout.show(cardPanel, "GroupLayout");
     }
 
     public void lockWithWaitingMessage(String message)
     {
-
+        CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
+        cardLayout.show(cardPanel, "WaitingLayout");
     }
 
     public void attachController(MainController controller)
