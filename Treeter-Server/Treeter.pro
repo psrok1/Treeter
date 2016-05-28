@@ -49,6 +49,7 @@ HEADERS += \
     database/database.h \
     database/sqlite3.h \
     database/sqlite3ext.h \
-    database/resultset.h
+    database/resultset.h \
+    model/memberrole.h
 
 Debug:DESTDIR = debug

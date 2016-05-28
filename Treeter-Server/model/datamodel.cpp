@@ -72,7 +72,7 @@ namespace Model
             user_ref->exportToDatabase();
 
         // User should be added to root group
-        this->rootGroup->addMember(this->rootGroup, user_ref, Group::MemberRole::Member);
+        this->rootGroup->addMember(this->rootGroup, user_ref, MemberRole::Member);
 
         return user_ref;
     }
