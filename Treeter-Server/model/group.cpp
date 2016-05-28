@@ -240,7 +240,7 @@ namespace Model
      * MemberRole getter.
      * MemberRole::NotAMember is returned, when member doesn't exist
      */
-    Group::MemberRole Group::getMemberPermission(std::string memberLogin) const
+    MemberRole Group::getMemberPermission(std::string memberLogin) const
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
@@ -310,10 +310,10 @@ namespace Model
      * @brief Group::listOfMembers
      * Gets full list of members with roles.
      */
-    std::list<std::pair<std::string, Group::MemberRole>> Group::listOfMembers() const
+    std::list<std::pair<std::string, MemberRole>> Group::listOfMembers() const
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
-        std::list<std::pair<std::string, Group::MemberRole>> result;
+        std::list<std::pair<std::string, MemberRole>> result;
 
         for(const std::pair<std::string, Member>& m: this->members)
             result.push_back(std::make_pair(m.first, m.second.role));

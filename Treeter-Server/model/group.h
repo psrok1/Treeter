@@ -9,6 +9,7 @@
 
 #include "../connectionlist.h"
 #include "groupmessage.h"
+#include "memberrole.h"
 #include "../message/messageoutgoing.h"
 
 extern Database DB;
@@ -20,14 +21,6 @@ namespace Model
 
     struct Group
     {
-        enum class MemberRole
-        {
-            NotAMember,
-            PendingApproval,
-            Member,
-            Moderator
-        };
-
         struct Member
         {
             std::weak_ptr<User> user;
