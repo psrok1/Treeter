@@ -17,7 +17,7 @@ public abstract class MessageResponse
         MessageResponse create(JSONObject jsonObj);
     }
 
-    private static final Map<String,MessageResponseFactory> factoryMap =
+    private static final Map<String,MessageResponseFactory> responseMap =
             Collections.unmodifiableMap(new HashMap<String,MessageResponseFactory>() {{
                 put("echo",            (JSONObject jsonObj) -> new EchoResponse(jsonObj));
                 put("hello",           (JSONObject jsonObj) -> new HelloResponse(jsonObj));
@@ -36,13 +36,33 @@ public abstract class MessageResponse
                 put("setMemberPermission", (JSONObject jsonObject) -> new SetMemberPermissionResponse(jsonObject));
             }});
 
+    private static final Map<String,MessageResponseFactory> notificationMap =
+            Collections.unmodifiableMap(new HashMap<String,MessageResponseFactory>() {{
+                put("newMessage", (JSONObject jsonObject) -> new NewMessageNotification(jsonObject));
+                put("addedToGroup", (JSONObject jsonObject) -> new AddedToGroupNotification(jsonObject));
+                put("removedFromGroup", (JSONObject jsonObject) -> new RemovedFromGroupNotification(jsonObject));
+                put("modifiedMemberPermission", (JSONObject jsonObject) -> new ModifiedMemberPermissionNotification(jsonObject));
+                put("addedSubgroup", (JSONObject jsonObject) -> new AddedSubgroupNotification(jsonObject));
+                put("removedSubgroup", (JSONObject jsonObject) -> new RemovedSubgroupNotification(jsonObject));
+            }});
+
     public static MessageResponse deserialize(String message) throws ParseException
     {
         JSONParser jsonParser = new JSONParser();
         message = message.substring(0,message.lastIndexOf("}")+1);
         JSONObject jsonObject = (JSONObject) jsonParser.parse(message);
-        String responseType = (String) jsonObject.get("response");
-        return factoryMap.get(responseType).create(jsonObject);
+
+        if(jsonObject.containsKey("response"))
+        {
+            String responseType = (String) jsonObject.get("response");
+            return responseMap.get(responseType).create(jsonObject);
+        }
+        else if(jsonObject.containsKey("notification"))
+        {
+            String notificationType = (String) jsonObject.get("notification");
+            return notificationMap.get(notificationType).create(jsonObject);
+        }
+        return null;
     }
 
     public MessageResponse(JSONObject jsonObj)

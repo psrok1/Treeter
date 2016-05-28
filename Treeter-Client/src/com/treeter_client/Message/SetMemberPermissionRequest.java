@@ -14,19 +14,7 @@ public class SetMemberPermissionRequest extends MessageRequest
     public SetMemberPermissionRequest(String username, MemberRole role)
     {
         this.username = username;
-        // @TODO: Set to MemberRole toString method
-        switch(role)
-        {
-            case Standard:
-                this.role = "standard";
-                break;
-            case Moderator:
-                this.role = "moderator";
-                break;
-            case PendingApproval:
-                this.role = "pending";
-                break;
-        }
+        this.role = role.toString();
     }
 
     public String serialize()

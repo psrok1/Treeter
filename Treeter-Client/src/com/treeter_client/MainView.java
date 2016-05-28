@@ -78,6 +78,7 @@ public class MainView
 
     public void lockWithWaitingMessage(String message)
     {
+        waitingPanel.setText(message);
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "WaitingLayout");
     }

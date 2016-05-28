@@ -31,12 +31,7 @@ public class GetGroupUsersResponse extends MessageResponse
             groupMember.login = (String)jsonMemberObject.get("login");
 
             String jsonMemberRole = (String)jsonMemberObject.get("role");
-            if(jsonMemberRole.equalsIgnoreCase("standard"))
-                groupMember.role = MemberRole.Standard;
-            else if(jsonMemberRole.equalsIgnoreCase("moderator"))
-                groupMember.role = MemberRole.Moderator;
-            else if(jsonMemberRole.equalsIgnoreCase("pending"))
-                groupMember.role = MemberRole.PendingApproval;
+            groupMember.role = MemberRole.fromString(jsonMemberRole);
 
             result.add(groupMember);
         }

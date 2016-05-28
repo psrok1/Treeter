@@ -18,4 +18,11 @@ public interface IMessageProcessor
     void processMessage(RemoveUserFromGroupResponse response);
     void processMessage(SendMessageResponse response);
     void processMessage(SetMemberPermissionResponse setMemberPermissionResponse);
+
+    void processMessage(NewMessageNotification newMessageNotification);
+    void processMessage(AddedToGroupNotification addedToGroupNotification);
+    void processMessage(RemovedFromGroupNotification removedFromGroupNotification);
+    void processMessage(ModifiedMemberPermissionNotification modifiedMemberPermissionNotification);
+    void processMessage(AddedSubgroupNotification addedSubgroupNotification);
+    void processMessage(RemovedSubgroupNotification removedSubgroupNotification);
 }
