@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include "model/groupmessage.h"
+#include "model/memberrole.h"
 
 class MessageIncoming
 {
@@ -176,7 +177,8 @@ class SetMemberPermissionRequest: public MessageIncoming
 public:
     SetMemberPermissionRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    // complete this
+    std::string getUsername() const;
+    MemberRole getRole() const;
 };
 
 #endif // MESSAGEINCOMING_H

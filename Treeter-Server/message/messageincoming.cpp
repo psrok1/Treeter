@@ -147,4 +147,19 @@ std::string GetMessagesRequest::getPath() const
 
 /** SetMemberPermissionRequest **/
 
-// complete this
+std::string SetMemberPermissionRequest::getUsername() const
+{
+    return json_object["username"];
+}
+
+MemberRole SetMemberPermissionRequest::getRole() const
+{
+    std::string role_string = json_object["role"];
+    if (role_string == "standard")
+        return MemberRole::Member;
+    else if (role_string == "moderator")
+        return MemberRole::Moderator;
+    else if (role_string == "pending")
+        return MemberRole::PendingApproval;
+    // maybe throw error here
+}

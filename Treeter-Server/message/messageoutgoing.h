@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <model/groupmessage.h>
+#include <model/memberrole.h>
 
 enum class ResponseErrorCode { OK };
 
@@ -57,8 +58,8 @@ public:
 
 class AuthUserResponse: public MessageOutgoing
 {
-    ResponseErrorCode error;
     std::vector<std::string> paths;
+    ResponseErrorCode error;
 public:
     AuthUserResponse(std::vector<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
     virtual std::string toString();
@@ -130,10 +131,10 @@ public:
 
 class GetGroupUsersResponse: public MessageOutgoing
 {
-    std::vector<std::string> moderators, users;
+    std::vector<std::pair<std::string, MemberRole>> users;
     ResponseErrorCode error;
 public:
-    GetGroupUsersResponse(std::vector<std::string> moderators, std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : moderators(moderators), users(users), error(error) { }
+    GetGroupUsersResponse(std::vector<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
     virtual std::string toString();
 };
 

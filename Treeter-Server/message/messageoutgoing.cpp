@@ -115,8 +115,25 @@ std::string GetGroupUsersResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "getGroupUsers";
-    j["moderators"] = moderators;
-    j["users"] = users;
+    nlohmann::json usersArray = nlohmann::json::array({});
+
+    for (auto user : users)
+    {
+        nlohmann::json tmp;
+        std::string role_str;
+        tmp["login"] = user.first;
+        if(user.second == MemberRole::Member)
+            role_str = "standard";
+        else if (user.second == MemberRole::Moderator)
+            role_str = "moderator";
+        else if (user.second == MemberRole::PendingApproval)
+            role_str = "pending";
+
+        tmp["role"] = role_str;
+        usersArray.push_back(tmp);
+    }
+    j["users"] = usersArray;
+
     if (error != ResponseErrorCode::OK)
         ;   // TODO
     return j.dump();
