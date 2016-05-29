@@ -1,6 +1,4 @@
-package com.treeter_client;
-
-import org.json.simple.JSONObject;
+package com.treeter_client.Message;
 
 public abstract class MessageRequest
 {

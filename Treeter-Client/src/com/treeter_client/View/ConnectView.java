@@ -1,4 +1,6 @@
-package com.treeter_client;
+package com.treeter_client.View;
+
+import com.treeter_client.MainController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,7 +17,7 @@ public class ConnectView
     private JTextField serverField, nickField, passwordField;
     private JButton acceptButton, cancelButton;
 
-    ConnectView()
+    public ConnectView()
     {
         frame = new JFrame();
         frame.setSize(600, 360);
@@ -116,7 +118,7 @@ public class ConnectView
         frame.setVisible(true);
     }
 
-    public  void hide()
+    public void hide()
     {
         frame.setVisible(false);
     }
@@ -129,5 +131,15 @@ public class ConnectView
                 controller.connect(serverField.getText());
             }
         });
+    }
+
+    public String getNick()
+    {
+        return nickField.getText();
+    }
+
+    public String getPassword()
+    {
+        return passwordField.getText();
     }
 }

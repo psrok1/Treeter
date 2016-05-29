@@ -1,4 +1,4 @@
-package com.treeter_client;
+package com.treeter_client.Message;
 
 
 import org.json.simple.JSONObject;
@@ -7,7 +7,7 @@ public class EchoRequest extends MessageRequest
 {
     String message;
 
-    EchoRequest(String message)
+    public EchoRequest(String message)
     {
         this.message = message;
     }

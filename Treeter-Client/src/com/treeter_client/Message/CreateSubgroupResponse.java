@@ -1,11 +1,10 @@
-package com.treeter_client;
+package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
-public class StartEncryptionResponse extends MessageResponse
+public class CreateSubgroupResponse extends MessageResponse
 {
-
-    public StartEncryptionResponse(JSONObject jsonObj)
+    public CreateSubgroupResponse(JSONObject jsonObj)
     {
         super(jsonObj);
     }

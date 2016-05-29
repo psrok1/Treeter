@@ -1,12 +1,13 @@
-package com.treeter_client;
+package com.treeter_client.Message;
 
+import com.treeter_client.Message.MessageRequest;
 import org.json.simple.JSONObject;
 
 public class StartEncryptionRequest extends MessageRequest
 {
     String encryptedKey;
 
-    StartEncryptionRequest(String encryptedKey)
+    public StartEncryptionRequest(String encryptedKey)
     {
         this.encryptedKey = encryptedKey;
     }

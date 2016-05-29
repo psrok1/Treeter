@@ -1,10 +1,9 @@
-package com.treeter_client;
+package com.treeter_client.Message;
 
 import org.json.simple.JSONObject;
 
 public class HelloResponse extends MessageResponse
 {
-
     public HelloResponse(JSONObject jsonObj)
     {
         super(jsonObj);
