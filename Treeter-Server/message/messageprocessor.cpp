@@ -92,7 +92,7 @@ bool MessageProcessor::processRequest(const CreateAccountRequest &req)
 
     if(!userRef)
     {
-        MessageOutgoing::Reference response(new CreateAccountResponse(ResponseErrorCode::ObjectExist));
+        MessageOutgoing::Reference response(new CreateAccountResponse(ResponseErrorCode::UserExist));
         this->connection->sendMessage(response);
         return false;
     }
@@ -106,8 +106,35 @@ bool MessageProcessor::processRequest(const CreateAccountRequest &req)
 
 bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getParentPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    if(!groupRef->createGroup(req.getSubgroupName()))
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::GroupExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new CreateSubgroupResponse());
+    this->connection->sendMessage(response);
     return true;
 }
 
@@ -115,8 +142,35 @@ bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
 
 bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new RemoveSubgroupResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getParentPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new RemoveSubgroupResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    if(!groupRef->deleteGroup(req.getSubgroupName()))
+    {
+        MessageOutgoing::Reference response(new RemoveSubgroupResponse(ResponseErrorCode::GroupNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new RemoveSubgroupResponse());
+    this->connection->sendMessage(response);
     return true;
 }
 
@@ -124,17 +178,83 @@ bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
 
 bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new GetSubgroupsResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new GetSubgroupsResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    std::list<std::string> groupNames = groupRef->listGroupNames();
+
+    MessageOutgoing::Reference response(new GetSubgroupsResponse(groupNames));
+    this->connection->sendMessage(response);
     return true;
 }
 
 /** AddUserToGroupRequest **/
 
 bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
-{
-    // TODO
-    (void)req;
+{   
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    if(req.getPath() == "/")
+    {
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::RootNotAllowed));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    std::shared_ptr<Model::User> reqUserRef = this->connection->model->getUserByLogin(req.getUsername());
+
+    if(!reqUserRef)
+    {
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::UserNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    if(!groupRef->addMember(groupRef, reqUserRef, MemberRole::Member))
+    {
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::MemberExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new AddUserToGroupResponse());
+    this->connection->sendMessage(response);
+
     return true;
 }
 
@@ -142,8 +262,52 @@ bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
 
 bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    if(req.getPath() == "/")
+    {
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::RootNotAllowed));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    std::shared_ptr<Model::User> reqUserRef = this->connection->model->getUserByLogin(req.getUsername());
+
+    if(!reqUserRef)
+    {
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::UserNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    if(!groupRef->deleteMember(req.getUsername()))
+    {
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::MemberNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new RemoveUserFromGroupResponse());
+    this->connection->sendMessage(response);
+
     return true;
 }
 
@@ -151,8 +315,30 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
 
 bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new GetGroupUsersResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new GetGroupUsersResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    auto membersList = groupRef->listOfMembers();
+
+    MessageOutgoing::Reference response(new GetGroupUsersResponse(membersList));
+    this->connection->sendMessage(response);
     return true;
 }
 
@@ -160,8 +346,45 @@ bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 
 bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new AddMeToGroupResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> parentGroupRef = userRef->getGroupByPath(req.getParentPath());
+
+    if(!parentGroupRef)
+    {
+        MessageOutgoing::Reference response(new AddMeToGroupResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = parentGroupRef->getGroupByName(req.getSubgroup());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new AddMeToGroupResponse(ResponseErrorCode::GroupNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    if(!groupRef->addMember(groupRef, userRef, MemberRole::PendingApproval))
+    {
+        MessageOutgoing::Reference response(new AddMeToGroupResponse(ResponseErrorCode::MemberExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new AddMeToGroupResponse());
+    this->connection->sendMessage(response);
+
     return true;
 }
 
@@ -169,8 +392,30 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
 
 bool MessageProcessor::processRequest(const SendMessageRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new SendMessageResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new SendMessageResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    groupRef->sendMessage(Model::GroupMessage(userRef->getLogin(), req.getMessage()));
+
+    MessageOutgoing::Reference response(new SendMessageResponse());
+    this->connection->sendMessage(response);
     return true;
 }
 
@@ -178,8 +423,30 @@ bool MessageProcessor::processRequest(const SendMessageRequest &req)
 
 bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new GetMessagesResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new GetMessagesResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    std::list<Model::GroupMessage> messages = groupRef->getMessages();
+
+    MessageOutgoing::Reference response(new GetMessagesResponse(messages));
+    this->connection->sendMessage(response);
     return true;
 }
 
@@ -187,7 +454,34 @@ bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 
 bool MessageProcessor::processRequest(const SetMemberPermissionRequest &req)
 {
-    // TODO
-    (void)req;
+    std::shared_ptr<Model::User> userRef = this->connection->user;
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new SetMemberPermissionResponse(ResponseErrorCode::NotLoggedIn));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+
+    if(!groupRef)
+    {
+        MessageOutgoing::Reference response(new SetMemberPermissionResponse(ResponseErrorCode::NotAMember));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // @TODO: Check permissions
+
+    if(!groupRef->setMemberPermission(req.getUsername(), req.getRole()))
+    {
+        MessageOutgoing::Reference response(new SetMemberPermissionResponse(ResponseErrorCode::MemberNotExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new SetMemberPermissionResponse());
+    this->connection->sendMessage(response);
     return true;
 }

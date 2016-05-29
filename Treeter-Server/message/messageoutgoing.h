@@ -12,9 +12,17 @@ enum class ResponseErrorCode
 {
     OK = 0,
     BadName = 1,
-    ObjectExist = 2,
+    NotAMember = 2,
     AccessDenied = 3,
-    MultipleSessionsNotAllowed = 4
+    MultipleSessionsNotAllowed = 4,
+    RootNotAllowed = 5,
+    UserExist = 6,
+    UserNotExist = 7,
+    GroupExist = 8,
+    GroupNotExist = 9,
+    MemberExist = 10,
+    MemberNotExist = 11,
+    NotLoggedIn = 12
 };
 
 class MessageOutgoing
@@ -84,23 +92,23 @@ public:
     virtual std::string toString();
 };
 
-/** createSubgroupResponse **/
+/** CreateSubgroupResponse **/
 
-class createSubgroupResponse: public MessageOutgoing
+class CreateSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    createSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    CreateSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
-/** removeSubgroupResponse **/
+/** RemoveSubgroupResponse **/
 
-class removeSubgroupResponse: public MessageOutgoing
+class RemoveSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    removeSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    RemoveSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
@@ -108,10 +116,11 @@ public:
 
 class GetSubgroupsResponse: public MessageOutgoing
 {
-    std::vector<std::string> subgroups;
+    std::list<std::string> subgroups;
     ResponseErrorCode error;
 public:
-    GetSubgroupsResponse(std::vector<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): subgroups(subgroups), error(error) { }
+    GetSubgroupsResponse(std::list<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): subgroups(subgroups), error(error) { }
+    GetSubgroupsResponse(ResponseErrorCode error): GetSubgroupsResponse(std::list<std::string>(), error) { }
     virtual std::string toString();
 };
 
@@ -140,10 +149,11 @@ public:
 
 class GetGroupUsersResponse: public MessageOutgoing
 {
-    std::vector<std::pair<std::string, MemberRole>> users;
+    std::list<std::pair<std::string, MemberRole>> users;
     ResponseErrorCode error;
 public:
-    GetGroupUsersResponse(std::vector<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
+    GetGroupUsersResponse(std::list<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
+    GetGroupUsersResponse(ResponseErrorCode error): GetGroupUsersResponse(std::list<std::pair<std::string, MemberRole>>(), error) { }
     virtual std::string toString();
 };
 
@@ -171,10 +181,21 @@ public:
 
 class GetMessagesResponse: public MessageOutgoing
 {
-    std::vector<Model::GroupMessage> messages;
+    std::list<Model::GroupMessage> messages;
     ResponseErrorCode error;
 public:
-    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): messages(messages), error(error) { }
+    GetMessagesResponse(std::list<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): messages(messages), error(error) { }
+    GetMessagesResponse(ResponseErrorCode error): GetMessagesResponse(std::list<Model::GroupMessage>(), error) { }
+    virtual std::string toString();
+};
+
+/** SetMemberPermissionResponse **/
+
+class SetMemberPermissionResponse: public MessageOutgoing
+{
+    ResponseErrorCode error;
+public:
+    SetMemberPermissionResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
     virtual std::string toString();
 };
 

@@ -18,6 +18,12 @@ namespace Model
         });
     }
 
+    std::pair<std::string, std::string> Group::splitParentPath(std::string path)
+    {
+        size_t slash_pos = path.find_last_of('/');
+        return std::make_pair(path.substr(0, slash_pos), path.substr(slash_pos+1));
+    }
+
     Group::Group(std::string name, Group* parent):
         invalidated(false), name(name),
         absolutePath((parent != nullptr ? parent->absolutePath : "")+"/"+name), parent(parent) { }

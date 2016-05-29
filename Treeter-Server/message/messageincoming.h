@@ -145,7 +145,8 @@ class AddMeToGroupRequest: public MessageIncoming
 public:
     AddMeToGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    std::string getPath() const;
+    std::string getParentPath() const;
+    std::string getSubgroup() const;
 };
 
 /** SendMessageRequest **/
@@ -177,6 +178,7 @@ class SetMemberPermissionRequest: public MessageIncoming
 public:
     SetMemberPermissionRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getPath() const;
     std::string getUsername() const;
     MemberRole getRole() const;
 };

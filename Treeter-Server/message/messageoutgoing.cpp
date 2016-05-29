@@ -55,7 +55,7 @@ std::string CreateAccountResponse::toString()
 
 /** createSubgroupResponse **/
 
-std::string createSubgroupResponse::toString()
+std::string CreateSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "createGroup";
@@ -66,7 +66,7 @@ std::string createSubgroupResponse::toString()
 
 /** removeSubgroupResponse **/
 
-std::string removeSubgroupResponse::toString()
+std::string RemoveSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "removeGroup";
@@ -175,6 +175,17 @@ std::string GetMessagesResponse::toString()
     }
     j["messages"] = msgVect;
 
+    if (error != ResponseErrorCode::OK)
+        j["error"] = static_cast<unsigned int>(error);
+    return j.dump();
+}
+
+/** SetMemberPermissionResponse **/
+
+std::string SetMemberPermissionResponse::toString()
+{
+    nlohmann::json j;
+    j["response"] = "setMemberPermission";
     if (error != ResponseErrorCode::OK)
         j["error"] = static_cast<unsigned int>(error);
     return j.dump();

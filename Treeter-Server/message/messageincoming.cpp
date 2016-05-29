@@ -133,9 +133,14 @@ std::string GetGroupUsersRequest::getPath() const
 
 /** AddMeToGroupRequest **/
 
-std::string AddMeToGroupRequest::getPath() const
+std::string AddMeToGroupRequest::getParentPath() const
 {
     return json_object["path"];
+}
+
+std::string AddMeToGroupRequest::getSubgroup() const
+{
+    return json_object["subgroup"];
 }
 
 /** SendMessageRequest **/
@@ -163,6 +168,11 @@ std::string GetMessagesRequest::getPath() const
 std::string SetMemberPermissionRequest::getUsername() const
 {
     return json_object["username"];
+}
+
+std::string SetMemberPermissionRequest::getPath() const
+{
+    return json_object["path"];
 }
 
 MemberRole SetMemberPermissionRequest::getRole() const

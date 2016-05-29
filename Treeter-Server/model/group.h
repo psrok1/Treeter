@@ -54,6 +54,7 @@ namespace Model
         Group& operator=(const Group&) = delete;
 
         static bool validateName(std::string name);
+        static std::pair<std::string, std::string> splitParentPath(std::string path);
         std::string getGroupName() const;
         std::string getAbsolutePath() const;
 
