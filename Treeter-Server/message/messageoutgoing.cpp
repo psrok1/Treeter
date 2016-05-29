@@ -191,17 +191,6 @@ std::string SetMemberPermissionResponse::toString()
     return j.dump();
 }
 
-/** AddUserToGroupNotification **/
-
-std::string AddUserToGroupNotification::toString()
-{
-    nlohmann::json j;
-    j["notification"] = "addUserToGroup";
-    j["path"] = path;
-    j["username"] = username;
-    return j.dump();
-}
-
 /** AddedToGroupNotification **/
 
 std::string AddedToGroupNotification::toString()

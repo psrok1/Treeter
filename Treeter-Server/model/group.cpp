@@ -90,7 +90,11 @@ namespace Model
             return nullptr;
         //Update the DB, unless it's just an import operation
         if(!imported)
+        {
             DB.insertGroup(name,this->absolutePath);
+            // Send notification to all
+            this->sendNotification(MessageOutgoing::Reference(new AddedSubgroupNotification(this->absolutePath, name)));
+        }
 
         return this->children[name] = std::shared_ptr<Group>(new Group(name, this));
     }
@@ -120,6 +124,9 @@ namespace Model
 
         // Delete from DB
         DB.deleteGroup(this->absolutePath+"/"+name);
+
+        // Send notification to all
+        this->sendNotification(MessageOutgoing::Reference(new RemovedSubgroupNotification(this->absolutePath, name)));
 
         return true;
     }
@@ -200,7 +207,12 @@ namespace Model
 
         //Update the DB, unless it's just an import operation
         if(!imported)
+        {
             DB.insertMember(user->getLogin(),group_ref->getAbsolutePath(),static_cast<int> (memberRole));
+
+            // Send notification to all
+            this->sendNotification(MessageOutgoing::Reference(new AddedToGroupNotification(this->absolutePath, login, memberRole)));
+        }
 
         return true;
     }
@@ -230,6 +242,9 @@ namespace Model
         this->members.erase(it);
 
         DB.deleteMember(memberLogin,this->absolutePath);
+
+        // Send notification to all
+        this->sendNotification(MessageOutgoing::Reference(new RemovedFromGroupNotification(this->absolutePath, memberLogin)));
 
         return true;
     }
@@ -271,6 +286,10 @@ namespace Model
 
         member.role = memberRole;
         DB.updateMemberRole(memberLogin,this->absolutePath,static_cast<int>(memberRole));
+
+        // Send notification to all
+        this->sendNotification(MessageOutgoing::Reference(new ModifiedMemberPermissionNotification(memberLogin, this->absolutePath, memberRole)));
+
         return true;
     }
 
@@ -328,7 +347,10 @@ namespace Model
     void Group::sendMessage(GroupMessage message)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
-        // @TODO: Adding message to db or message list
+
+        // @TODO: Adding msg to db
+        this->messages.push_back(message);
+
         MessageOutgoing::Reference newMsgNotification(new NewMessageNotification(this->absolutePath, message));
         sendNotification(newMsgNotification);
     }

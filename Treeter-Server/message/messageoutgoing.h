@@ -201,16 +201,6 @@ public:
 
 /** NOTIFICATIONS **/
 
-/** AddUserToGroupNotification **/
-
-class AddUserToGroupNotification: public MessageOutgoing
-{
-    std::string path, username;
-public:
-    AddUserToGroupNotification(std::string path, std::string username) : path(path), username(username) { }
-    virtual std::string toString();
-};
-
 /** AddedToGroupNotification **/
 
 class AddedToGroupNotification: public MessageOutgoing
