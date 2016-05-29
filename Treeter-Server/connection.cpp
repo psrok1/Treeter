@@ -121,6 +121,13 @@ void Connection::operator()(Reference refConnection)
 
     shutdown(socketDescriptor, SHUT_RD);
 
+    // If associated user: make a logout
+    if(this->user)
+    {
+        this->user->unregisterConnection();
+        this->user.reset();
+    }
+
     // Close sender instance
     messageSender->stopThread();
     messageSender->joinThread();

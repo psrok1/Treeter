@@ -57,9 +57,22 @@ bool MessageProcessor::processRequest(const AuthUserRequest &req)
     }
 
     // Add relation to current connection
+    if(!userRef->registerConnection(this->connection))
+    {
+        MessageOutgoing::Reference response(new AuthUserResponse(ResponseErrorCode::MultipleSessionsNotAllowed));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // Add relation connection -> user (sometimes can be useful)
     this->connection->user = userRef;
 
-    // Add group subscriptions
+    // Established!
+    // Get group paths list
+    std::list<std::string> groupPaths = userRef->listGroupPaths();
+
+    MessageOutgoing::Reference response(new AuthUserResponse(groupPaths));
+    this->connection->sendMessage(response);
 
     return true;
 }
@@ -89,7 +102,7 @@ bool MessageProcessor::processRequest(const CreateAccountRequest &req)
     return true;
 }
 
-/** createSubgroupRequest **/
+/** CreateSubgroupRequest **/
 
 bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
 {
@@ -98,7 +111,7 @@ bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
     return true;
 }
 
-/** removeSubgroupRequest **/
+/** RemoveSubgroupRequest **/
 
 bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
 {

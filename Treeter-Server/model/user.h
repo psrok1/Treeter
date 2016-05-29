@@ -54,7 +54,7 @@ namespace Model
         std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
 
-        void registerConnection(std::shared_ptr<Connection> connection);
+        bool registerConnection(std::shared_ptr<Connection> connection);
         void unregisterConnection();
         std::shared_ptr<Connection> getConnection();
 

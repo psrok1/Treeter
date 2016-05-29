@@ -12,7 +12,8 @@ enum class ResponseErrorCode
     OK = 0,
     BadName = 1,
     ObjectExist = 2,
-    AccessDenied = 3
+    AccessDenied = 3,
+    MultipleSessionsNotAllowed = 4
 };
 
 class MessageOutgoing

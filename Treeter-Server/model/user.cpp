@@ -135,11 +135,16 @@ namespace Model
     /**
      * @brief User::registerConnection
      * Registers connection subscription in user object
+     * Returns false, if other connection is already registered
      */
-    void User::registerConnection(std::shared_ptr<Connection> connection)
+    bool User::registerConnection(std::shared_ptr<Connection> connection)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
+        if(this->connection)
+            return false;
+
         this->connection = connection;
+        return true;
     }
 
     /**
