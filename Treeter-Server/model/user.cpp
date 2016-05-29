@@ -140,7 +140,8 @@ namespace Model
     bool User::registerConnection(std::shared_ptr<Connection> connection)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
-        if(this->connection)
+
+        if(!this->connection.expired())
             return false;
 
         this->connection = connection;

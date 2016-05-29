@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <memory>
 #include <model/groupmessage.h>
 #include <model/memberrole.h>
@@ -65,11 +66,11 @@ public:
 
 class AuthUserResponse: public MessageOutgoing
 {
-    std::vector<std::string> paths;
+    std::list<std::string> paths;
     ResponseErrorCode error;
 public:
-    AuthUserResponse(std::vector<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
-    AuthUserResponse(ResponseErrorCode error): AuthUserResponse(std::vector<std::string>(), error) { }
+    AuthUserResponse(std::list<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
+    AuthUserResponse(ResponseErrorCode error): AuthUserResponse(std::list<std::string>(), error) { }
     virtual std::string toString();
 };
 
