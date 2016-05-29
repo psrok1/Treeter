@@ -81,6 +81,7 @@ std::string GetSubgroupsResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "getSubgroups";
+    j["path"] = path;
     j["subgroups"] = subgroups;
     if (error != ResponseErrorCode::OK)
         j["error"] = static_cast<unsigned int>(error);
@@ -115,6 +116,7 @@ std::string GetGroupUsersResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "getGroupUsers";
+    j["path"] = path;
     nlohmann::json usersArray = nlohmann::json::array({});
 
     for (auto user : users)
@@ -167,6 +169,7 @@ std::string GetMessagesResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "getMessages";
+    j["path"] = path;
 
     std::vector<std::string> msgVect;
     for (auto msg : messages)

@@ -167,7 +167,7 @@ bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new RemoveSubgroupResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -208,14 +208,14 @@ bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetSubgroupsResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
 \
     std::list<std::string> groupNames = groupRef->listGroupNames();
 
-    MessageOutgoing::Reference response(new GetSubgroupsResponse(groupNames));
+    MessageOutgoing::Reference response(new GetSubgroupsResponse(req.getPath(), groupNames));
     this->connection->sendMessage(response);
     return true;
 }
@@ -251,7 +251,7 @@ bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new AddUserToGroupResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -309,7 +309,7 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -360,14 +360,14 @@ bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetGroupUsersResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
 
     auto membersList = groupRef->listOfMembers();
 
-    MessageOutgoing::Reference response(new GetGroupUsersResponse(membersList));
+    MessageOutgoing::Reference response(new GetGroupUsersResponse(req.getPath(), membersList));
     this->connection->sendMessage(response);
     return true;
 }
@@ -396,7 +396,7 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
 
     if(parentGroupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new AddMeToGroupResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -447,7 +447,7 @@ bool MessageProcessor::processRequest(const SendMessageRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new SendMessageResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -483,14 +483,14 @@ bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetMessagesResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
 
     std::list<Model::GroupMessage> messages = groupRef->getMessages();
 
-    MessageOutgoing::Reference response(new GetMessagesResponse(messages));
+    MessageOutgoing::Reference response(new GetMessagesResponse(req.getPath(), messages));
     this->connection->sendMessage(response);
     return true;
 }
@@ -519,7 +519,7 @@ bool MessageProcessor::processRequest(const SetMemberPermissionRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
     {
-        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new SetMemberPermissionResponse(ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }

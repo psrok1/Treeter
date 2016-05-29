@@ -116,11 +116,12 @@ public:
 
 class GetSubgroupsResponse: public MessageOutgoing
 {
+    std::string path;
     std::list<std::string> subgroups;
     ResponseErrorCode error;
 public:
-    GetSubgroupsResponse(std::list<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): subgroups(subgroups), error(error) { }
-    GetSubgroupsResponse(ResponseErrorCode error): GetSubgroupsResponse(std::list<std::string>(), error) { }
+    GetSubgroupsResponse(std::string path, std::list<std::string> subgroups, ResponseErrorCode error = ResponseErrorCode::OK): path(path), subgroups(subgroups), error(error) { }
+    GetSubgroupsResponse(ResponseErrorCode error): GetSubgroupsResponse("", std::list<std::string>(), error) { }
     virtual std::string toString();
 };
 
@@ -149,11 +150,12 @@ public:
 
 class GetGroupUsersResponse: public MessageOutgoing
 {
+    std::string path;
     std::list<std::pair<std::string, MemberRole>> users;
     ResponseErrorCode error;
 public:
-    GetGroupUsersResponse(std::list<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
-    GetGroupUsersResponse(ResponseErrorCode error): GetGroupUsersResponse(std::list<std::pair<std::string, MemberRole>>(), error) { }
+    GetGroupUsersResponse(std::string path, std::list<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), users(users), error(error) { }
+    GetGroupUsersResponse(ResponseErrorCode error): GetGroupUsersResponse("", std::list<std::pair<std::string, MemberRole>>(), error) { }
     virtual std::string toString();
 };
 
@@ -181,11 +183,12 @@ public:
 
 class GetMessagesResponse: public MessageOutgoing
 {
+    std::string path;
     std::list<Model::GroupMessage> messages;
     ResponseErrorCode error;
 public:
-    GetMessagesResponse(std::list<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): messages(messages), error(error) { }
-    GetMessagesResponse(ResponseErrorCode error): GetMessagesResponse(std::list<Model::GroupMessage>(), error) { }
+    GetMessagesResponse(std::string path, std::list<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): path(path), messages(messages), error(error) { }
+    GetMessagesResponse(ResponseErrorCode error): GetMessagesResponse("", std::list<Model::GroupMessage>(), error) { }
     virtual std::string toString();
 };
 
