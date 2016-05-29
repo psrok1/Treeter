@@ -44,7 +44,7 @@ public enum ErrorCodeResponse
         return ErrorCodeResponse.errorStringMap.get(this);
     }
 
-    public static ErrorCodeResponse valueOf(int errNo) {
-        return map.get(errNo);
+    public static ErrorCodeResponse valueOf(Long errNo) {
+        return map.get(errNo.intValue());
     }
 }

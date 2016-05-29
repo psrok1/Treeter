@@ -12,6 +12,8 @@ import com.treeter_client.Model.GroupTreeModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MainView
 {
@@ -35,8 +37,6 @@ public class MainView
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(new Color(0xA6, 0x80, 0xB8));
-        // @TODO line below to remove
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         UIManager.put("Tree.collapsedIcon", new ImageIcon(getClass().getResource("/tree-closed.png")));
         UIManager.put("Tree.expandedIcon", new ImageIcon(getClass().getResource("/tree-opened.png")));
 
@@ -108,6 +108,14 @@ public class MainView
 
     public void attachController(MainController controller)
     {
+        frame.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                controller.disconnect();
+            }
+        });
     }
 
     public static void main(String[] args)

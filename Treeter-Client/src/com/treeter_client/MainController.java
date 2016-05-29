@@ -174,6 +174,7 @@ class MessageProcessor implements IMessageProcessor
         if(response.getErrorCode() != ErrorCodeResponse.OK)
         {
             controller.connectView.showError(response.getErrorCode());
+            controller.client.close();
             return;
         }
 
@@ -195,6 +196,7 @@ class MessageProcessor implements IMessageProcessor
         if(response.getErrorCode() != ErrorCodeResponse.OK)
         {
             controller.connectView.showError(response.getErrorCode());
+            controller.client.close();
             return;
         }
 

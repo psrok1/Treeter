@@ -72,10 +72,10 @@ public abstract class MessageResponse
 
     public ErrorCodeResponse getErrorCode()
     {
-        if(jsonObject.containsKey("error"))
+        if(!jsonObject.containsKey("error"))
             return ErrorCodeResponse.OK;
         else
-            return ErrorCodeResponse.valueOf((int)jsonObject.get("error"));
+            return ErrorCodeResponse.valueOf((Long)jsonObject.get("error"));
     }
 
     public abstract void process(IMessageProcessor processor);
