@@ -123,11 +123,4 @@ namespace Model
         }
         this->rootGroup->importFromDatabase(*this);
     }
-
-    void DataModel::exportToDatabase()
-    {
-        for(std::shared_ptr<User> user: getValues(this->users))
-            user->exportToDatabase();
-        this->rootGroup->exportToDatabase();
-    }
 }

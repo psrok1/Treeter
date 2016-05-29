@@ -1,6 +1,7 @@
 #include "messageincoming.h"
 #include "messageincomingctor.h"
 #include <chrono>
+#include <stdexcept>
 
 using json = nlohmann::json;
 
@@ -8,7 +9,19 @@ MessageIncomingCtorMap ctorMap(
 {
     {"echo", messageIncomingCtor<EchoRequest>()},
     {"hello", messageIncomingCtor<HelloRequest>()},
-    {"startEncryption", messageIncomingCtor<StartEncryptionRequest>()}
+    {"startEncryption", messageIncomingCtor<StartEncryptionRequest>()},
+    {"createAccount", messageIncomingCtor<CreateAccountRequest>()},
+    {"authUser", messageIncomingCtor<AuthUserRequest>()},
+    {"getGroupUsers", messageIncomingCtor<GetGroupUsersRequest>()},
+    {"getMessages", messageIncomingCtor<GetMessagesRequest>()},
+    {"sendMessage", messageIncomingCtor<SendMessageRequest>()},
+    {"addMeToGroup", messageIncomingCtor<AddMeToGroupRequest>()},
+    {"createSubgroup", messageIncomingCtor<CreateSubgroupRequest>()},
+    {"removeSubgroup", messageIncomingCtor<RemoveSubgroupRequest>()},
+    {"getSubgroups", messageIncomingCtor<GetSubgroupsRequest>()},
+    {"addUserToGroup", messageIncomingCtor<AddUserToGroupRequest>()},
+    {"removeUserFromGroup", messageIncomingCtor<RemoveUserFromGroupRequest>()},
+    {"setMemberPermission", messageIncomingCtor<SetMemberPermissionRequest>()}
 });
 
 MessageIncoming::Reference MessageIncoming::fromString(std::string message)
@@ -55,26 +68,26 @@ std::string CreateAccountRequest::getPassword() const
     return json_object["password"];
 }
 
-/** CreateGroupRequest **/
+/** createSubgroupRequest **/
 
-std::string CreateGroupRequest::getParentPath() const
+std::string CreateSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string CreateGroupRequest::getSubgroupName() const
+std::string CreateSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
 
-/** RemoveGroupRequest **/
+/** removeSubgroupRequest **/
 
-std::string RemoveGroupRequest::getParentPath() const
+std::string RemoveSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string RemoveGroupRequest::getSubgroupName() const
+std::string RemoveSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
@@ -97,11 +110,6 @@ std::string AddUserToGroupRequest::getUsername() const
 std::string AddUserToGroupRequest::getPath() const
 {
     return json_object["path"];
-}
-
-bool AddUserToGroupRequest::getModerator() const
-{
-    return json_object["moderator"];
 }
 
 /** RemoveUserFromGroupRequest **/
@@ -130,13 +138,6 @@ std::string AddMeToGroupRequest::getPath() const
     return json_object["path"];
 }
 
-/** GetGroupPendingUsersRequest **/
-
-std::string GetGroupPendingUsersRequest::getPath() const
-{
-    return json_object["path"];
-}
-
 /** SendMessageRequest **/
 
 std::string SendMessageRequest::getPath() const
@@ -144,11 +145,9 @@ std::string SendMessageRequest::getPath() const
     return json_object["path"];
 }
 
-Model::GroupMessage SendMessageRequest::getMessage() const
+std::string SendMessageRequest::getMessage() const
 {
-    std::string author = json_object["message"]["author"];
-    std::string content = json_object["message"]["content"];
-    return Model::GroupMessage(author, content);    // Ignore timestamp stored in incoming message
+    return json_object["content"];
 }
 
 /** GetMessagesRequest **/
@@ -158,11 +157,23 @@ std::string GetMessagesRequest::getPath() const
     return json_object["path"];
 }
 
-std::chrono::system_clock::time_point GetMessagesRequest::getLastMsgTimestamp() const
+
+/** SetMemberPermissionRequest **/
+
+std::string SetMemberPermissionRequest::getUsername() const
 {
-    if (json_object.count("lastMsgTimestamp"))
-    {
-        return std::chrono::system_clock::from_time_t(json_object["lastMsgTimestamp"]);
-    }
-    return std::chrono::system_clock::from_time_t(0);
+    return json_object["username"];
+}
+
+MemberRole SetMemberPermissionRequest::getRole() const
+{
+    std::string role_string = json_object["role"];
+    if (role_string == "standard")
+        return MemberRole::Member;
+    else if (role_string == "moderator")
+        return MemberRole::Moderator;
+    else if (role_string == "pending")
+        return MemberRole::PendingApproval;
+    // maybe throw error here
+    throw new std::runtime_error("Unknown SetMemberPermission role value");
 }

@@ -29,4 +29,4 @@ public:
     ~Database();
 };
 
-#endif TREETERDATABASE_H
+#endif

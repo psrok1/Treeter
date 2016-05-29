@@ -36,8 +36,9 @@ std::string AuthUserResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "authUser";
+    j["paths"] = paths;
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -48,29 +49,29 @@ std::string CreateAccountResponse::toString()
     nlohmann::json j;
     j["response"] = "createAccount";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
-/** CreateGroupResponse **/
+/** createSubgroupResponse **/
 
-std::string CreateGroupResponse::toString()
+std::string createSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "createGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
-/** RemoveGroupResponse **/
+/** removeSubgroupResponse **/
 
-std::string RemoveGroupResponse::toString()
+std::string removeSubgroupResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "removeGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -82,7 +83,7 @@ std::string GetSubgroupsResponse::toString()
     j["response"] = "getSubgroups";
     j["subgroups"] = subgroups;
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -93,7 +94,7 @@ std::string AddUserToGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "addUserToGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -104,19 +105,7 @@ std::string RemoveUserFromGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "removeUserFromGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
-    return j.dump();
-}
-
-/** GetGroupPathsResponse **/
-
-std::string GetGroupPathsResponse::toString()
-{
-    nlohmann::json j;
-    j["response"] = "getGroupPaths";
-    j["paths"] = groupPaths;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -126,10 +115,27 @@ std::string GetGroupUsersResponse::toString()
 {
     nlohmann::json j;
     j["response"] = "getGroupUsers";
-    j["moderators"] = moderators;
-    j["users"] = users;
+    nlohmann::json usersArray = nlohmann::json::array({});
+
+    for (auto user : users)
+    {
+        nlohmann::json tmp;
+        std::string role_str;
+        tmp["login"] = user.first;
+        if(user.second == MemberRole::Member)
+            role_str = "standard";
+        else if (user.second == MemberRole::Moderator)
+            role_str = "moderator";
+        else if (user.second == MemberRole::PendingApproval)
+            role_str = "pending";
+
+        tmp["role"] = role_str;
+        usersArray.push_back(tmp);
+    }
+    j["users"] = usersArray;
+
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -140,18 +146,7 @@ std::string AddMeToGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "addMeToGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
-    return j.dump();
-}
-
-/** GetGroupPendingUsersResponse **/
-
-std::string GetGroupPendingUsersResponse::toString()
-{
-    nlohmann::json j;
-    j["response"] = "getGroupPendingUsers";
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -162,7 +157,7 @@ std::string SendMessageResponse::toString()
     nlohmann::json j;
     j["response"] = "sendMessage";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -181,7 +176,7 @@ std::string GetMessagesResponse::toString()
     j["messages"] = msgVect;
 
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -193,8 +188,6 @@ std::string AddUserToGroupNotification::toString()
     j["notification"] = "addUserToGroup";
     j["path"] = path;
     j["username"] = username;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -204,10 +197,16 @@ std::string AddedToGroupNotification::toString()
 {
     nlohmann::json j;
     j["notification"] = "addedToGroup";
+    j["username"] = username;
+    std::string role_str;
+    if(role == MemberRole::Member)
+        role_str = "standard";
+    else if (role == MemberRole::Moderator)
+        role_str = "moderator";
+    else if (role == MemberRole::PendingApproval)
+        role_str = "pending";
+    j["role"] = role_str;
     j["path"] = path;
-    j["moderator"] = moderator;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -217,9 +216,8 @@ std::string RemovedFromGroupNotification::toString()
 {
     nlohmann::json j;
     j["notification"] = "removedFromGroup";
+    j["username"] = username;
     j["path"] = path;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -231,7 +229,54 @@ std::string NewMessageNotification::toString()
     j["notification"] = "newMessage";
     j["path"] = path;
     j["message"] = message.toString();
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
+    return j.dump();
+}
+
+/** ModifiedMemberPermissionNotification **/
+std::string ModifiedMemberPermissionNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "modifiedMemberPermission";
+    j["username"] = username;
+    j["path"] = path;
+
+    std::string role_str;
+    if(role == MemberRole::Member)
+        role_str = "standard";
+    else if (role == MemberRole::Moderator)
+        role_str = "moderator";
+    else if (role == MemberRole::PendingApproval)
+        role_str = "pending";
+    j["role"] = role_str;
+
+    return j.dump();
+}
+
+/** AddedSubgroupNotification **/
+std::string AddedSubgroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "addedSubgroup";
+    j["path"] = path;
+    j["subgroup"] = subgroup;
+    return j.dump();
+}
+
+/** RemovedSubgroupNotification **/
+std::string RemovedSubgroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "removedSubgroup";
+    j["path"] = path;
+    j["subgroup"] = subgroup;
+    return j.dump();
+}
+
+/** ResetNotification **/
+std::string ResetNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "reset";
+    j["listeningOnPort"] = "port";
     return j.dump();
 }

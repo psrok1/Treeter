@@ -14,11 +14,13 @@ int Database::gatherResults(void *results, int columnsCount, char **textData, ch
 {
     ResultSet *resultset = (ResultSet*) results;
 
-    if(resultset->ColumnNames.size()<columnsCount)
+    if(resultset->ColumnNames.size() < static_cast<size_t>(columnsCount))
+    {
         for(int i=0; i<columnsCount; ++i)
         {
             resultset->ColumnNames.push_back(std::string(columnName[i]));
-        };
+        }
+    }
 
     Result result;
     for(int i=0; i<columnsCount; ++i)
