@@ -3,6 +3,10 @@
 #include "messageoutgoing.h"
 #include "../server.h"
 
+#include "model/datamodel.h"
+#include "model/group.h"
+#include "model/user.h"
+
 MessageProcessor::MessageProcessor(Connection::Reference conn): connection(conn) { }
 
 /** EchoRequest **/
@@ -43,8 +47,20 @@ bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
 
 bool MessageProcessor::processRequest(const AuthUserRequest &req)
 {
-    // TODO
-    (void)req;
+    auto userRef = this->connection->model->getUserByLogin(req.getLogin());
+
+    if(!userRef || !userRef->verifyPassword(req.getPassword()))
+    {
+        MessageOutgoing::Reference response(new AuthUserResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    // Add relation to current connection
+    this->connection->user = userRef;
+
+    // Add group subscriptions
+
     return true;
 }
 
@@ -52,8 +68,24 @@ bool MessageProcessor::processRequest(const AuthUserRequest &req)
 
 bool MessageProcessor::processRequest(const CreateAccountRequest &req)
 {
-    // TODO
-    (void)req;
+    if(!Model::User::validateLogin(req.getLogin()))
+    {
+        MessageOutgoing::Reference response(new CreateAccountResponse(ResponseErrorCode::BadName));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    auto userRef = this->connection->model->addUser(req.getLogin(), req.getPassword());
+
+    if(!userRef)
+    {
+        MessageOutgoing::Reference response(new CreateAccountResponse(ResponseErrorCode::ObjectExist));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
+    MessageOutgoing::Reference response(new CreateAccountResponse());
+    this->connection->sendMessage(response);
     return true;
 }
 

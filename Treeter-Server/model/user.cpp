@@ -132,6 +132,37 @@ namespace Model
         return getValues(this->groups);
     }
 
+    /**
+     * @brief User::registerConnection
+     * Registers connection subscription in user object
+     */
+    void User::registerConnection(std::shared_ptr<Connection> connection)
+    {
+        std::unique_lock<std::recursive_mutex> lck(mu);
+        this->connection = connection;
+    }
+
+    /**
+     * @brief User::unregisterConnection
+     * Removes subscription
+     */
+    void User::unregisterConnection()
+    {
+        std::unique_lock<std::recursive_mutex> lck(mu);
+        this->connection.reset();
+    }
+
+    /**
+     * @brief User::getConnection
+     * Returns locked connection pointer
+     */
+    std::shared_ptr<Connection> User::getConnection()
+    {
+        std::unique_lock<std::recursive_mutex> lck(mu);
+        return this->connection.lock();
+    }
+
+
     void User::exportToDatabase()
     {
         DB.insertUser(login,password);

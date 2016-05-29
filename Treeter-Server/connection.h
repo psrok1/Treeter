@@ -17,6 +17,8 @@
  
 class Server;
 class MessageProcessor;
+
+namespace Model { class DataModel; }
  
 class Connection : public Threadloop<Connection>
 {
@@ -56,9 +58,12 @@ class Connection : public Threadloop<Connection>
     // Logged user
     std::shared_ptr<Model::User> user;
 
+    // Weak reference to model
+    Model::DataModel* model;
+
     void sendString(std::string msg);
 public:
-    Connection(Server* srv, int socket);
+    Connection(Server* srv, int socket, Model::DataModel* model);
     ~Connection();
  
     virtual void stopThread();

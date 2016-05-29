@@ -12,7 +12,7 @@
 
 unsigned Connection::NEXT_ID = 0;
 
-Connection::Connection(Server* srv, int socket): id(Connection::NEXT_ID++), server(srv), stopped(false)
+Connection::Connection(Server* srv, int socket, Model::DataModel* model): id(Connection::NEXT_ID++), server(srv), stopped(false), model(model)
 {
     // Creating shutdown pipe
     if(pipe(this->shutdownPipe)==-1)

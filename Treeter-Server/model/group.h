@@ -40,7 +40,6 @@ namespace Model
         std::unordered_map<std::string, std::shared_ptr<Group>> children;
 
         std::list<GroupMessage> messages;
-        ConnectionList connections;
         std::unordered_map<std::string, Member> members;
 
         mutable std::recursive_mutex mu;
@@ -62,9 +61,6 @@ namespace Model
         bool deleteGroup(std::string name);
         std::list<std::string> listGroupNames() const;
         std::shared_ptr<Group> getGroupByName(std::string name) const;
-
-        void registerConnection(Connection::Reference connection);
-        void unregisterConnection(Connection::Reference connection);
 
         bool addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole = MemberRole::PendingApproval, bool imported = false);
         bool deleteMember(std::string memberLogin);

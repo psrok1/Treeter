@@ -47,11 +47,25 @@ namespace Model
     /**
      * @brief Group::sendNotification
      * Sends message to all associated connections
-     * ConnectionList object is internally synchronized, so critical section is unnecessary
      */
     void Group::sendNotification(MessageOutgoing::Reference msg)
     {
-        this->connections.sendToAll(msg);
+        std::unique_lock<std::recursive_mutex> lck(mu);
+
+        for(Member& member: getValues(this->members))
+        {
+            std::shared_ptr<User> userRef = member.user.lock();
+            // User could be invalidated
+            if(!userRef)
+                continue;
+
+            // User might be not priviliged
+            if(member.role == MemberRole::PendingApproval)
+                continue;
+
+            Connection::Reference connection = userRef->getConnection();
+            connection->sendMessage(msg);
+        }
     }
 
     /**
@@ -148,27 +162,6 @@ namespace Model
             return nullptr;
 
         return (*it).second;
-    }
-
-    /**
-     * @brief Group::registerConnection
-     * Adds new connection (observer) into group.
-     * ConnectionList object is internally synchronized, so critical section is unnecessary
-     */
-    void Group::registerConnection(Connection::Reference connection)
-    {
-        this->connections.insert(connection);
-    }
-
-    /**
-     * @brief Group::registerConnection
-     * Removes connection (observer) from group.
-     * ConnectionList object is internally synchronized, so critical section is unnecessary
-     */
-    void Group::unregisterConnection(Connection::Reference connection)
-    {
-        // ConnectionList object is internally synchronized: there is no need to lock inside critical section
-        this->connections.remove(connection);
     }
 
     /**

@@ -11,6 +11,8 @@
 
 extern Database DB;
 
+class Connection;
+
 namespace Model
 {
     class Group;
@@ -23,6 +25,8 @@ namespace Model
 
         const std::string login;
         const std::string password;
+
+        std::weak_ptr<Connection> connection;
 
         std::unordered_map<std::string, std::shared_ptr<Group>> groups;
 
@@ -49,6 +53,10 @@ namespace Model
         std::shared_ptr<Group> getGroupByPath(std::string groupPath);
         std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
+
+        void registerConnection(std::shared_ptr<Connection> connection);
+        void unregisterConnection();
+        std::shared_ptr<Connection> getConnection();
 
         void exportToDatabase();
     };

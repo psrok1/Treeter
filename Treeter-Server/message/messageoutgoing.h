@@ -7,7 +7,13 @@
 #include <model/groupmessage.h>
 #include <model/memberrole.h>
 
-enum class ResponseErrorCode { OK };
+enum class ResponseErrorCode
+{
+    OK = 0,
+    BadName = 1,
+    ObjectExist = 2,
+    AccessDenied = 3
+};
 
 class MessageOutgoing
 {
@@ -62,6 +68,7 @@ class AuthUserResponse: public MessageOutgoing
     ResponseErrorCode error;
 public:
     AuthUserResponse(std::vector<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
+    AuthUserResponse(ResponseErrorCode error): AuthUserResponse(std::vector<std::string>(), error) { }
     virtual std::string toString();
 };
 

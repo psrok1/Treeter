@@ -14,9 +14,13 @@
 #include "connectionlist.h"
 #include "threadloop.h"
 
+#include "model/datamodel.h"
+
 class Server : public Threadloop<Server>
 {
     ConnectionList connectionList;
+    Model::DataModel model;
+
     std::atomic<bool> stopped;
     int shutdownPipe[2];
 

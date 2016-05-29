@@ -47,11 +47,16 @@ Server::~Server()
 
 void Server::operator()(Reference)
 {
-    std::cout << "Server started...\n";
+    std::cout << "Hello world! o/ \n\n";
 
     //Set descriptors up
     fd_set descriptors;
     int maxdesc = socketDescriptor>shutdownPipe[0]? socketDescriptor+1: shutdownPipe[0]+1;
+
+    std::cout << "Importing data from database...\n";
+    this->model.importFromDatabase();
+
+    std::cout << "Listening on port "<<usedPort<<"...\n";
 
     // ---- SERVER LOOP
     try
@@ -107,7 +112,7 @@ void Server::createConnection()
 {
     try
     {
-        Connection::Reference connection(new Connection(this, socketDescriptor));
+        Connection::Reference connection(new Connection(this, socketDescriptor, &this->model));
         connectionList.insert(connection);
         connection->createThread(connection);
         connection->detachThread();
