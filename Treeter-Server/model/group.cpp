@@ -70,7 +70,8 @@ namespace Model
                 continue;
 
             Connection::Reference connection = userRef->getConnection();
-            connection->sendMessage(msg);
+            if(connection)
+                connection->sendMessage(msg);
         }
     }
 
