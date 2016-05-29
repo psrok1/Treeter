@@ -19,6 +19,11 @@ public class GetMessagesResponse extends MessageResponse
         processor.processMessage(this);
     }
 
+    public String getPath()
+    {
+        return (String) jsonObject.get("path");
+    }
+
     public ArrayList<String> getMessages()
     {
         ArrayList<String> result = new ArrayList<String>();

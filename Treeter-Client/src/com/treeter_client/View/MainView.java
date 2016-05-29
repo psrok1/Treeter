@@ -7,6 +7,7 @@
 package com.treeter_client.View;
 
 import com.treeter_client.MainController;
+import com.treeter_client.Message.ErrorCodeResponse;
 import com.treeter_client.Model.GroupModel;
 import com.treeter_client.Model.GroupTreeModel;
 
@@ -142,5 +143,10 @@ public class MainView
     public void hide()
     {
         frame.setVisible(false);
+    }
+
+    public void showError(ErrorCodeResponse errorCode)
+    {
+        JOptionPane.showMessageDialog(this.frame, errorCode.toString());
     }
 }

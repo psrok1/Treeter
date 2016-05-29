@@ -40,6 +40,13 @@ public class GroupModel extends DataModel
                 subgroupListModel.equals(DataModelState.Synchronized);
     }
 
+    public boolean needSynchronization()
+    {
+        return  memberListModel.equals(DataModelState.Unsynchronized) &&
+                messageListModel.equals(DataModelState.Unsynchronized) &&
+                subgroupListModel.equals(DataModelState.Unsynchronized);
+    }
+
     public GroupMemberListModel getMemberList()
     {
         return memberListModel;
@@ -63,5 +70,13 @@ public class GroupModel extends DataModel
     public MemberRole getPermissions()
     {
         return this.permissions;
+    }
+
+    public void synchronizationStarted()
+    {
+        this.setState(DataModelState.Incomplete);
+        messageListModel.setState(DataModelState.Incomplete);
+        subgroupListModel.setState(DataModelState.Incomplete);
+        memberListModel.setState(DataModelState.Incomplete);
     }
 }

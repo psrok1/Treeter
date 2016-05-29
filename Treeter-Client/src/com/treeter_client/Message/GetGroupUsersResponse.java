@@ -19,6 +19,11 @@ public class GetGroupUsersResponse extends MessageResponse
         processor.processMessage(this);
     }
 
+    public String getPath()
+    {
+        return (String) jsonObject.get("path");
+    }
+
     public ArrayList<GroupMember> getMemberList()
     {
         ArrayList<GroupMember> result = new ArrayList<GroupMember>();

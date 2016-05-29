@@ -17,6 +17,11 @@ public class GetSubgroupsResponse extends MessageResponse
         processor.processMessage(this);
     }
 
+    public String getPath()
+    {
+        return (String) jsonObject.get("path");
+    }
+
     public ArrayList<String> getSubgroups()
     {
         ArrayList<String> result = new ArrayList<String>();

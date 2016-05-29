@@ -63,7 +63,12 @@ public class GroupTreePanel extends JPanel
 
     public void attachController(MainController controller)
     {
-
+        setGroupSelectListener(new GroupTreeSelectListener() {
+            @Override
+            public void groupSelected(GroupModel group) {
+                controller.selectGroup(group);
+            }
+        });
     }
 }
 

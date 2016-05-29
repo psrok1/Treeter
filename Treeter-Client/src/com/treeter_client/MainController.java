@@ -1,10 +1,7 @@
 package com.treeter_client;
 
 import com.treeter_client.Message.*;
-import com.treeter_client.Model.GroupMember;
-import com.treeter_client.Model.GroupModel;
-import com.treeter_client.Model.GroupTreeModel;
-import com.treeter_client.Model.MemberRole;
+import com.treeter_client.Model.*;
 import com.treeter_client.View.ConnectView;
 import com.treeter_client.View.MainView;
 
@@ -116,6 +113,24 @@ public class MainController
             mainView.lockWithEmptyLayout();
         }
     }
+
+    public void selectGroup(GroupModel group)
+    {
+        if(group.isSynchronized())
+        {
+            this.model.setActiveGroup(group);
+            mainView.updateGroup(group);
+        } else
+            mainView.lockWithWaitingMessage("Trwa pobieranie danych z serwera.");
+
+        if(group.needSynchronization())
+        {
+            group.synchronizationStarted();
+            this.client.send(new GetGroupUsersRequest(group.absolutePath));
+            this.client.send(new GetMessagesRequest(group.absolutePath));
+            this.client.send(new GetSubgroupsRequest(group.absolutePath));
+        }
+    }
 }
 
 class MessageProcessor implements IMessageProcessor
@@ -210,59 +225,128 @@ class MessageProcessor implements IMessageProcessor
     @Override
     public void processMessage(AddMeToGroupResponse response)
     {
-
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
     public void processMessage(AddUserToGroupResponse response)
     {
-
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
     public void processMessage(CreateSubgroupResponse response)
     {
-
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
     public void processMessage(GetGroupUsersResponse response)
     {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
 
+        GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+        GroupMemberListModel groupMembers = group.getMemberList();
+
+        groupMembers.loadRemoteData(response.getMemberList());
+        groupMembers.setState(DataModelState.Synchronized);
+
+        if(group.isSynchronized())
+            controller.updateGroup(group);
     }
 
     @Override
     public void processMessage(GetMessagesResponse response)
     {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
 
+        GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+        GroupMessageListModel groupMessages = group.getMessageList();
+
+        groupMessages.loadRemoteData(response.getMessages());
+        groupMessages.setState(DataModelState.Synchronized);
+
+        if(group.isSynchronized())
+            controller.updateGroup(group);
     }
 
     @Override
     public void processMessage(GetSubgroupsResponse response)
     {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
 
+        GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+        GroupSubgroupListModel subgroups = group.getSubgroupList();
+
+        subgroups.loadRemoteData(response.getSubgroups());
+        subgroups.setState(DataModelState.Synchronized);
+
+        if(group.isSynchronized())
+            controller.updateGroup(group);
     }
 
     @Override
     public void processMessage(RemoveSubgroupResponse response)
     {
-
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
     public void processMessage(RemoveUserFromGroupResponse response)
     {
-
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
-    public void processMessage(SendMessageResponse response) {
-
+    public void processMessage(SendMessageResponse response)
+    {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
-    public void processMessage(SetMemberPermissionResponse setMemberPermissionResponse) {
-
+    public void processMessage(SetMemberPermissionResponse response)
+    {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.mainView.showError(response.getErrorCode());
+            return;
+        }
     }
 
     @Override
