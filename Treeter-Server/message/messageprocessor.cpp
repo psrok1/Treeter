@@ -124,7 +124,12 @@ bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     if(!groupRef->createGroup(req.getSubgroupName()))
     {
@@ -160,7 +165,12 @@ bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     if(!groupRef->deleteGroup(req.getSubgroupName()))
     {
@@ -196,8 +206,13 @@ bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
-
+    if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
+\
     std::list<std::string> groupNames = groupRef->listGroupNames();
 
     MessageOutgoing::Reference response(new GetSubgroupsResponse(groupNames));
@@ -234,7 +249,12 @@ bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     std::shared_ptr<Model::User> reqUserRef = this->connection->model->getUserByLogin(req.getUsername());
 
@@ -287,7 +307,12 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     std::shared_ptr<Model::User> reqUserRef = this->connection->model->getUserByLogin(req.getUsername());
 
@@ -333,7 +358,12 @@ bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     auto membersList = groupRef->listOfMembers();
 
@@ -364,6 +394,13 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
         return false;
     }
 
+    if(parentGroupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
+
     std::shared_ptr<Model::Group> groupRef = parentGroupRef->getGroupByName(req.getSubgroup());
 
     if(!groupRef)
@@ -372,8 +409,6 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
         this->connection->sendMessage(response);
         return false;
     }
-
-    // @TODO: Check permissions
 
     if(!groupRef->addMember(groupRef, userRef, MemberRole::PendingApproval))
     {
@@ -410,7 +445,12 @@ bool MessageProcessor::processRequest(const SendMessageRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     groupRef->sendMessage(Model::GroupMessage(userRef->getLogin(), req.getMessage()));
 
@@ -441,7 +481,12 @@ bool MessageProcessor::processRequest(const GetMessagesRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     std::list<Model::GroupMessage> messages = groupRef->getMessages();
 
@@ -472,7 +517,12 @@ bool MessageProcessor::processRequest(const SetMemberPermissionRequest &req)
         return false;
     }
 
-    // @TODO: Check permissions
+    if(groupRef->getMemberPermission(userRef->getLogin()) != MemberRole::Moderator)
+    {
+        MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::AccessDenied));
+        this->connection->sendMessage(response);
+        return false;
+    }
 
     if(!groupRef->setMemberPermission(req.getUsername(), req.getRole()))
     {
