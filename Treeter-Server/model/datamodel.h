@@ -34,7 +34,6 @@ namespace Model
         std::shared_ptr<Group> getRootGroup() const;
 
         void importFromDatabase();
-        void exportToDatabase();
     };
 }
 

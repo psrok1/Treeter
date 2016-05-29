@@ -369,7 +369,6 @@ namespace Model
 
         for(auto& child: this->children)
         {
-            const std::string& groupName = child.first;
             const std::shared_ptr<Group>& groupPtr = child.second;
 
             std::list<std::pair<std::string, MemberRole>> groupMembers;
@@ -380,25 +379,5 @@ namespace Model
 
             groupPtr->importFromDatabase(model);
         }
-    }
-
-    void Group::exportToDatabase()
-    {
-        /**
-         * @TODO
-         * Export group path and parent path info
-         **/
-        for(const std::pair<std::string, Member>& member: this->members)
-        {
-            const std::string& memberLogin = member.first;
-            const MemberRole& memberRole = member.second.role;
-            /**
-             * @TODO
-             * Export group member info
-             **/
-        }
-
-        for(std::shared_ptr<Group>& group: getValues(this->children))
-            group->exportToDatabase();
     }
 }

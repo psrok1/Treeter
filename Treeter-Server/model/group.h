@@ -81,7 +81,6 @@ namespace Model
         std::list<GroupMessage> getMessages() const;
 
         void importFromDatabase(DataModel& model);
-        void exportToDatabase();
     };
 }
 

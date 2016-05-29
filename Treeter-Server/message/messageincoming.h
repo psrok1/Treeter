@@ -73,23 +73,23 @@ public:
     std::string getPassword() const;
 };
 
-/** createSubgroupRequest **/
+/** CreateSubgroupRequest **/
 
-class createSubgroupRequest: public MessageIncoming
+class CreateSubgroupRequest: public MessageIncoming
 {
 public:
-    createSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    CreateSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getParentPath() const;
     std::string getSubgroupName() const;
 };
 
-/** removeSubgroupRequest **/
+/** RemoveSubgroupRequest **/
 
-class removeSubgroupRequest: public MessageIncoming
+class RemoveSubgroupRequest: public MessageIncoming
 {
 public:
-    removeSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    RemoveSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getParentPath() const;
     std::string getSubgroupName() const;

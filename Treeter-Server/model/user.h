@@ -50,7 +50,6 @@ namespace Model
         std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
 
-        void importFromDatabase();
         void exportToDatabase();
     };
 }

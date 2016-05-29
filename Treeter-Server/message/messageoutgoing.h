@@ -165,7 +165,7 @@ class GetMessagesResponse: public MessageOutgoing
     std::vector<Model::GroupMessage> messages;
     ResponseErrorCode error;
 public:
-    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error): messages(messages), error(error) { }
+    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): messages(messages), error(error) { }
     virtual std::string toString();
 };
 

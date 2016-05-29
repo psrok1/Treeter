@@ -1,6 +1,7 @@
 #include "messageincoming.h"
 #include "messageincomingctor.h"
 #include <chrono>
+#include <stdexcept>
 
 using json = nlohmann::json;
 
@@ -8,7 +9,19 @@ MessageIncomingCtorMap ctorMap(
 {
     {"echo", messageIncomingCtor<EchoRequest>()},
     {"hello", messageIncomingCtor<HelloRequest>()},
-    {"startEncryption", messageIncomingCtor<StartEncryptionRequest>()}
+    {"startEncryption", messageIncomingCtor<StartEncryptionRequest>()},
+    {"createAccount", messageIncomingCtor<CreateAccountRequest>()},
+    {"authUser", messageIncomingCtor<AuthUserRequest>()},
+    {"getGroupUsers", messageIncomingCtor<GetGroupUsersRequest>()},
+    {"getMessages", messageIncomingCtor<GetMessagesRequest>()},
+    {"sendMessage", messageIncomingCtor<SendMessageRequest>()},
+    {"addMeToGroup", messageIncomingCtor<AddMeToGroupRequest>()},
+    {"createSubgroup", messageIncomingCtor<CreateSubgroupRequest>()},
+    {"removeSubgroup", messageIncomingCtor<RemoveSubgroupRequest>()},
+    {"getSubgroups", messageIncomingCtor<GetSubgroupsRequest>()},
+    {"addUserToGroup", messageIncomingCtor<AddUserToGroupRequest>()},
+    {"removeUserFromGroup", messageIncomingCtor<RemoveUserFromGroupRequest>()},
+    {"setMemberPermission", messageIncomingCtor<SetMemberPermissionRequest>()}
 });
 
 MessageIncoming::Reference MessageIncoming::fromString(std::string message)
@@ -57,24 +70,24 @@ std::string CreateAccountRequest::getPassword() const
 
 /** createSubgroupRequest **/
 
-std::string createSubgroupRequest::getParentPath() const
+std::string CreateSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string createSubgroupRequest::getSubgroupName() const
+std::string CreateSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
 
 /** removeSubgroupRequest **/
 
-std::string removeSubgroupRequest::getParentPath() const
+std::string RemoveSubgroupRequest::getParentPath() const
 {
     return json_object["path"];
 }
 
-std::string removeSubgroupRequest::getSubgroupName() const
+std::string RemoveSubgroupRequest::getSubgroupName() const
 {
     return json_object["subgroup"];
 }
@@ -162,4 +175,5 @@ MemberRole SetMemberPermissionRequest::getRole() const
     else if (role_string == "pending")
         return MemberRole::PendingApproval;
     // maybe throw error here
+    throw new std::runtime_error("Unknown SetMemberPermission role value");
 }

@@ -44,6 +44,7 @@ bool MessageProcessor::processRequest(const StartEncryptionRequest &req)
 bool MessageProcessor::processRequest(const AuthUserRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -52,22 +53,25 @@ bool MessageProcessor::processRequest(const AuthUserRequest &req)
 bool MessageProcessor::processRequest(const CreateAccountRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
 /** createSubgroupRequest **/
 
-bool MessageProcessor::processRequest(const createSubgroupRequest &req)
+bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
 /** removeSubgroupRequest **/
 
-bool MessageProcessor::processRequest(const removeSubgroupRequest &req)
+bool MessageProcessor::processRequest(const RemoveSubgroupRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -76,6 +80,7 @@ bool MessageProcessor::processRequest(const removeSubgroupRequest &req)
 bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -84,6 +89,7 @@ bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
 bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -92,6 +98,7 @@ bool MessageProcessor::processRequest(const AddUserToGroupRequest &req)
 bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -100,6 +107,7 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
 bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -108,6 +116,7 @@ bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -116,6 +125,7 @@ bool MessageProcessor::processRequest(const AddMeToGroupRequest &req)
 bool MessageProcessor::processRequest(const SendMessageRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -124,6 +134,7 @@ bool MessageProcessor::processRequest(const SendMessageRequest &req)
 bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
 
@@ -132,5 +143,6 @@ bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 bool MessageProcessor::processRequest(const SetMemberPermissionRequest &req)
 {
     // TODO
+    (void)req;
     return true;
 }
