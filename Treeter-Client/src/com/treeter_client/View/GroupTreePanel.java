@@ -51,7 +51,7 @@ public class GroupTreePanel extends JPanel
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupTree.getLastSelectedPathComponent();
-
+                System.out.println("Something selected");
                 /* if nothing is selected */
                 if (node == null) return;
 
@@ -66,6 +66,7 @@ public class GroupTreePanel extends JPanel
         setGroupSelectListener(new GroupTreeSelectListener() {
             @Override
             public void groupSelected(GroupModel group) {
+                System.out.println(group.absolutePath);
                 controller.selectGroup(group);
             }
         });

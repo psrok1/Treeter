@@ -35,16 +35,16 @@ public class GroupModel extends DataModel
 
     public boolean isSynchronized()
     {
-        return  memberListModel.equals(DataModelState.Synchronized) &&
-                messageListModel.equals(DataModelState.Synchronized) &&
-                subgroupListModel.equals(DataModelState.Synchronized);
+        return  memberListModel.getState() == DataModelState.Synchronized &&
+                messageListModel.getState() == DataModelState.Synchronized &&
+                subgroupListModel.getState() == DataModelState.Synchronized;
     }
 
     public boolean needSynchronization()
     {
-        return  memberListModel.equals(DataModelState.Unsynchronized) &&
-                messageListModel.equals(DataModelState.Unsynchronized) &&
-                subgroupListModel.equals(DataModelState.Unsynchronized);
+        return  memberListModel.getState() == DataModelState.Unsynchronized &&
+                messageListModel.getState() == DataModelState.Unsynchronized &&
+                subgroupListModel.getState() == DataModelState.Unsynchronized;
     }
 
     public GroupMemberListModel getMemberList()

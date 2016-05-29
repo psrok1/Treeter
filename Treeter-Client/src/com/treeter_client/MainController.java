@@ -116,9 +116,9 @@ public class MainController
 
     public void selectGroup(GroupModel group)
     {
+        this.model.setActiveGroup(group);
         if(group.isSynchronized())
         {
-            this.model.setActiveGroup(group);
             mainView.updateGroup(group);
         } else
             mainView.lockWithWaitingMessage("Trwa pobieranie danych z serwera.");
@@ -203,6 +203,7 @@ class MessageProcessor implements IMessageProcessor
 
         controller.connectView.hide();
         controller.mainView.show();
+        controller.selectGroup(model.getGroupByPath("/", false));
     }
 
     @Override

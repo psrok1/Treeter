@@ -1,6 +1,7 @@
 package com.treeter_client.Model;
 
 import java.lang.reflect.Member;
+import java.security.acl.Group;
 import java.util.ArrayList;
 
 /**
@@ -20,18 +21,40 @@ public class GroupMemberListModel extends DataModel
     {
         if(this.getState() != DataModelState.Synchronized)
             return;
+
+        GroupMember member = new GroupMember();
+        member.login = login;
+        member.role = role;
+        this.memberList.add(member);
+    }
+
+    private GroupMember findElementByLogin(String login)
+    {
+        for(GroupMember member: this.memberList)
+            if(member.login.equals(login))
+                return member;
+
+        return null;
     }
 
     public void removeMember(String login)
     {
         if(this.getState() != DataModelState.Synchronized)
             return;
+
+        GroupMember member = findElementByLogin(login);
+        if(member != null)
+            this.memberList.remove(member);
     }
 
     public void setMemberPermissions(String login, MemberRole role)
     {
         if(this.getState() != DataModelState.Synchronized)
             return;
+
+        GroupMember member = findElementByLogin(login);
+        if(member != null)
+            member.role = role;
     }
 
     public GroupMember[] getData()

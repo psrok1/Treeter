@@ -51,6 +51,7 @@ public class GroupMemberView extends JPanel
         memberList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         memberList.setLayoutOrientation(JList.VERTICAL);
         memberList.setVisibleRowCount(-1);
+        memberList.setCellRenderer(new GroupMemberCellRenderer());
         memberScrollPane = new JScrollPane();
         memberScrollPane.getViewport().add(memberList);
         this.add(memberScrollPane, BorderLayout.CENTER);
