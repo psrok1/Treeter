@@ -26,8 +26,9 @@ namespace Model
         return Crypto::sha256(plain_password);
     }
 
-    User::User(std::string login, std::string password):
-        invalidated(false), login(login), password(User::hashPassword(password)) { }
+    User::User(std::string login, std::string password, bool plaintextPassword):
+        invalidated(false), login(login),
+        password(plaintextPassword ? User::hashPassword(password) : password) { }
 
     /**
      * @brief User::addGroup
@@ -129,5 +130,10 @@ namespace Model
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
         return getValues(this->groups);
+    }
+
+    void User::exportToDatabase()
+    {
+        DB.insertUser(login,password);
     }
 }

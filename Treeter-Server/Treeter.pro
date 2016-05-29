@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 LIBS += -pthread
 LIBS += -lcrypto
+LIBS += -ldl
 
 SOURCES += main.cpp \
     server.cpp \
@@ -20,7 +21,10 @@ SOURCES += main.cpp \
     model/user.cpp \
     model/datamodel.cpp \
     model/group.cpp \
-    model/groupmessage.cpp
+    model/groupmessage.cpp \
+    database/database.cpp \
+    database/sqlite3.c \
+    database/resultset.cpp
 
 HEADERS += \
     threadloop.h \
@@ -41,6 +45,11 @@ HEADERS += \
     model/datamodel.h \
     model/group.h \
     model/groupmessage.h \
-    model/mapgetter.h
+    model/mapgetter.h \
+    database/database.h \
+    database/sqlite3.h \
+    database/sqlite3ext.h \
+    database/resultset.h \
+    model/memberrole.h
 
 Debug:DESTDIR = debug

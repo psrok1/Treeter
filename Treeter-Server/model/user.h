@@ -7,6 +7,9 @@
 #include <unordered_map>
 #include <memory>
 #include <atomic>
+#include <database/database.h>
+
+extern Database DB;
 
 namespace Model
 {
@@ -32,7 +35,7 @@ namespace Model
         bool addGroup(std::shared_ptr<Group> group);
         bool removeGroup(std::string groupPath);
     public:
-        User(std::string login, std::string password);
+        User(std::string login, std::string password, bool plaintextPassword = true);
         void invalidate() { this->invalidated = true; }
 
         User(const User&) = delete;
@@ -46,6 +49,8 @@ namespace Model
         std::shared_ptr<Group> getGroupByPath(std::string groupPath);
         std::list<std::string> listGroupPaths() const;
         std::list<std::shared_ptr<Group>> listGroupReferences() const;
+
+        void exportToDatabase();
     };
 }
 

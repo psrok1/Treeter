@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include "model/groupmessage.h"
+#include "model/memberrole.h"
 
 class MessageIncoming
 {
@@ -72,23 +73,23 @@ public:
     std::string getPassword() const;
 };
 
-/** CreateGroupRequest **/
+/** CreateSubgroupRequest **/
 
-class CreateGroupRequest: public MessageIncoming
+class CreateSubgroupRequest: public MessageIncoming
 {
 public:
-    CreateGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    CreateSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getParentPath() const;
     std::string getSubgroupName() const;
 };
 
-/** RemoveGroupRequest **/
+/** RemoveSubgroupRequest **/
 
-class RemoveGroupRequest: public MessageIncoming
+class RemoveSubgroupRequest: public MessageIncoming
 {
 public:
-    RemoveGroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    RemoveSubgroupRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getParentPath() const;
     std::string getSubgroupName() const;
@@ -113,7 +114,6 @@ public:
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getUsername() const;
     std::string getPath() const;
-    bool getModerator() const;
 };
 
 /** RemoveUserFromGroupRequest **/
@@ -126,16 +126,6 @@ public:
     std::string getUsername() const;
     std::string getPath() const;
 };
-
-/** GetGroupPathsRequest **/
-
-class GetGroupPathsRequest: public MessageIncoming
-{
-public:
-    GetGroupPathsRequest(nlohmann::json obj): MessageIncoming(obj) { }
-    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-};
-
 
 /** GetGroupUsersRequest **/
 
@@ -158,16 +148,6 @@ public:
     std::string getPath() const;
 };
 
-/** GetGroupPendingUsersRequest **/
-
-class GetGroupPendingUsersRequest: public MessageIncoming
-{
-public:
-    GetGroupPendingUsersRequest(nlohmann::json obj): MessageIncoming(obj) { }
-    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    std::string getPath() const;
-};
-
 /** SendMessageRequest **/
 
 class SendMessageRequest: public MessageIncoming
@@ -175,7 +155,7 @@ class SendMessageRequest: public MessageIncoming
 public:
     SendMessageRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
-    Model::GroupMessage getMessage() const;
+    std::string getMessage() const;
     std::string getPath() const;
 };
 
@@ -187,7 +167,18 @@ public:
     GetMessagesRequest(nlohmann::json obj): MessageIncoming(obj) { }
     virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
     std::string getPath() const;
-    std::chrono::system_clock::time_point getLastMsgTimestamp() const;
+};
+
+
+/** SetMemberPermissionRequest **/
+
+class SetMemberPermissionRequest: public MessageIncoming
+{
+public:
+    SetMemberPermissionRequest(nlohmann::json obj): MessageIncoming(obj) { }
+    virtual bool process(MessageProcessor &processor) const { return processor.processRequest(*this); }
+    std::string getUsername() const;
+    MemberRole getRole() const;
 };
 
 #endif // MESSAGEINCOMING_H

@@ -1,4 +1,5 @@
 #include "group.h"
+#include "datamodel.h"
 #include "mapgetter.h"
 #include "message/messageoutgoing.h"
 #include <utility>
@@ -59,7 +60,7 @@ namespace Model
      * If operation is forbidden because of object invalidation - method fails.
      * If group exists yet: also nullptr returned
      */
-    std::shared_ptr<Group> Group::createGroup(std::string name)
+    std::shared_ptr<Group> Group::createGroup(std::string name, bool imported)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
         if(invalidated)
@@ -67,6 +68,9 @@ namespace Model
 
         if(this->children.find(name) != this->children.end())
             return nullptr;
+        //Update the DB, unless it's just an import operation
+        if(!imported)
+            DB.insertGroup(name,this->absolutePath);
 
         return this->children[name] = std::shared_ptr<Group>(new Group(name, this));
     }
@@ -93,6 +97,10 @@ namespace Model
 
         // Erase from subgroup list
         this->children.erase(it);
+
+        // Delete from DB
+        DB.deleteGroup(this->absolutePath+"/"+name);
+
         return true;
     }
 
@@ -174,7 +182,7 @@ namespace Model
      *
      * First argument is smart "this" pointer, provided by parent subgroup or member's user instance
      */
-    bool Group::addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole)
+    bool Group::addMember(std::shared_ptr<Group> group_ref, std::shared_ptr<User> user, MemberRole memberRole, bool imported)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
@@ -190,6 +198,11 @@ namespace Model
             return false;
 
         this->members[login] = Member(user, memberRole);
+
+        //Update the DB, unless it's just an import operation
+        if(!imported)
+            DB.insertMember(user->getLogin(),group_ref->getAbsolutePath(),static_cast<int> (memberRole));
+
         return true;
     }
 
@@ -217,6 +230,8 @@ namespace Model
 
         this->members.erase(it);
 
+        DB.deleteMember(memberLogin,this->absolutePath);
+
         return true;
     }
 
@@ -225,7 +240,7 @@ namespace Model
      * MemberRole getter.
      * MemberRole::NotAMember is returned, when member doesn't exist
      */
-    Group::MemberRole Group::getMemberPermission(std::string memberLogin) const
+    MemberRole Group::getMemberPermission(std::string memberLogin) const
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
@@ -256,6 +271,7 @@ namespace Model
         Member& member = (*it).second;
 
         member.role = memberRole;
+        DB.updateMemberRole(memberLogin,this->absolutePath,static_cast<int>(memberRole));
         return true;
     }
 
@@ -294,10 +310,10 @@ namespace Model
      * @brief Group::listOfMembers
      * Gets full list of members with roles.
      */
-    std::list<std::pair<std::string, Group::MemberRole>> Group::listOfMembers() const
+    std::list<std::pair<std::string, MemberRole>> Group::listOfMembers() const
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
-        std::list<std::pair<std::string, Group::MemberRole>> result;
+        std::list<std::pair<std::string, MemberRole>> result;
 
         for(const std::pair<std::string, Member>& m: this->members)
             result.push_back(std::make_pair(m.first, m.second.role));
@@ -342,5 +358,26 @@ namespace Model
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
         return this->messages;
+    }
+
+    void Group::importFromDatabase(DataModel& model)
+    {
+        ResultSet groupNames = DB.importChildren(this->absolutePath);
+
+        for(auto& groupName: groupNames)
+            this->createGroup(groupName[0]);
+
+        for(auto& child: this->children)
+        {
+            const std::shared_ptr<Group>& groupPtr = child.second;
+
+            std::list<std::pair<std::string, MemberRole>> groupMembers;
+            ResultSet members = DB.importMembers(this->absolutePath);
+
+            for(auto member: members)
+                this->addMember(groupPtr, model.getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())),true);
+
+            groupPtr->importFromDatabase(model);
+        }
     }
 }

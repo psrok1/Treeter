@@ -5,6 +5,7 @@
 #include <ctime>
 #include <signal.h>
 #include <unistd.h>
+#include "database/database.h"
 
 #include "config.h"
 #include "crypto/crypto.h"
@@ -12,6 +13,7 @@
 using namespace std;
 
 Server::Reference serverInstance;
+Database DB;
 
 void handle_ctrlc(int) {
     serverInstance->stopThread();
@@ -25,6 +27,10 @@ int main()
     srand(time(nullptr));
     struct sigaction sigIntHandler;
 
+    //Initialize the database connection
+    DB.init();
+    DB.insertMessage("a","admin","/root",0);
+
     // Loading configuration file
     if(!Configuration::load())
         return 1;
@@ -33,11 +39,14 @@ int main()
     Crypto::initialize();
     Crypto::RSAProvider::generate();
 
+
+
     // Adding SIGINT handler
     sigIntHandler.sa_handler = handle_ctrlc;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
+
 
     // Invoking server and waiting until shutdown
     serverInstance = Server::Reference(new Server(Configuration::getServerPort()));

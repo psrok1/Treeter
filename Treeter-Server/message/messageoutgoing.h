@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <model/groupmessage.h>
+#include <model/memberrole.h>
 
 enum class ResponseErrorCode { OK };
 
@@ -57,9 +58,10 @@ public:
 
 class AuthUserResponse: public MessageOutgoing
 {
+    std::vector<std::string> paths;
     ResponseErrorCode error;
 public:
-    AuthUserResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    AuthUserResponse(std::vector<std::string> paths, ResponseErrorCode error = ResponseErrorCode::OK): paths(paths), error(error) { }
     virtual std::string toString();
 };
 
@@ -73,23 +75,23 @@ public:
     virtual std::string toString();
 };
 
-/** CreateGroupResponse **/
+/** createSubgroupResponse **/
 
-class CreateGroupResponse: public MessageOutgoing
+class createSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    CreateGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    createSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
-/** RemoveGroupResponse **/
+/** removeSubgroupResponse **/
 
-class RemoveGroupResponse: public MessageOutgoing
+class removeSubgroupResponse: public MessageOutgoing
 {
     ResponseErrorCode error;
 public:
-    RemoveGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
+    removeSubgroupResponse(ResponseErrorCode error = ResponseErrorCode::OK): error(error) { }
     virtual std::string toString();
 };
 
@@ -125,26 +127,14 @@ public:
     virtual std::string toString();
 };
 
-/** GetGroupPathsResponse **/
-
-class GetGroupPathsResponse: public MessageOutgoing
-{
-    std::vector<std::string> groupPaths;
-    ResponseErrorCode error;
-public:
-    GetGroupPathsResponse(std::vector<std::string> groupPaths, ResponseErrorCode error = ResponseErrorCode::OK) : groupPaths(groupPaths), error(error) { }
-    virtual std::string toString();
-};
-
-
 /** GetGroupUsersResponse **/
 
 class GetGroupUsersResponse: public MessageOutgoing
 {
-    std::vector<std::string> moderators, users;
+    std::vector<std::pair<std::string, MemberRole>> users;
     ResponseErrorCode error;
 public:
-    GetGroupUsersResponse(std::vector<std::string> moderators, std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : moderators(moderators), users(users), error(error) { }
+    GetGroupUsersResponse(std::vector<std::pair<std::string, MemberRole>> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
     virtual std::string toString();
 };
 
@@ -155,18 +145,6 @@ class AddMeToGroupResponse: public MessageOutgoing
     ResponseErrorCode error;
 public:
     AddMeToGroupResponse(ResponseErrorCode error = ResponseErrorCode::OK) : error(error) { }
-    virtual std::string toString();
-};
-
-
-/** GetGroupPendingUsersResponse **/
-
-class GetGroupPendingUsersResponse: public MessageOutgoing
-{
-    std::vector<std::string> users;
-    ResponseErrorCode error;
-public:
-    GetGroupPendingUsersResponse(std::vector<std::string> users, ResponseErrorCode error = ResponseErrorCode::OK) : users(users), error(error) { }
     virtual std::string toString();
 };
 
@@ -187,7 +165,7 @@ class GetMessagesResponse: public MessageOutgoing
     std::vector<Model::GroupMessage> messages;
     ResponseErrorCode error;
 public:
-    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error): messages(messages), error(error) { }
+    GetMessagesResponse(std::vector<Model::GroupMessage> messages, ResponseErrorCode error = ResponseErrorCode::OK): messages(messages), error(error) { }
     virtual std::string toString();
 };
 
@@ -198,9 +176,8 @@ public:
 class AddUserToGroupNotification: public MessageOutgoing
 {
     std::string path, username;
-    ResponseErrorCode error;
 public:
-    AddUserToGroupNotification(std::string path, std::string username, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), username(username), error(error) { }
+    AddUserToGroupNotification(std::string path, std::string username) : path(path), username(username) { }
     virtual std::string toString();
 };
 
@@ -208,11 +185,10 @@ public:
 
 class AddedToGroupNotification: public MessageOutgoing
 {
-    std::string path;
-    bool moderator;
-    ResponseErrorCode error;
+    std::string path, username;
+    MemberRole role;
 public:
-    AddedToGroupNotification(std::string path, bool moderator, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), moderator(moderator), error(error) { }
+    AddedToGroupNotification(std::string path, std::string username, MemberRole role) : path(path), username(username), role(role) { }
     virtual std::string toString();
 };
 
@@ -220,10 +196,9 @@ public:
 
 class RemovedFromGroupNotification: public MessageOutgoing
 {
-    std::string path;
-    ResponseErrorCode error;
+    std::string path, username;
 public:
-    RemovedFromGroupNotification(std::string path, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), error(error) { }
+    RemovedFromGroupNotification(std::string path, std::string username) : path(path), username(username) { }
     virtual std::string toString();
 };
 
@@ -233,9 +208,49 @@ class NewMessageNotification: public MessageOutgoing
 {
     std::string path;
     Model::GroupMessage message;
-    ResponseErrorCode error;
 public:
-    NewMessageNotification(std::string path, Model::GroupMessage message, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), message(message), error(error) { }
+    NewMessageNotification(std::string path, Model::GroupMessage message) : path(path), message(message) { }
+    virtual std::string toString();
+};
+
+/** ModifiedMemberPermissionNotification **/
+
+class ModifiedMemberPermissionNotification: public MessageOutgoing
+{
+    std::string username, path;
+    MemberRole role;
+public:
+    ModifiedMemberPermissionNotification(std::string username, std::string path, MemberRole role) : username(username), path(path), role(role) { }
+    virtual std::string toString();
+};
+
+/** AddedSubgroupNotification **/
+
+class AddedSubgroupNotification: public MessageOutgoing
+{
+    std::string path, subgroup;
+public:
+    AddedSubgroupNotification(std::string path, std::string subgroup): path(path), subgroup(subgroup) { }
+    virtual std::string toString();
+};
+
+/** RemovedSubgroupNotification **/
+
+class RemovedSubgroupNotification: public MessageOutgoing
+{
+    std::string path, subgroup;
+public:
+    RemovedSubgroupNotification(std::string path, std::string subgroup): path(path), subgroup(subgroup) { }
+    virtual std::string toString();
+};
+
+/** ResetNotification **/
+
+class ResetNotification: public MessageOutgoing
+{
+    unsigned int port;
+public:
+    ResetNotification(unsigned int port) : port(port) { }
     virtual std::string toString();
 };
 
