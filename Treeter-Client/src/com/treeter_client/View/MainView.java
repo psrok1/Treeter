@@ -108,7 +108,6 @@ public class MainView
 
     public void attachController(MainController controller)
     {
-
     }
 
     public static void main(String[] args)

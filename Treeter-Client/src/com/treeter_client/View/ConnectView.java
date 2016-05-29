@@ -1,6 +1,7 @@
 package com.treeter_client.View;
 
 import com.treeter_client.MainController;
+import com.treeter_client.Message.ErrorCodeResponse;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,7 +16,7 @@ public class ConnectView
     private JLabel logo, logLabel, serverLabel, nickLabel, passwordLabel;
     private JPanel outsidePanel, insidePanel, buttonPanel;
     private JTextField serverField, nickField, passwordField;
-    private JButton acceptButton, cancelButton;
+    private JButton acceptButton, registerButton;
 
     public ConnectView()
     {
@@ -108,14 +109,19 @@ public class ConnectView
 
         // Przyciski
         acceptButton = new JButton("Zaloguj");
-        cancelButton = new JButton("Zakończ");
+        registerButton = new JButton("Zarejestruj");
         buttonPanel.add(acceptButton);
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(registerButton);
     }
 
     public void show()
     {
         frame.setVisible(true);
+    }
+
+    public void showError(ErrorCodeResponse error)
+    {
+        JOptionPane.showMessageDialog(this.frame, error.toString());
     }
 
     public void hide()
@@ -127,8 +133,17 @@ public class ConnectView
     {
         acceptButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.connect(serverField.getText());
+            public void actionPerformed(ActionEvent e)
+            {
+                controller.connect(serverField.getText(), false);
+            }
+        });
+
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                controller.connect(serverField.getText(), true);
             }
         });
     }

@@ -8,6 +8,7 @@ import com.treeter_client.Model.MemberRole;
 import com.treeter_client.View.ConnectView;
 import com.treeter_client.View.MainView;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class MainController
@@ -15,6 +16,7 @@ public class MainController
     ConnectView connectView;
     MainView mainView;
 
+    boolean createUserFirst;
     String loggedUser;
 
     Client client;
@@ -28,8 +30,9 @@ public class MainController
         model = new GroupTreeModel();
     }
 
-    public void connect(String address)
+    public void connect(String address, boolean createUserFirst)
     {
+        this.createUserFirst = createUserFirst;
         client = new Client();
         client.onConnect(new Client.EventListener()
         {
@@ -155,13 +158,25 @@ class MessageProcessor implements IMessageProcessor
         String login = controller.connectView.getNick();
         String password = controller.connectView.getPassword();
 
-        AuthUserRequest authUserRequest = new AuthUserRequest(login, password);
-        controller.client.send(authUserRequest);
+        MessageRequest nextRequest;
+
+        if(controller.createUserFirst)
+            nextRequest = new CreateAccountRequest(login, password);
+        else
+            nextRequest = new AuthUserRequest(login, password);
+
+        controller.client.send(nextRequest);
     }
 
     @Override
     public void processMessage(AuthUserResponse response)
     {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.connectView.showError(response.getErrorCode());
+            return;
+        }
+
         ArrayList<String> paths = response.getPaths();
 
         GroupTreeModel model = this.controller.createNewModel();
@@ -175,6 +190,22 @@ class MessageProcessor implements IMessageProcessor
     }
 
     @Override
+    public void processMessage(CreateAccountResponse response)
+    {
+        if(response.getErrorCode() != ErrorCodeResponse.OK)
+        {
+            controller.connectView.showError(response.getErrorCode());
+            return;
+        }
+
+        String login = controller.connectView.getNick();
+        String password = controller.connectView.getPassword();
+
+        MessageRequest nextRequest = new AuthUserRequest(login, password);
+        controller.client.send(nextRequest);
+    }
+
+    @Override
     public void processMessage(AddMeToGroupResponse response)
     {
 
@@ -182,12 +213,6 @@ class MessageProcessor implements IMessageProcessor
 
     @Override
     public void processMessage(AddUserToGroupResponse response)
-    {
-
-    }
-
-    @Override
-    public void processMessage(CreateAccountResponse response)
     {
 
     }
