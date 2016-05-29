@@ -38,7 +38,7 @@ std::string AuthUserResponse::toString()
     j["response"] = "authUser";
     j["paths"] = paths;
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -49,7 +49,7 @@ std::string CreateAccountResponse::toString()
     nlohmann::json j;
     j["response"] = "createAccount";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -60,7 +60,7 @@ std::string createSubgroupResponse::toString()
     nlohmann::json j;
     j["response"] = "createGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -71,7 +71,7 @@ std::string removeSubgroupResponse::toString()
     nlohmann::json j;
     j["response"] = "removeGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -83,7 +83,7 @@ std::string GetSubgroupsResponse::toString()
     j["response"] = "getSubgroups";
     j["subgroups"] = subgroups;
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -94,7 +94,7 @@ std::string AddUserToGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "addUserToGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -105,7 +105,7 @@ std::string RemoveUserFromGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "removeUserFromGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -135,7 +135,7 @@ std::string GetGroupUsersResponse::toString()
     j["users"] = usersArray;
 
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -146,7 +146,7 @@ std::string AddMeToGroupResponse::toString()
     nlohmann::json j;
     j["response"] = "addMeToGroup";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -157,7 +157,7 @@ std::string SendMessageResponse::toString()
     nlohmann::json j;
     j["response"] = "sendMessage";
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
@@ -176,7 +176,7 @@ std::string GetMessagesResponse::toString()
     j["messages"] = msgVect;
 
     if (error != ResponseErrorCode::OK)
-        ;   // TODO
+        j["error"] = static_cast<unsigned int>(error);
     return j.dump();
 }
 
