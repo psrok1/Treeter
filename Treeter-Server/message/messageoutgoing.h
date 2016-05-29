@@ -176,9 +176,8 @@ public:
 class AddUserToGroupNotification: public MessageOutgoing
 {
     std::string path, username;
-    ResponseErrorCode error;
 public:
-    AddUserToGroupNotification(std::string path, std::string username, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), username(username), error(error) { }
+    AddUserToGroupNotification(std::string path, std::string username) : path(path), username(username) { }
     virtual std::string toString();
 };
 
@@ -186,11 +185,10 @@ public:
 
 class AddedToGroupNotification: public MessageOutgoing
 {
-    std::string path;
-    bool moderator;
-    ResponseErrorCode error;
+    std::string path, username;
+    MemberRole role;
 public:
-    AddedToGroupNotification(std::string path, bool moderator, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), moderator(moderator), error(error) { }
+    AddedToGroupNotification(std::string path, std::string username, MemberRole role) : path(path), username(username), role(role) { }
     virtual std::string toString();
 };
 
@@ -198,10 +196,9 @@ public:
 
 class RemovedFromGroupNotification: public MessageOutgoing
 {
-    std::string path;
-    ResponseErrorCode error;
+    std::string path, username;
 public:
-    RemovedFromGroupNotification(std::string path, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), error(error) { }
+    RemovedFromGroupNotification(std::string path, std::string username) : path(path), username(username) { }
     virtual std::string toString();
 };
 
@@ -211,9 +208,49 @@ class NewMessageNotification: public MessageOutgoing
 {
     std::string path;
     Model::GroupMessage message;
-    ResponseErrorCode error;
 public:
-    NewMessageNotification(std::string path, Model::GroupMessage message, ResponseErrorCode error = ResponseErrorCode::OK) : path(path), message(message), error(error) { }
+    NewMessageNotification(std::string path, Model::GroupMessage message) : path(path), message(message) { }
+    virtual std::string toString();
+};
+
+/** ModifiedMemberPermissionNotification **/
+
+class ModifiedMemberPermissionNotification: public MessageOutgoing
+{
+    std::string username, path;
+    MemberRole role;
+public:
+    ModifiedMemberPermissionNotification(std::string username, std::string path, MemberRole role) : username(username), path(path), role(role) { }
+    virtual std::string toString();
+};
+
+/** AddedSubgroupNotification **/
+
+class AddedSubgroupNotification: public MessageOutgoing
+{
+    std::string path, subgroup;
+public:
+    AddedSubgroupNotification(std::string path, std::string subgroup): path(path), subgroup(subgroup) { }
+    virtual std::string toString();
+};
+
+/** RemovedSubgroupNotification **/
+
+class RemovedSubgroupNotification: public MessageOutgoing
+{
+    std::string path, subgroup;
+public:
+    RemovedSubgroupNotification(std::string path, std::string subgroup): path(path), subgroup(subgroup) { }
+    virtual std::string toString();
+};
+
+/** ResetNotification **/
+
+class ResetNotification: public MessageOutgoing
+{
+    unsigned int port;
+public:
+    ResetNotification(unsigned int port) : port(port) { }
     virtual std::string toString();
 };
 

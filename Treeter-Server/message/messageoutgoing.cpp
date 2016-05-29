@@ -188,8 +188,6 @@ std::string AddUserToGroupNotification::toString()
     j["notification"] = "addUserToGroup";
     j["path"] = path;
     j["username"] = username;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -199,10 +197,16 @@ std::string AddedToGroupNotification::toString()
 {
     nlohmann::json j;
     j["notification"] = "addedToGroup";
+    j["username"] = username;
+    std::string role_str;
+    if(role == MemberRole::Member)
+        role_str = "standard";
+    else if (role == MemberRole::Moderator)
+        role_str = "moderator";
+    else if (role == MemberRole::PendingApproval)
+        role_str = "pending";
+    j["role"] = role_str;
     j["path"] = path;
-    j["moderator"] = moderator;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -212,9 +216,8 @@ std::string RemovedFromGroupNotification::toString()
 {
     nlohmann::json j;
     j["notification"] = "removedFromGroup";
+    j["username"] = username;
     j["path"] = path;
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
     return j.dump();
 }
 
@@ -226,7 +229,54 @@ std::string NewMessageNotification::toString()
     j["notification"] = "newMessage";
     j["path"] = path;
     j["message"] = message.toString();
-    if (error != ResponseErrorCode::OK)
-        ;   // TODO
+    return j.dump();
+}
+
+/** ModifiedMemberPermissionNotification **/
+std::string ModifiedMemberPermissionNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "modifiedMemberPermission";
+    j["username"] = username;
+    j["path"] = path;
+
+    std::string role_str;
+    if(role == MemberRole::Member)
+        role_str = "standard";
+    else if (role == MemberRole::Moderator)
+        role_str = "moderator";
+    else if (role == MemberRole::PendingApproval)
+        role_str = "pending";
+    j["role"] = role_str;
+
+    return j.dump();
+}
+
+/** AddedSubgroupNotification **/
+std::string AddedSubgroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "addedSubgroup";
+    j["path"] = path;
+    j["subgroup"] = subgroup;
+    return j.dump();
+}
+
+/** RemovedSubgroupNotification **/
+std::string RemovedSubgroupNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "removedSubgroup";
+    j["path"] = path;
+    j["subgroup"] = subgroup;
+    return j.dump();
+}
+
+/** ResetNotification **/
+std::string ResetNotification::toString()
+{
+    nlohmann::json j;
+    j["notification"] = "reset";
+    j["listeningOnPort"] = "port";
     return j.dump();
 }
