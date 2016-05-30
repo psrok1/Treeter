@@ -171,10 +171,10 @@ std::string GetMessagesResponse::toString()
     j["response"] = "getMessages";
     j["path"] = path;
 
-    std::vector<std::string> msgVect;
+    std::vector<nlohmann::json> msgVect;
     for (auto msg : messages)
     {
-        msgVect.push_back(msg.toString());
+        msgVect.push_back(msg.toJSON());
     }
     j["messages"] = msgVect;
 
@@ -231,7 +231,7 @@ std::string NewMessageNotification::toString()
     nlohmann::json j;
     j["notification"] = "newMessage";
     j["path"] = path;
-    j["message"] = message.toString();
+    j["message"] = message.toJSON();
     return j.dump();
 }
 
