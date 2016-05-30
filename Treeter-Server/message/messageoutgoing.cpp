@@ -58,7 +58,7 @@ std::string CreateAccountResponse::toString()
 std::string CreateSubgroupResponse::toString()
 {
     nlohmann::json j;
-    j["response"] = "createGroup";
+    j["response"] = "createSubgroup";
     if (error != ResponseErrorCode::OK)
         j["error"] = static_cast<unsigned int>(error);
     return j.dump();
@@ -69,7 +69,7 @@ std::string CreateSubgroupResponse::toString()
 std::string RemoveSubgroupResponse::toString()
 {
     nlohmann::json j;
-    j["response"] = "removeGroup";
+    j["response"] = "removeSubgroup";
     if (error != ResponseErrorCode::OK)
         j["error"] = static_cast<unsigned int>(error);
     return j.dump();
