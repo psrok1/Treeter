@@ -118,6 +118,7 @@ public class MainView
             }
         });
 
+        groupTreePanel.attachController(controller);
         messageView.attachController(controller);
         memberView.attachController(controller);
         subgroupView.attachController(controller);

@@ -29,7 +29,6 @@ public class GroupTreePanel extends JPanel
         groupTree = new JTree(treeModel);
         groupTree.setBackground(new Color(0xA6, 0x80, 0xB8));
         groupTree.putClientProperty("JTree.lineStyle", "None");
-
         groupTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         DefaultTreeCellRenderer treeRenderer = new GroupTreeCellRenderer();
         treeRenderer.setOpenIcon(null);

@@ -99,8 +99,12 @@ public class MainController
 
     public void updateGroup(GroupModel groupModel)
     {
-        if(model.isActiveGroup(groupModel))
-            mainView.updateGroup(groupModel);
+        if(model.isActiveGroup(groupModel)) {
+            if(groupModel.getPermissions() == MemberRole.PendingApproval)
+                mainView.lockWithWaitingMessage("Oczekiwanie na akceptację przez moderatora grupy");
+            else
+                mainView.updateGroup(groupModel);
+        }
         else
             model.notifyGroup(groupModel);
     }
@@ -305,6 +309,14 @@ class MessageProcessor implements IMessageProcessor
     @Override
     public void processMessage(GetGroupUsersResponse response)
     {
+        if(response.getErrorCode() == ErrorCodeResponse.AccessDenied)
+        {
+            GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+            group.setPermissions(MemberRole.PendingApproval);
+            controller.updateGroup(group);
+            return;
+        }
+
         if(response.getErrorCode() != ErrorCodeResponse.OK)
         {
             controller.mainView.showError(response.getErrorCode());
@@ -324,6 +336,14 @@ class MessageProcessor implements IMessageProcessor
     @Override
     public void processMessage(GetMessagesResponse response)
     {
+        if(response.getErrorCode() == ErrorCodeResponse.AccessDenied)
+        {
+            GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+            group.setPermissions(MemberRole.PendingApproval);
+            controller.updateGroup(group);
+            return;
+        }
+
         if(response.getErrorCode() != ErrorCodeResponse.OK)
         {
             controller.mainView.showError(response.getErrorCode());
@@ -343,6 +363,14 @@ class MessageProcessor implements IMessageProcessor
     @Override
     public void processMessage(GetSubgroupsResponse response)
     {
+        if(response.getErrorCode() == ErrorCodeResponse.AccessDenied)
+        {
+            GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
+            group.setPermissions(MemberRole.PendingApproval);
+            controller.updateGroup(group);
+            return;
+        }
+
         if(response.getErrorCode() != ErrorCodeResponse.OK)
         {
             controller.mainView.showError(response.getErrorCode());
