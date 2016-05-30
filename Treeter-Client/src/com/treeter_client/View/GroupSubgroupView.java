@@ -8,6 +8,7 @@ import com.treeter_client.Model.GroupSubgroupListModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.*;
 
 /**
  * Created by psrok1 on 27.05.2016.
@@ -79,6 +80,39 @@ public class GroupSubgroupView extends JPanel
 
     public void attachController(MainController controller)
     {
+        subgroupList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!subgroupList.isSelectionEmpty()
+                        && subgroupList.locationToIndex(e.getPoint()) == subgroupList.getSelectedIndex())
+                {
+                    // @TODO
+                    subgroupMenu.show(subgroupList, e.getX(), e.getY());
+                }
+            }
+        });
 
+        addSubgroupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.addSubgroup(addSubgroupField.getText());
+            }
+        });
+
+        subgroupJoin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String subgroup = subgroupList.getSelectedValue();
+                controller.joinSubgroup(subgroup);
+            }
+        });
+
+        subgroupDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String subgroup = subgroupList.getSelectedValue();
+                controller.deleteSubgroup(subgroup);
+            }
+        });
     }
 }

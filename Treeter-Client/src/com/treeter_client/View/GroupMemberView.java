@@ -8,6 +8,10 @@ import com.treeter_client.Model.GroupModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 /**
@@ -81,7 +85,57 @@ public class GroupMemberView extends JPanel
 
     public void attachController(MainController controller)
     {
+        inviteMemberButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String memberName = inviteMemberField.getText();
+                controller.addMember(memberName);
+            }
+        });
 
+        memberList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!memberList.isSelectionEmpty()
+                        && memberList.locationToIndex(e.getPoint()) == memberList.getSelectedIndex())
+                {
+                    // @TODO
+                    membersMenu.show(memberList, e.getX(), e.getY());
+                }
+            }
+        });
+
+        memberAccept.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GroupMember member = memberList.getSelectedValue();
+                controller.acceptMember(member.login);
+            }
+        });
+
+        memberStandard.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GroupMember member = memberList.getSelectedValue();
+                controller.makeStandardMember(member.login);
+            }
+        });
+
+        memberModerator.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GroupMember member = memberList.getSelectedValue();
+                controller.makeModeratorMember(member.login);
+            }
+        });
+
+        memberReject.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GroupMember member = memberList.getSelectedValue();
+                controller.rejectMember(member.login);
+            }
+        });
     }
 }
 

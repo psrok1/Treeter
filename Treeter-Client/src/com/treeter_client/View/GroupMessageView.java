@@ -7,6 +7,8 @@ import com.treeter_client.Model.GroupModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -63,6 +65,12 @@ public class GroupMessageView extends JPanel
 
     public void attachController(MainController controller)
     {
-
+        sendMessageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = sendMessageField.getText();
+                controller.sendMessage(message);
+            }
+        });
     }
 }

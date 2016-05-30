@@ -131,6 +131,55 @@ public class MainController
             this.client.send(new GetSubgroupsRequest(group.absolutePath));
         }
     }
+
+    public void addSubgroup(String subgroup) {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new CreateSubgroupRequest(path, subgroup));
+    }
+
+    public void joinSubgroup(String subgroup) {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new AddMeToGroupRequest(path, subgroup));
+    }
+
+    public void deleteSubgroup(String subgroup)
+    {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new RemoveSubgroupRequest(path, subgroup));
+    }
+
+    public void addMember(String memberName) {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new AddUserToGroupRequest(memberName, path));
+    }
+
+    public void rejectMember(String login) {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new RemoveUserFromGroupRequest(path, login));
+    }
+
+    public void makeModeratorMember(String login) {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new SetMemberPermissionRequest(path, login, MemberRole.Moderator));
+    }
+
+    public void makeStandardMember(String login)
+    {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new SetMemberPermissionRequest(path, login, MemberRole.Standard));
+    }
+
+    public void acceptMember(String login)
+    {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new SetMemberPermissionRequest(path, login, MemberRole.Moderator));
+    }
+
+    public void sendMessage(String message)
+    {
+        String path = model.getActiveGroup().absolutePath;
+        this.client.send(new SendMessageRequest(path, message));
+    }
 }
 
 class MessageProcessor implements IMessageProcessor

@@ -1,8 +1,5 @@
 package com.treeter_client.Message;
 
-import com.sun.java.util.jar.pack.Package;
-import com.sun.org.apache.xpath.internal.operations.Mult;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

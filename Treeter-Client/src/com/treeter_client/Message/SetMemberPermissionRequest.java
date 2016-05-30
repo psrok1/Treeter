@@ -8,11 +8,13 @@ import org.json.simple.JSONObject;
  */
 public class SetMemberPermissionRequest extends MessageRequest
 {
+    String path;
     String username;
     String role;
 
-    public SetMemberPermissionRequest(String username, MemberRole role)
+    public SetMemberPermissionRequest(String path, String username, MemberRole role)
     {
+        this.path = path;
         this.username = username;
         this.role = role.toString();
     }
@@ -23,6 +25,7 @@ public class SetMemberPermissionRequest extends MessageRequest
         jsonObject.put("request", "setMemberPermission");
         jsonObject.put("username", username);
         jsonObject.put("role", role);
+        jsonObject.put("path", path);
         return jsonObject.toJSONString();
     }
 }

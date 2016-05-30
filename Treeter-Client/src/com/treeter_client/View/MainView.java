@@ -117,6 +117,10 @@ public class MainView
                 controller.disconnect();
             }
         });
+
+        messageView.attachController(controller);
+        memberView.attachController(controller);
+        subgroupView.attachController(controller);
     }
 
     public static void main(String[] args)

@@ -113,4 +113,9 @@ public class GroupTreeModel
     {
         return root;
     }
+
+    public GroupModel getActiveGroup()
+    {
+        return activeGroup;
+    }
 }
