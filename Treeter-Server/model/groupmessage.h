@@ -3,6 +3,7 @@
 
 #include <string>
 #include <chrono>
+#include "message/json.hpp"
 
 namespace Model
 {
@@ -22,7 +23,7 @@ namespace Model
         const std::string getMessage() const { return message; }
         const Timestamp getTimestamp() const { return timestamp; }
 
-        const std::string toString() const;
+        const nlohmann::json toJSON() const;
     };
 }
 
