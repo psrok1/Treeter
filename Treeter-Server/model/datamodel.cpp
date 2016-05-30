@@ -69,10 +69,12 @@ namespace Model
         this->users[login] = user_ref;
 
         if(plaintextPassword)
+        {
             user_ref->exportToDatabase();
 
-        // User should be added to root group
-        this->rootGroup->addMember(this->rootGroup, user_ref, MemberRole::Member);
+            // User should be added to root group
+            this->rootGroup->addMember(this->rootGroup, user_ref, MemberRole::Member);
+        }
 
         return user_ref;
     }
@@ -121,6 +123,15 @@ namespace Model
         {
             this->addUser(userdata[0], userdata[1], false);
         }
+
+        // Import root members
+        ResultSet rootMembers = DB.importMembers("/");
+
+        for(auto member: rootMembers)
+        {
+            this->rootGroup->addMember(this->rootGroup, this->getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())),true);
+        }
+
         this->rootGroup->importFromDatabase(*this);
     }
 }

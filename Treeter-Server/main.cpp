@@ -29,7 +29,6 @@ int main()
 
     //Initialize the database connection
     DB.init();
-    DB.insertMessage("a","admin","/root",0);
 
     // Loading configuration file
     if(!Configuration::load())

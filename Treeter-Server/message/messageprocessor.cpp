@@ -131,12 +131,15 @@ bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
         return false;
     }
 
-    if(!groupRef->createGroup(req.getSubgroupName()))
+    std::shared_ptr<Model::Group> newGroupRef = groupRef->createGroup(req.getSubgroupName());
+    if(!newGroupRef)
     {
         MessageOutgoing::Reference response(new CreateSubgroupResponse(ResponseErrorCode::GroupExist));
         this->connection->sendMessage(response);
         return false;
     }
+
+    newGroupRef->addMember(newGroupRef, userRef, MemberRole::Moderator);
 
     MessageOutgoing::Reference response(new CreateSubgroupResponse());
     this->connection->sendMessage(response);
@@ -208,7 +211,10 @@ bool MessageProcessor::processRequest(const GetSubgroupsRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new GetSubgroupsResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetSubgroupsResponse(
+                                                req.getPath(),
+                                                std::list<std::string>(),
+                                                ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -360,7 +366,10 @@ bool MessageProcessor::processRequest(const GetGroupUsersRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new GetGroupUsersResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetGroupUsersResponse(
+                                                req.getPath(),
+                                                std::list<std::pair<std::string,MemberRole>>(),
+                                                ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }
@@ -483,7 +492,10 @@ bool MessageProcessor::processRequest(const GetMessagesRequest &req)
 
     if(groupRef->getMemberPermission(userRef->getLogin()) == MemberRole::PendingApproval)
     {
-        MessageOutgoing::Reference response(new GetMessagesResponse(ResponseErrorCode::AccessDenied));
+        MessageOutgoing::Reference response(new GetMessagesResponse(
+                                                req.getPath(),
+                                                std::list<Model::GroupMessage>(),
+                                                ResponseErrorCode::AccessDenied));
         this->connection->sendMessage(response);
         return false;
     }

@@ -1,9 +1,12 @@
 #include "group.h"
 #include "datamodel.h"
 #include "mapgetter.h"
+#include "model/user.h"
 #include "message/messageoutgoing.h"
 #include <utility>
 #include <algorithm>
+
+#include <iostream>
 
 namespace Model
 {
@@ -26,7 +29,12 @@ namespace Model
 
     Group::Group(std::string name, Group* parent):
         invalidated(false), name(name),
-        absolutePath((parent != nullptr ? parent->absolutePath : "")+"/"+name), parent(parent) { }
+        absolutePath((parent != nullptr
+            ? (parent->absolutePath != "/"
+                ? parent->absolutePath+"/"+name
+                : "/"+name)
+            : "/")), parent(parent) {
+    }
 
     /**
      * @brief Group::getName
@@ -54,7 +62,7 @@ namespace Model
      * @brief Group::sendNotification
      * Sends message to all associated connections
      */
-    void Group::sendNotification(MessageOutgoing::Reference msg)
+    void Group::sendNotification(MessageOutgoing::Reference msg, std::string especiallyTo)
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
@@ -66,7 +74,7 @@ namespace Model
                 continue;
 
             // User might be not priviliged
-            if(member.role == MemberRole::PendingApproval)
+            if(member.role == MemberRole::PendingApproval && userRef->getLogin() != especiallyTo)
                 continue;
 
             Connection::Reference connection = userRef->getConnection();
@@ -212,7 +220,7 @@ namespace Model
             DB.insertMember(user->getLogin(),group_ref->getAbsolutePath(),static_cast<int> (memberRole));
 
             // Send notification to all
-            this->sendNotification(MessageOutgoing::Reference(new AddedToGroupNotification(this->absolutePath, login, memberRole)));
+            this->sendNotification(MessageOutgoing::Reference(new AddedToGroupNotification(this->absolutePath, login, memberRole)), login);
         }
 
         return true;
@@ -245,7 +253,7 @@ namespace Model
         DB.deleteMember(memberLogin,this->absolutePath);
 
         // Send notification to all
-        this->sendNotification(MessageOutgoing::Reference(new RemovedFromGroupNotification(this->absolutePath, memberLogin)));
+        this->sendNotification(MessageOutgoing::Reference(new RemovedFromGroupNotification(this->absolutePath, memberLogin)), memberLogin);
 
         return true;
     }
@@ -289,7 +297,7 @@ namespace Model
         DB.updateMemberRole(memberLogin,this->absolutePath,static_cast<int>(memberRole));
 
         // Send notification to all
-        this->sendNotification(MessageOutgoing::Reference(new ModifiedMemberPermissionNotification(memberLogin, this->absolutePath, memberRole)));
+        this->sendNotification(MessageOutgoing::Reference(new ModifiedMemberPermissionNotification(memberLogin, this->absolutePath, memberRole)), memberLogin);
 
         return true;
     }
@@ -349,8 +357,11 @@ namespace Model
     {
         std::unique_lock<std::recursive_mutex> lck(mu);
 
-        // @TODO: Adding msg to db
         this->messages.push_back(message);
+        DB.insertMessage(message.getAuthor(),
+                         message.getMessage(),
+                         this->getAbsolutePath(),
+                         std::chrono::system_clock::to_time_t(message.getTimestamp()));
 
         MessageOutgoing::Reference newMsgNotification(new NewMessageNotification(this->absolutePath, message));
         sendNotification(newMsgNotification);
@@ -389,6 +400,17 @@ namespace Model
         for(auto& groupName: groupNames)
             this->createGroup(groupName[0]);
 
+        ResultSet groupMessages = DB.importMessages(this->absolutePath);
+
+        for(auto& groupMessage: groupMessages)
+        {
+            GroupMessage message(
+                        groupMessage[1],
+                        groupMessage[0],
+                        std::chrono::system_clock::from_time_t(atoi(groupMessage[2].data())));
+            this->messages.push_back(message);
+        }
+
         for(auto& child: this->children)
         {
             const std::shared_ptr<Group>& groupPtr = child.second;
@@ -397,7 +419,9 @@ namespace Model
             ResultSet members = DB.importMembers(this->absolutePath);
 
             for(auto member: members)
+            {
                 this->addMember(groupPtr, model.getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())),true);
+            }
 
             groupPtr->importFromDatabase(model);
         }

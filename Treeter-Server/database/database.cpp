@@ -69,7 +69,7 @@ ResultSet Database::importMembers(std::string groupPath)
 
 ResultSet Database::importMessages(std::string groupPath)
 {
-    char* query = sqlite3_mprintf("select id, text, sender, channel, timestamp from messages where channel='%q' order by timestamp asc;",groupPath.data());
+    char* query = sqlite3_mprintf("select sender, text, timestamp from messages where channel='%q' order by timestamp asc;",groupPath.data());
     ResultSet results = runQuery(query,true);
     sqlite3_free(query);
     return results;

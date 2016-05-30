@@ -44,7 +44,7 @@ namespace Model
 
         mutable std::recursive_mutex mu;
 
-        void sendNotification(MessageOutgoing::Reference msg);
+        void sendNotification(MessageOutgoing::Reference msg, std::string especiallyTo = "");
         void clean();
     public:
         Group(std::string name, Group* parent);
