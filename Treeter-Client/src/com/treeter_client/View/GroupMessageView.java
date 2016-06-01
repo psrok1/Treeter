@@ -9,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -42,7 +44,6 @@ public class GroupMessageView extends JPanel
         messageScrollPane = new JScrollPane();
         messageScrollPane.getViewport().add(messageList);
         this.add(messageScrollPane, BorderLayout.CENTER);
-        messageScrollPane.getVerticalScrollBar().addAdjustmentListener(e -> e.getAdjustable().setValue(e.getAdjustable().getMaximum()));
 
         // panel do wysylanie wiadomosci
         sendMessagePanel = new JPanel(new BorderLayout());
@@ -55,12 +56,26 @@ public class GroupMessageView extends JPanel
         this.add(sendMessagePanel, BorderLayout.SOUTH);
     }
 
+
     public void updateGroup(GroupModel group)
     {
         GroupMessageListModel model = group.getMessageList();
+        final JScrollBar vscroll = messageScrollPane.getVerticalScrollBar();
+        final int distanceToBottom = vscroll.getMaximum() - ( vscroll.getValue() + vscroll.getVisibleAmount() );
+
         messageList.setListData(model.getData());
         messageList.revalidate();
         messageList.repaint();
+
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                messageScrollPane.validate();
+
+                if( 0 == distanceToBottom ) {
+                    vscroll.setValue( vscroll.getMaximum() );
+                }
+            }
+        });
     }
 
     public void attachController(MainController controller)

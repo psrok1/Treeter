@@ -180,7 +180,6 @@ public class Client
 
         public void putMessageToSend(MessageRequest msg)
         {
-            System.out.println("Message offered!");
             requests.offer(msg);
         }
 
@@ -224,9 +223,8 @@ public class Client
                 clientSenderThread.start();
                 // Powolanie zdarzenia onConnect
                 SwingUtilities.invokeLater(() -> onConnectListener.action());
-            } catch(IOException e)
+            } catch(Exception e)
             {
-                e.printStackTrace();
                 SwingUtilities.invokeLater(() -> onErrorListener.action());
             }
         }
@@ -245,7 +243,6 @@ public class Client
     {
         String ip = address.substring(0, address.indexOf(':'));
         int port = Integer.parseInt(address.substring(address.indexOf(':') + 1));
-
         SocketAddress addr = new InetSocketAddress(ip, port);
         new Thread(new ClientOpener(addr)).start();
     }

@@ -1,9 +1,7 @@
 package com.treeter_client.View;
 
 import com.treeter_client.MainController;
-import com.treeter_client.Model.GroupMessageListModel;
-import com.treeter_client.Model.GroupModel;
-import com.treeter_client.Model.GroupSubgroupListModel;
+import com.treeter_client.Model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -73,9 +71,24 @@ public class GroupSubgroupView extends JPanel
     public void updateGroup(GroupModel group)
     {
         GroupSubgroupListModel model = group.getSubgroupList();
+        addSubgroupButton.setEnabled(group.getPermissions() == MemberRole.Moderator);
+
+        final JScrollBar vscroll = subgroupScrollPane.getVerticalScrollBar();
+        final int distanceToBottom = vscroll.getMaximum() - ( vscroll.getValue() + vscroll.getVisibleAmount() );
+
         subgroupList.setListData(model.getData());
         subgroupList.revalidate();
         subgroupList.repaint();
+
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                subgroupScrollPane.validate();
+
+                if( 0 == distanceToBottom ) {
+                    vscroll.setValue( vscroll.getMaximum() );
+                }
+            }
+        });
     }
 
     public void attachController(MainController controller)
@@ -86,7 +99,16 @@ public class GroupSubgroupView extends JPanel
                 if (!subgroupList.isSelectionEmpty()
                         && subgroupList.locationToIndex(e.getPoint()) == subgroupList.getSelectedIndex())
                 {
-                    // @TODO
+                    GroupTreeModel model = controller.getModel();
+                    GroupModel group = model.getActiveGroup();
+                    String subgroupPath;
+                    if(group.absolutePath.equals("/"))
+                        subgroupPath = "/" + subgroupList.getSelectedValue();
+                    else
+                        subgroupPath = group.absolutePath + "/" + subgroupList.getSelectedValue();
+
+                    subgroupJoin.setEnabled(model.getGroupByPath(subgroupPath, false) == null);
+                    subgroupDelete.setEnabled(group.getPermissions() == MemberRole.Moderator);
                     subgroupMenu.show(subgroupList, e.getX(), e.getY());
                 }
             }

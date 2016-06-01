@@ -124,6 +124,10 @@ public class ConnectView
     {
         JOptionPane.showMessageDialog(this.frame, error.toString());
     }
+    public void showError(String errorStr)
+    {
+        JOptionPane.showMessageDialog(this.frame, errorStr);
+    }
 
     public void hide()
     {
