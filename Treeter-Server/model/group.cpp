@@ -259,6 +259,10 @@ namespace Model
 
         DB.deleteMember(memberLogin,this->absolutePath);
 
+        // Recursive deletion
+        for(std::shared_ptr<Group> childRef: getValues(this->children))
+            childRef->deleteMember(memberLogin);
+
         return true;
     }
 
