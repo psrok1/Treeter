@@ -245,15 +245,15 @@ namespace Model
 
         std::shared_ptr<User> user_ref = (it->second).user.lock();
 
+        // Send notification to all
+        this->sendNotification(MessageOutgoing::Reference(new RemovedFromGroupNotification(this->absolutePath, memberLogin)), memberLogin);
+
         if(user_ref)
             user_ref->removeGroup(this->absolutePath);
 
         this->members.erase(it);
 
         DB.deleteMember(memberLogin,this->absolutePath);
-
-        // Send notification to all
-        this->sendNotification(MessageOutgoing::Reference(new RemovedFromGroupNotification(this->absolutePath, memberLogin)), memberLogin);
 
         return true;
     }
