@@ -86,21 +86,21 @@
       <file leaf-file-name="GroupMessageView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupMessageView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="499">
-              <caret line="77" column="11" selection-start-line="69" selection-start-column="8" selection-end-line="77" selection-end-column="11" />
+            <state relative-caret-position="475">
+              <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
               <folding>
-                <element signature="e#3213#3214#0" expanded="true" />
-                <element signature="e#3272#3273#0" expanded="true" />
+                <element signature="e#3219#3220#0" expanded="true" />
+                <element signature="e#3278#3279#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainView.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/MainView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+            <state relative-caret-position="300">
+              <caret line="89" column="33" selection-start-line="89" selection-start-column="33" selection-end-line="89" selection-end-column="33" />
               <folding>
                 <element signature="e#2353#2354#0" expanded="true" />
                 <element signature="e#2417#2418#0" expanded="true" />
@@ -109,11 +109,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GroupSubgroupView.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="GroupSubgroupView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupSubgroupView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+            <state relative-caret-position="250">
+              <caret line="121" column="13" selection-start-line="121" selection-start-column="13" selection-end-line="121" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -208,10 +208,10 @@
         <option value="$PROJECT_DIR$/src/com/treeter_client/Client.java" />
         <option value="$PROJECT_DIR$/src/com/treeter_client/MainController.java" />
         <option value="$PROJECT_DIR$/src/com/treeter_client/View/GroupTreePanel.java" />
-        <option value="$PROJECT_DIR$/src/com/treeter_client/View/MainView.java" />
-        <option value="$PROJECT_DIR$/src/com/treeter_client/View/GroupMessageView.java" />
         <option value="$PROJECT_DIR$/src/com/treeter_client/View/GroupMemberView.java" />
         <option value="$PROJECT_DIR$/src/com/treeter_client/View/GroupSubgroupView.java" />
+        <option value="$PROJECT_DIR$/src/com/treeter_client/View/GroupMessageView.java" />
+        <option value="$PROJECT_DIR$/src/com/treeter_client/View/MainView.java" />
       </list>
     </option>
   </component>
@@ -1201,28 +1201,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/MainView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
-          <folding>
-            <element signature="e#2353#2354#0" expanded="true" />
-            <element signature="e#2417#2418#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupMessageView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="499">
-          <caret line="77" column="11" selection-start-line="69" selection-start-column="8" selection-end-line="77" selection-end-column="11" />
-          <folding>
-            <element signature="e#3213#3214#0" expanded="true" />
-            <element signature="e#3272#3273#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupMemberView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="499">
@@ -1233,9 +1211,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupSubgroupView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+        <state relative-caret-position="250">
+          <caret line="121" column="13" selection-start-line="121" selection-start-column="13" selection-end-line="121" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/GroupMessageView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
+          <folding>
+            <element signature="e#3219#3220#0" expanded="true" />
+            <element signature="e#3278#3279#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/treeter_client/View/MainView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="89" column="33" selection-start-line="89" selection-start-column="33" selection-end-line="89" selection-end-column="33" />
+          <folding>
+            <element signature="e#2353#2354#0" expanded="true" />
+            <element signature="e#2417#2418#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

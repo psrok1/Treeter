@@ -32,7 +32,7 @@ public class GroupMessageView extends JPanel
         this.setBackground(Color.WHITE);
 
         // nazwa grupy
-        groupName = new JLabel("Grupa ....");
+        groupName = new JLabel("Lista wiadomości");
         this.add(groupName, BorderLayout.NORTH);
 
         // lista wiadomosci
