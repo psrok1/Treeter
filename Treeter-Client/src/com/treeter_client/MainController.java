@@ -38,7 +38,16 @@ public class MainController
             {
                 try
                 {
-                    System.out.println("Action!");
+                    client.onError(new Client.EventListener()
+                    {
+                        @Override
+                        public void action()
+                        {
+                            client.close();
+                            mainView.hide();
+                            connectView.show();
+                        }
+                    });
                     HelloRequest helloRequest = new HelloRequest();
                     client.send(new HelloRequest());
                 } catch(Exception e)
@@ -61,12 +70,16 @@ public class MainController
             @Override
             public void action()
             {
-                client.close();
-                mainView.hide();
-                connectView.show();
+                connectView.showError("Błąd podczas łączenia z serwerem.");
             }
         });
-        client.open(address);
+        try
+        {
+            client.open(address);
+        } catch(Exception e)
+        {
+            connectView.showError("Niepoprawny adres serwera");
+        }
     }
 
     public static void main(String args[])
@@ -184,6 +197,11 @@ public class MainController
     {
         String path = model.getActiveGroup().absolutePath;
         this.client.send(new SendMessageRequest(path, message));
+    }
+
+    public GroupTreeModel getModel()
+    {
+        return this.model;
     }
 }
 
@@ -329,6 +347,7 @@ class MessageProcessor implements IMessageProcessor
         GroupMemberListModel groupMembers = group.getMemberList();
 
         groupMembers.loadRemoteData(response.getMemberList());
+        group.setPermissions(groupMembers.findByLogin(controller.loggedUser).role);
         groupMembers.setState(DataModelState.Synchronized);
 
         if(group.isSynchronized())
@@ -508,10 +527,8 @@ class MessageProcessor implements IMessageProcessor
         if(groupModel == null)
             return;
         // Is it me?
-        if(path.equals(controller.loggedUser))
-        {
+        if(username.equals(controller.loggedUser))
             groupModel.setPermissions(role);
-        }
         // Set member permissions
         groupModel.getMemberList().setMemberPermissions(username, role);
         // Update view

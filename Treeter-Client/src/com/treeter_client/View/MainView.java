@@ -38,17 +38,10 @@ public class MainView
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(new Color(0xA6, 0x80, 0xB8));
-        UIManager.put("Tree.collapsedIcon", new ImageIcon(getClass().getResource("/tree-closed.png")));
-        UIManager.put("Tree.expandedIcon", new ImageIcon(getClass().getResource("/tree-opened.png")));
+        UIManager.put("Tree.collapsedIcon", new ImageIcon());
+        UIManager.put("Tree.expandedIcon", new ImageIcon());
 
         groupTreePanel = new GroupTreePanel(groupTreeModel.getRoot());
-//        groupTreePanel.setGroupSelectListener(new GroupTreeSelectListener() {
-//            @Override
-//            public void groupSelected(GroupTreeModelGroup group) {
-//                System.out.println(group.absolutePath);
-//                groupTreeModel.setActiveGroup(group.absolutePath);
-//            }
-//        });
 
         messageView = new GroupMessageView();
         memberView = new GroupMemberView();
@@ -80,8 +73,7 @@ public class MainView
 
     public void setModel(GroupTreeModel model)
     {
-        this.groupTreeModel = model;
-        this.groupTreePanel.setRoot(model.getRoot());
+        this.groupTreePanel.setModel(model.getUIModel());
     }
 
     public void updateGroup(GroupModel group)

@@ -1,6 +1,8 @@
 package com.treeter_client.Model;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.util.Enumeration;
 
 /**
@@ -9,13 +11,21 @@ import java.util.Enumeration;
 public class GroupTreeModel
 {
     DefaultMutableTreeNode root;
+    DefaultTreeModel treeModel;
     GroupModel activeGroup;
+
 
     public GroupTreeModel()
     {
         GroupModel groupRoot = new GroupModel("/");
         root = new DefaultMutableTreeNode(groupRoot);
+        treeModel = new DefaultTreeModel(root);
         activeGroup = null;
+    }
+
+    public DefaultTreeModel getUIModel()
+    {
+        return treeModel;
     }
 
     private DefaultMutableTreeNode getNodeByPath(String path, DefaultMutableTreeNode node, boolean createIfNotExist)
@@ -55,6 +65,7 @@ public class GroupTreeModel
             GroupModel newGroup = new GroupModel(newGroupPath);
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newGroup);
             node.add(newNode);
+            treeModel.nodeStructureChanged(node);
             return getNodeByPath(child_path, newNode, createIfNotExist);
         } else
             return null;
@@ -67,7 +78,8 @@ public class GroupTreeModel
 
     public GroupModel getGroupByPath(String path, boolean createIfNotExist)
     {
-        return (GroupModel)getNodeByPath(path, createIfNotExist).getUserObject();
+        DefaultMutableTreeNode node = getNodeByPath(path, createIfNotExist);
+        return node != null ? (GroupModel)node.getUserObject() : null;
     }
 
     public GroupModel addGroup(String path)
@@ -82,7 +94,9 @@ public class GroupTreeModel
         if(node == null)
             return;
 
+        TreeNode parent = node.getParent();
         node.removeFromParent();
+        treeModel.nodeStructureChanged(parent);
     }
 
     public void notifyGroup(GroupModel group)

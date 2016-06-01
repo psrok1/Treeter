@@ -28,7 +28,7 @@ public class GroupMemberListModel extends DataModel
         this.memberList.add(member);
     }
 
-    private GroupMember findElementByLogin(String login)
+    public GroupMember findByLogin(String login)
     {
         for(GroupMember member: this.memberList)
             if(member.login.equals(login))
@@ -42,7 +42,7 @@ public class GroupMemberListModel extends DataModel
         if(this.getState() != DataModelState.Synchronized)
             return;
 
-        GroupMember member = findElementByLogin(login);
+        GroupMember member = findByLogin(login);
         if(member != null)
             this.memberList.remove(member);
     }
@@ -52,7 +52,7 @@ public class GroupMemberListModel extends DataModel
         if(this.getState() != DataModelState.Synchronized)
             return;
 
-        GroupMember member = findElementByLogin(login);
+        GroupMember member = findByLogin(login);
         if(member != null)
             member.role = role;
     }

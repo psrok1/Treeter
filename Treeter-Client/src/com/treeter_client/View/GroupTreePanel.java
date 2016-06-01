@@ -6,10 +6,7 @@ import com.treeter_client.Model.GroupModel;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 
 interface GroupTreeSelectListener {
@@ -31,17 +28,17 @@ public class GroupTreePanel extends JPanel
         groupTree.putClientProperty("JTree.lineStyle", "None");
         groupTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         DefaultTreeCellRenderer treeRenderer = new GroupTreeCellRenderer();
-        treeRenderer.setOpenIcon(null);
-        treeRenderer.setClosedIcon(null);
+        treeRenderer.setOpenIcon(new ImageIcon(getClass().getResource("/tree-opened.png")));
+        treeRenderer.setClosedIcon(new ImageIcon(getClass().getResource("/tree-closed.png")));
         treeRenderer.setLeafIcon(null);
 
         groupTree.setCellRenderer(treeRenderer);
         this.add(groupTree, BorderLayout.CENTER);
     }
 
-    public void setRoot(DefaultMutableTreeNode treeRoot)
+    public void setModel(DefaultTreeModel treeModel)
     {
-        this.treeModel.setRoot(treeRoot);
+        this.groupTree.setModel(treeModel);
     }
 
     public void setGroupSelectListener(GroupTreeSelectListener listener)
@@ -50,7 +47,6 @@ public class GroupTreePanel extends JPanel
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupTree.getLastSelectedPathComponent();
-                System.out.println("Something selected");
                 /* if nothing is selected */
                 if (node == null) return;
 
@@ -65,7 +61,6 @@ public class GroupTreePanel extends JPanel
         setGroupSelectListener(new GroupTreeSelectListener() {
             @Override
             public void groupSelected(GroupModel group) {
-                System.out.println(group.absolutePath);
                 controller.selectGroup(group);
             }
         });

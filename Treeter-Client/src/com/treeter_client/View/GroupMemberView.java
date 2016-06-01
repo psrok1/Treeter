@@ -4,6 +4,7 @@ import com.treeter_client.MainController;
 import com.treeter_client.Model.GroupMember;
 import com.treeter_client.Model.GroupMemberListModel;
 import com.treeter_client.Model.GroupModel;
+import com.treeter_client.Model.MemberRole;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -78,9 +79,24 @@ public class GroupMemberView extends JPanel
     public void updateGroup(GroupModel group)
     {
         GroupMemberListModel model = group.getMemberList();
+        inviteMemberButton.setEnabled(!group.absolutePath.equals("/") && group.getPermissions() == MemberRole.Moderator);
+
+        final JScrollBar vscroll = memberScrollPane.getVerticalScrollBar();
+        final int distanceToBottom = vscroll.getMaximum() - ( vscroll.getValue() + vscroll.getVisibleAmount() );
+
         memberList.setListData(model.getData());
         memberList.revalidate();
         memberList.repaint();
+
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                memberScrollPane.validate();
+
+                if( 0 == distanceToBottom ) {
+                    vscroll.setValue( vscroll.getMaximum() );
+                }
+            }
+        });
     }
 
     public void attachController(MainController controller)
@@ -107,7 +123,18 @@ public class GroupMemberView extends JPanel
                 if (!memberList.isSelectionEmpty()
                         && memberList.locationToIndex(e.getPoint()) == memberList.getSelectedIndex())
                 {
-                    // @TODO
+                    GroupMember member = memberList.getSelectedValue();
+                    GroupModel group = controller.getModel().getActiveGroup();
+                    MemberRole selfPermissions = group.getPermissions();
+
+                    memberAccept.setEnabled(selfPermissions == MemberRole.Moderator
+                            && member.role == MemberRole.PendingApproval);
+                    memberStandard.setEnabled(selfPermissions == MemberRole.Moderator
+                            && member.role == MemberRole.Moderator);
+                    memberModerator.setEnabled(selfPermissions == MemberRole.Moderator
+                            && member.role == MemberRole.Standard);
+                    memberReject.setEnabled(!group.absolutePath.equals("/")
+                            && selfPermissions == MemberRole.Moderator);
                     membersMenu.show(memberList, e.getX(), e.getY());
                 }
             }
