@@ -116,7 +116,11 @@ void Connection::operator()(Reference refConnection)
     }
     catch (std::system_error e)
     {
-        std::cout<<"Connection thread exception, terminating: "<<e.what()<<" errno="<<e.code();
+        std::cerr<<"Connection thread exception, terminating: "<<e.what()<<" errno="<<e.code()<<"\n";
+    }
+    catch (std::exception e)
+    {
+        std::cerr<<"Connection thread critical exception, terminating: "<<e.what()<<"\n";
     }
 
     shutdown(socketDescriptor, SHUT_RD);

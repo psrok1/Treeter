@@ -68,6 +68,7 @@ namespace Model
         MemberRole getMemberPermission(std::string memberLogin) const;
         bool setMemberPermission(std::string memberLogin, MemberRole memberRole);
         bool hasModerator() const;
+        std::string getModeratorCandidate() const;
 
         std::list<std::string> listOfPendingApprovals() const;
         std::list<std::pair<std::string, MemberRole>> listOfMembers() const;

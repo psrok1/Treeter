@@ -89,7 +89,11 @@ void Server::operator()(Reference)
     }
     catch(std::system_error e)
     {
-        std::cout<<"Server thread exception, terminating: "<<e.what()<<" errno="<<e.code();
+        std::cerr<<"Server thread exception, terminating: "<<e.what()<<" errno="<<e.code()<<"\n";
+    }
+    catch (std::exception e)
+    {
+        std::cerr<<"Connection thread critical exception, terminating: "<<e.what()<<"\n";
     }
 
     // .... END OF SERVER LOOP

@@ -139,6 +139,7 @@ bool MessageProcessor::processRequest(const CreateSubgroupRequest &req)
         return false;
     }
 
+    // Make me a moderator! (first user in group)
     newGroupRef->addMember(newGroupRef, userRef, MemberRole::Moderator);
 
     MessageOutgoing::Reference response(new CreateSubgroupResponse());
@@ -305,8 +306,9 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
     }
 
     std::shared_ptr<Model::Group> groupRef = userRef->getGroupByPath(req.getPath());
+    std::shared_ptr<Model::Group> groupParentRef = userRef->getGroupByPath(Model::Group::splitParentPath(req.getPath()).first);
 
-    if(!groupRef)
+    if(!groupRef || !groupParentRef)
     {
         MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::NotAMember));
         this->connection->sendMessage(response);
@@ -334,6 +336,29 @@ bool MessageProcessor::processRequest(const RemoveUserFromGroupRequest &req)
         MessageOutgoing::Reference response(new RemoveUserFromGroupResponse(ResponseErrorCode::MemberNotExist));
         this->connection->sendMessage(response);
         return false;
+    }
+
+    // Group doesn't have moderator?
+    if(!groupRef->hasModerator())
+    {
+        std::string bestCandidateLogin = groupRef->getModeratorCandidate();
+
+        while(!bestCandidateLogin.empty())
+        {
+            if(!groupRef->setMemberPermission(bestCandidateLogin, MemberRole::Moderator))
+            {
+                // Member has been removed suddenly :(
+                bestCandidateLogin = groupRef->getModeratorCandidate();
+            } else
+                // All hail the queen!
+                break;
+        }
+
+        if(bestCandidateLogin.empty())
+        {
+            // Group must be deleted
+            groupParentRef->deleteGroup(groupRef->getGroupName());
+        }
     }
 
     MessageOutgoing::Reference response(new RemoveUserFromGroupResponse());

@@ -24,7 +24,11 @@ namespace Model
     std::pair<std::string, std::string> Group::splitParentPath(std::string path)
     {
         size_t slash_pos = path.find_last_of('/');
-        return std::make_pair(path.substr(0, slash_pos), path.substr(slash_pos+1));
+        std::string parent = path.substr(0, slash_pos);
+        if(parent == "")
+            return std::make_pair("/",path.substr(slash_pos+1));
+        else
+            return std::make_pair(path.substr(0, slash_pos), path.substr(slash_pos+1));
     }
 
     Group::Group(std::string name, Group* parent):
@@ -300,6 +304,23 @@ namespace Model
         this->sendNotification(MessageOutgoing::Reference(new ModifiedMemberPermissionNotification(memberLogin, this->absolutePath, memberRole)), memberLogin);
 
         return true;
+    }
+
+    /**
+     * @brief Group::getModeratorCandidate
+     * Get best candidate to be a moderator
+     */
+    std::string Group::getModeratorCandidate() const
+    {
+        std::unique_lock<std::recursive_mutex> lck(mu);
+
+        for(const std::pair<std::string, Member>& member: this->members)
+        {
+            if(member.second.role != MemberRole::PendingApproval)
+                return member.first;
+        }
+
+        return std::string();
     }
 
     /**

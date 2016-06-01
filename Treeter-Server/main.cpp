@@ -27,33 +27,37 @@ int main()
     srand(time(nullptr));
     struct sigaction sigIntHandler;
 
-    //Initialize the database connection
-    DB.init();
+    try
+    {
+        //Initialize the database connection
+        DB.init();
 
-    // Loading configuration file
-    if(!Configuration::load())
-        return 1;
+        // Loading configuration file
+        if(!Configuration::load())
+            return 1;
 
-    // Initializing Crypto module
-    Crypto::initialize();
-    Crypto::RSAProvider::generate();
+        // Initializing Crypto module
+        Crypto::initialize();
+        Crypto::RSAProvider::generate();
 
-
-
-    // Adding SIGINT handler
-    sigIntHandler.sa_handler = handle_ctrlc;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigIntHandler, NULL);
+        // Adding SIGINT handler
+        sigIntHandler.sa_handler = handle_ctrlc;
+        sigemptyset(&sigIntHandler.sa_mask);
+        sigIntHandler.sa_flags = 0;
+        sigaction(SIGINT, &sigIntHandler, NULL);
 
 
-    // Invoking server and waiting until shutdown
-    serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
-    serverInstance->createThread(serverInstance);
-    serverInstance->joinThread();
+        // Invoking server and waiting until shutdown
+        serverInstance = Server::Reference(new Server(Configuration::getServerPort()));
+        serverInstance->createThread(serverInstance);
+        serverInstance->joinThread();
 
-    // Freeing Crypto
-    Crypto::free();
+        // Freeing Crypto
+        Crypto::free();
+    } catch(std::system_error e)
+    {
+        std::cerr << "Critical error, terminating: "<<e.what()<<"\n";
+    }
 
     return 0;
 }
