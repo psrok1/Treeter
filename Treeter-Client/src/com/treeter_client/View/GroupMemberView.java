@@ -90,6 +90,14 @@ public class GroupMemberView extends JPanel
             public void actionPerformed(ActionEvent e) {
                 String memberName = inviteMemberField.getText();
                 controller.addMember(memberName);
+                inviteMemberField.setText("");
+            }
+        });
+
+        inviteMemberField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inviteMemberButton.doClick();
             }
         });
 

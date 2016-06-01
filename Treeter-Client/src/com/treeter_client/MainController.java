@@ -99,11 +99,12 @@ public class MainController
 
     public void updateGroup(GroupModel groupModel)
     {
-        if(model.isActiveGroup(groupModel)) {
+        if(model.isActiveGroup(groupModel))
+        {
             if(groupModel.getPermissions() == MemberRole.PendingApproval)
                 mainView.lockWithWaitingMessage("Oczekiwanie na akceptację przez moderatora grupy");
             else
-                mainView.updateGroup(groupModel);
+                this.selectGroup(groupModel);
         }
         else
             model.notifyGroup(groupModel);
@@ -176,7 +177,7 @@ public class MainController
     public void acceptMember(String login)
     {
         String path = model.getActiveGroup().absolutePath;
-        this.client.send(new SetMemberPermissionRequest(path, login, MemberRole.Moderator));
+        this.client.send(new SetMemberPermissionRequest(path, login, MemberRole.Standard));
     }
 
     public void sendMessage(String message)
@@ -314,6 +315,7 @@ class MessageProcessor implements IMessageProcessor
             GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
             group.setPermissions(MemberRole.PendingApproval);
             controller.updateGroup(group);
+            group.getMemberList().setState(DataModelState.Unsynchronized);
             return;
         }
 
@@ -341,6 +343,7 @@ class MessageProcessor implements IMessageProcessor
             GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
             group.setPermissions(MemberRole.PendingApproval);
             controller.updateGroup(group);
+            group.getMessageList().setState(DataModelState.Unsynchronized);
             return;
         }
 
@@ -368,6 +371,7 @@ class MessageProcessor implements IMessageProcessor
             GroupModel group = controller.model.getGroupByPath(response.getPath(), false);
             group.setPermissions(MemberRole.PendingApproval);
             controller.updateGroup(group);
+            group.getSubgroupList().setState(DataModelState.Unsynchronized);
             return;
         }
 

@@ -70,6 +70,14 @@ public class GroupMessageView extends JPanel
             public void actionPerformed(ActionEvent e) {
                 String message = sendMessageField.getText();
                 controller.sendMessage(message);
+                sendMessageField.setText("");
+            }
+        });
+
+        sendMessageField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendMessageButton.doClick();
             }
         });
     }

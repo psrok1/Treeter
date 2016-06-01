@@ -96,6 +96,14 @@ public class GroupSubgroupView extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.addSubgroup(addSubgroupField.getText());
+                addSubgroupField.setText("");
+            }
+        });
+
+        addSubgroupField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addSubgroupButton.doClick();
             }
         });
 

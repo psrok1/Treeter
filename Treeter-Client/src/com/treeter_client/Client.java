@@ -262,13 +262,20 @@ public class Client
             if (connection != null && connection.isConnected())
                 connection.close();
 
-            clientListenerThread.interrupt();
-            clientSenderThread.interrupt();
-
-            if (clientListenerThread.isAlive())
-                clientListenerThread.join();
-            if (clientSenderThread.isAlive())
-                clientSenderThread.join();
+            if(clientListenerThread != null)
+            {
+                if(!clientListenerThread.isInterrupted())
+                    clientListenerThread.interrupt();
+                if (clientListenerThread.isAlive())
+                    clientListenerThread.join();
+            }
+            if(clientSenderThread != null)
+            {
+                if(!clientSenderThread.isInterrupted())
+                    clientSenderThread.interrupt();
+                if (clientSenderThread.isAlive())
+                    clientSenderThread.join();
+            }
         } catch (final Exception e)
         {
             e.printStackTrace();

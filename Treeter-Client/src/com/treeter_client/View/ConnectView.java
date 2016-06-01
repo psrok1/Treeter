@@ -15,7 +15,8 @@ public class ConnectView
     private ImageIcon logoImage;
     private JLabel logo, logLabel, serverLabel, nickLabel, passwordLabel;
     private JPanel outsidePanel, insidePanel, buttonPanel;
-    private JTextField serverField, nickField, passwordField;
+    private JTextField serverField, nickField;
+    private JPasswordField passwordField;
     private JButton acceptButton, registerButton;
 
     public ConnectView()
@@ -88,7 +89,7 @@ public class ConnectView
         c.gridy = 3;
         insidePanel.add(passwordLabel, c);
 
-        passwordField = new JTextField();
+        passwordField = new JPasswordField();
         c.weightx = 0.9;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
@@ -155,6 +156,6 @@ public class ConnectView
 
     public String getPassword()
     {
-        return passwordField.getText();
+        return new String(passwordField.getPassword());
     }
 }
