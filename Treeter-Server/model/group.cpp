@@ -259,6 +259,10 @@ namespace Model
 
         DB.deleteMember(memberLogin,this->absolutePath);
 
+        // Recursive deletion
+        for(std::shared_ptr<Group> childRef: getValues(this->children))
+            childRef->deleteMember(memberLogin);
+
         return true;
     }
 
@@ -436,12 +440,11 @@ namespace Model
         {
             const std::shared_ptr<Group>& groupPtr = child.second;
 
-            std::list<std::pair<std::string, MemberRole>> groupMembers;
-            ResultSet members = DB.importMembers(this->absolutePath);
+            ResultSet members = DB.importMembers(groupPtr->absolutePath);
 
             for(auto member: members)
             {
-                this->addMember(groupPtr, model.getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())),true);
+                groupPtr->addMember(groupPtr, model.getUserByLogin(member[0]), static_cast<MemberRole>(atoi(member[1].data())),true);
             }
 
             groupPtr->importFromDatabase(model);
