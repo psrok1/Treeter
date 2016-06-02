@@ -82,6 +82,7 @@ public class MainView
         memberView.updateGroup(group);
         subgroupView.updateGroup(group);
 
+        frame.setTitle("Treeter - "+group.absolutePath);
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "GroupLayout");
     }
@@ -89,12 +90,14 @@ public class MainView
     public void lockWithWaitingMessage(String message)
     {
         waitingPanel.setText(message);
+        frame.setTitle("Treeter");
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "WaitingLayout");
     }
 
     public void lockWithEmptyLayout()
     {
+        frame.setTitle("Treeter");
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
         cardLayout.show(cardPanel, "EmptyLayout");
     }
