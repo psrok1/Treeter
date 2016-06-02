@@ -66,6 +66,7 @@ namespace Crypto
         }
 
         BN_free(e);
+        std::cout << "Crypto: RSA-1024 generated\n";
         return key;
     }
 
@@ -279,12 +280,14 @@ namespace Crypto
         ERR_load_crypto_strings ();
         OPENSSL_config (NULL);
         OpenSSL_add_all_algorithms ();
+        std::cout << "Crypto: initialize()\n";
     }
 
     void free()
     {
         CRYPTO_set_locking_callback(NULL);
         delete [] locks;
+        std::cout << "Crypto: free()\n";
     }
 
     std::string sha256(std::string message)

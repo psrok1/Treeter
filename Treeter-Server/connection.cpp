@@ -25,6 +25,7 @@ Connection::Connection(Server* srv, int socket, Model::DataModel* model): id(Con
             throw std::system_error(std::error_code(errno, std::system_category()),"accept() failed");
     ipAddress = ntohl(addr.sin_addr.s_addr);
 }
+
 Connection::~Connection()
 {
     close(this->shutdownPipe[0]);
@@ -142,11 +143,6 @@ void Connection::operator()(Reference refConnection)
 
 void Connection::stopThread()
 {
-    // Tutaj powinnismy moim zdaniem rowniez przeprowadzic odlaczanie referencji z modelu
-    // Dzieki temu, ze przeprowadzi to watek odlaczajacy: mamy gwarancje, ze polaczenie zostanie oswobodzone
-    // dokladnie w chwili, gdy zadajacy tego chce
-    // Potem nasze polaczenie mozna juz zostawic same sobie.. niech sie na spokojnie zamknie, nikogo juz nie bedzie obchodzic
-
     stopped = true;
     write(this->shutdownPipe[1], "goodbye", sizeof("goodbye"));
 }

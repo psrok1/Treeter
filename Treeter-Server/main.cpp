@@ -59,6 +59,8 @@ int main()
         std::cerr << "Critical error, terminating: "<<e.what()<<"\n";
     }
 
+    std::cout << "Terminated.\n";
+
     return 0;
 }
 
